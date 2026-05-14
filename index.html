@@ -7,19 +7,11 @@
 <title>Young Giant | EV Logistics Nigeria</title>
 <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;700;800&family=Outfit:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet"/>
 <style>
-:root{
-  --g:#00E676;--gd:#00C853;--g2:#00FF7F;
-  --dk:#05080A;--dk2:#080D10;--dk3:#0B1215;
-  --card:#0E1519;--border:rgba(0,230,118,0.1);--border2:rgba(0,230,118,0.25);
-  --txt:#E5F0EC;--muted:#557265;--mono:'DM Mono',monospace;
-  --head:'Syne',sans-serif;--body:'Outfit',sans-serif;
-}
+:root{--g:#00E676;--gd:#00C853;--g2:#00FF7F;--dk:#05080A;--dk2:#080D10;--dk3:#0B1215;--card:#0E1519;--border:rgba(0,230,118,0.1);--border2:rgba(0,230,118,0.25);--txt:#E5F0EC;--muted:#557265;--mono:'DM Mono',monospace;--head:'Syne',sans-serif;--body:'Outfit',sans-serif;}
 *,*::before,*::after{margin:0;padding:0;box-sizing:border-box;}
 html{scroll-behavior:smooth;}
 body{background:var(--dk);color:var(--txt);font-family:var(--body);overflow-x:hidden;}
-::-webkit-scrollbar{width:3px;}
-::-webkit-scrollbar-track{background:var(--dk);}
-::-webkit-scrollbar-thumb{background:var(--gd);border-radius:20px;}
+::-webkit-scrollbar{width:3px;}::-webkit-scrollbar-track{background:var(--dk);}::-webkit-scrollbar-thumb{background:var(--gd);border-radius:20px;}
 nav{position:fixed;top:0;left:0;right:0;z-index:100;display:flex;align-items:center;justify-content:space-between;padding:16px 48px;background:rgba(5,8,10,0.85);backdrop-filter:blur(20px);border-bottom:1px solid var(--border);}
 .nl{display:flex;align-items:center;gap:10px;text-decoration:none;}
 .nb{width:36px;height:36px;background:var(--g);border-radius:6px;display:flex;align-items:center;justify-content:center;font-family:var(--head);font-size:16px;font-weight:800;color:var(--dk);}
@@ -94,6 +86,7 @@ section{padding:100px 48px;position:relative;}
 .sol-emoji{font-size:30px;margin-bottom:16px;}
 .sol h3{font-family:var(--head);font-size:18px;font-weight:700;margin-bottom:10px;}
 .sol p{font-size:13px;color:var(--muted);line-height:1.7;font-weight:300;}
+</style><style>
 .traction-inner{display:grid;grid-template-columns:1fr 1.6fr;gap:80px;align-items:start;}
 .ni{padding:22px 0;border-bottom:1px solid var(--border);display:grid;grid-template-columns:32px 1fr auto;gap:20px;transition:all 0.2s;}
 .ni:hover{transform:translateX(6px);}
@@ -170,23 +163,10 @@ footer{padding:40px 48px;border-top:1px solid var(--border);display:flex;justify
 .reveal-l.visible{opacity:1;transform:translateX(0);}
 .reveal-r{opacity:0;transform:translateX(36px);transition:all 0.9s cubic-bezier(0.16,1,0.3,1);}
 .reveal-r.visible{opacity:1;transform:translateX(0);}
-@media(max-width:900px){
-  nav{padding:14px 20px;}.nm{display:none;}
-  .hero{grid-template-columns:1fr;padding:90px 20px 60px;gap:40px;}
-  .hero-right{display:none;}
-  section{padding:70px 20px;}
-  .about-grid,.founder-inner,.invest-grid{grid-template-columns:1fr;gap:48px;}
-  .how-grid{grid-template-columns:1fr 1fr;gap:32px;}.how-grid::before{display:none;}
-  .sol-grid{grid-template-columns:1fr;}
-  .traction-inner{grid-template-columns:1fr;}
-  .facts{grid-template-columns:1fr 1fr;}
-  .contact-cards{grid-template-columns:1fr;}
-  footer{flex-direction:column;text-align:center;}
-}
+@media(max-width:900px){nav{padding:14px 20px;}.nm{display:none;}.hero{grid-template-columns:1fr;padding:90px 20px 60px;gap:40px;}.hero-right{display:none;}section{padding:70px 20px;}.about-grid,.founder-inner,.invest-grid{grid-template-columns:1fr;gap:48px;}.how-grid{grid-template-columns:1fr 1fr;gap:32px;}.how-grid::before{display:none;}.sol-grid{grid-template-columns:1fr;}.traction-inner{grid-template-columns:1fr;}.facts{grid-template-columns:1fr 1fr;}.contact-cards{grid-template-columns:1fr;}footer{flex-direction:column;text-align:center;}}
 </style>
 </head>
 <body>
-
 <nav>
   <a href="#" class="nl"><div class="nb">YG</div><span class="nt">YOUNG GIANT</span></a>
   <ul class="nm">
@@ -198,7 +178,6 @@ footer{padding:40px 48px;border-top:1px solid var(--border);display:flex;justify
     <li><a href="booking.html" class="nc">Book Delivery ⚡</a></li>
   </ul>
 </nav>
-
 <div class="ticker">
   <div class="ti">
     <span class="ti-item"><span class="ti-dot"></span>BYD Nigeria — Active Partnership Discussions</span>
@@ -215,7 +194,6 @@ footer{padding:40px 48px;border-top:1px solid var(--border);display:flex;justify
     <span class="ti-item"><span class="ti-dot"></span>Solar Powered · Zero Emissions · 10x Cheaper</span>
   </div>
 </div>
-
 <section class="hero">
   <div class="hero-bg"></div>
   <div class="hero-grid"></div>
@@ -224,6 +202,208 @@ footer{padding:40px 48px;border-top:1px solid var(--border);display:flex;justify
   <div class="hero-left">
     <div class="h-tag"><span class="h-tag-dot"></span>Nigeria's EV Logistics Pioneer</div>
     <h1>Moving<br/><span class="accent">Nigeria</span><br/><span class="thin">Forward.</span></h1>
-    <p class="h-sub">Solar-powered electric fleets. GPS-tracked deliveries. Zero emissions. 10× cheaper than diesel. Young Giant is building Nigeria's logistics future.</p>
+    <p class="h-sub">Solar-powered electric fleets. GPS-tracked deliveries. Zero emissions. 10x cheaper than diesel. Young Giant is building Nigeria's logistics future.</p>
     <div class="h-btns">
-      <a hre
+      <a href="booking.html" class="btn-g">Book a Delivery ⚡</a>
+      <a href="#investors" class="btn-o">Partner With Us →</a>
+    </div>
+  </div>
+  <div class="hero-right">
+    <div class="stat-cards">
+      <div class="sc"><div class="sc-val">10×</div><div class="sc-label">Cheaper Than Diesel</div><div class="sc-trend">↑ Solar Powered Fleet</div></div>
+      <div class="sc"><div class="sc-val">0%</div><div class="sc-label">EV Import Duty</div><div class="sc-trend">↑ Government Policy 2024</div></div>
+      <div class="sc"><div class="sc-val">220M+</div><div class="sc-label">Nigerian Market</div><div class="sc-trend">↑ Africa's Largest Economy</div></div>
+      <div class="sc"><div class="sc-val">$360K</div><div class="sc-label">Total Project Value</div><div class="sc-trend">↑ Pilot Fleet + Infrastructure</div></div>
+    </div>
+  </div>
+</section>
+<section class="about" id="about">
+  <div class="s-inner">
+    <div class="about-grid">
+      <div class="reveal-l">
+        <div class="map-wrapper">
+          <svg viewBox="0 0 400 420" width="100%" style="position:relative;z-index:1;">
+            <defs>
+              <radialGradient id="mg" cx="50%" cy="50%" r="50%"><stop offset="0%" stop-color="rgba(0,230,118,0.15)"/><stop offset="100%" stop-color="rgba(0,230,118,0)"/></radialGradient>
+              <filter id="glow"><feGaussianBlur stdDeviation="3" result="blur"/><feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+            </defs>
+            <ellipse cx="200" cy="210" rx="165" ry="165" fill="url(#mg)"/>
+            <path d="M 100 130 L 118 112 L 140 105 L 168 98 L 198 93 L 225 91 L 248 95 L 268 106 L 282 120 L 292 138 L 296 158 L 293 175 L 286 190 L 296 208 L 300 228 L 294 248 L 283 263 L 272 278 L 256 290 L 238 298 L 218 302 L 198 300 L 178 293 L 160 282 L 143 268 L 128 252 L 115 235 L 106 216 L 102 196 L 100 175 L 98 153 Z" fill="rgba(0,230,118,0.07)" stroke="rgba(0,230,118,0.3)" stroke-width="1.5" filter="url(#glow)"/>
+            <path d="M 155 155 L 245 155 M 135 205 L 265 205 M 158 255 L 242 255" stroke="rgba(0,230,118,0.08)" stroke-width="1" fill="none"/>
+            <path d="M 175 105 L 175 295 M 225 93 L 225 300" stroke="rgba(0,230,118,0.08)" stroke-width="1" fill="none"/>
+            <circle cx="152" cy="268" r="9" fill="#00E676" opacity="0.9"/>
+            <circle cx="152" cy="268" r="16" fill="none" stroke="#00E676" stroke-width="1.5" opacity="0.4"/>
+            <circle cx="152" cy="268" r="24" fill="none" stroke="#00E676" stroke-width="1" opacity="0.15"/>
+            <text x="127" y="295" font-family="DM Mono,monospace" font-size="10" fill="#00E676" letter-spacing="1">LAGOS</text>
+            <circle cx="212" cy="192" r="9" fill="#00E676" opacity="0.9"/>
+            <circle cx="212" cy="192" r="16" fill="none" stroke="#00E676" stroke-width="1.5" opacity="0.4"/>
+            <circle cx="212" cy="192" r="24" fill="none" stroke="#00E676" stroke-width="1" opacity="0.15"/>
+            <text x="224" y="197" font-family="DM Mono,monospace" font-size="10" fill="#00E676" letter-spacing="1">ABUJA</text>
+            <circle cx="198" cy="272" r="6" fill="rgba(0,230,118,0.35)" opacity="0.8"/>
+            <text x="207" y="278" font-family="DM Mono,monospace" font-size="9" fill="rgba(0,230,118,0.5)" letter-spacing="1">PH SOON</text>
+            <path d="M 152 268 Q 178 225 212 192" stroke="#00E676" stroke-width="1.5" fill="none" stroke-dasharray="5,4" opacity="0.5"/>
+            <circle r="3.5" fill="#00E676" opacity="0.9"><animateMotion dur="3s" repeatCount="indefinite" path="M 152 268 Q 178 225 212 192"/></circle>
+          </svg>
+          <div style="text-align:center;padding-top:8px;"><p style="font-family:'DM Mono',monospace;font-size:10px;letter-spacing:2px;color:var(--muted);text-transform:uppercase;">Deployment Map · Nigeria</p></div>
+        </div>
+      </div>
+      <div class="reveal-r">
+        <div class="s-tag">What We Do</div>
+        <h2 class="s-title">Clean Logistics<br/>for Nigeria.</h2>
+        <p class="s-desc">Young Giant delivers goods for Nigerian businesses using electric vehicles — 10x cheaper than diesel, solar-charged and GPS-tracked from pickup to drop-off.</p>
+        <div class="about-points">
+          <div class="ap"><div class="ap-icon">⚡</div><div><h3>Electric Vehicle Fleet</h3><p>Chinese-manufactured EVs deployed for last-mile delivery across Lagos and Abuja on every route.</p></div></div>
+          <div class="ap"><div class="ap-icon">☀️</div><div><h3>Solar Charging Hubs</h3><p>Fully off-grid solar stations eliminate NEPA dependency and reduce charging costs to near zero.</p></div></div>
+          <div class="ap"><div class="ap-icon">📍</div><div><h3>Live GPS Tracking</h3><p>Every delivery tracked in real time. Businesses see exactly where their package is at all times.</p></div></div>
+          <div class="ap"><div class="ap-icon">🧑🏿‍💼</div><div><h3>Nigerian Jobs Created</h3><p>Every city we enter creates certified EV driver roles for local Nigerian youth.</p></div></div>
+        </div>
+      </div>
+    </div>
+  </div><section id="how">
+  <div class="s-inner">
+    <div class="reveal" style="text-align:center;">
+      <div class="s-tag" style="justify-content:center;">Process</div>
+      <h2 class="s-title" style="text-align:center;">How It Works</h2>
+    </div>
+    <div class="how-grid">
+      <div class="hw reveal"><div class="hw-circle" data-num="1">📱</div><h4>Book Online</h4><p>Schedule a pickup through our platform in under 2 minutes — any time, any day.</p></div>
+      <div class="hw reveal"><div class="hw-circle" data-num="2">✅</div><h4>We Confirm</h4><p>Our team confirms within 30 minutes and assigns a certified EV driver to your order.</p></div>
+      <div class="hw reveal"><div class="hw-circle" data-num="3">🚐</div><h4>EV Dispatched</h4><p>A fully electric solar-charged van picks up your goods and heads to the destination.</p></div>
+      <div class="hw reveal"><div class="hw-circle" data-num="4">📦</div><h4>Delivered Clean</h4><p>On-time delivery. Zero emissions. Zero fuel surcharge. Zero stress.</p></div>
+    </div>
+  </div>
+</section>
+<section class="sol-section" id="solution">
+  <div class="s-inner">
+    <div class="reveal"><div class="s-tag">Our Platform</div><h2 class="s-title">Six Pillars of<br/>Young Giant.</h2></div>
+    <div class="sol-grid">
+      <div class="sol reveal"><div class="sol-num">01</div><div class="sol-emoji">⚡</div><h3>EV Fleet</h3><p>Chinese-manufactured electric vans and tricycles built for Nigerian roads and urban delivery.</p></div>
+      <div class="sol reveal"><div class="sol-num">02</div><div class="sol-emoji">☀️</div><h3>Solar Hubs</h3><p>Off-grid solar charging infrastructure eliminating NEPA dependency entirely.</p></div>
+      <div class="sol reveal"><div class="sol-num">03</div><div class="sol-emoji">📍</div><h3>Live Tracking</h3><p>Real-time GPS on every vehicle. SMS updates from pickup to doorstep delivery.</p></div>
+      <div class="sol reveal"><div class="sol-num">04</div><div class="sol-emoji">💻</div><h3>Booking Platform</h3><p>Live digital platform for scheduling, tracking and managing all your deliveries online.</p></div>
+      <div class="sol reveal"><div class="sol-num">05</div><div class="sol-emoji">🤝</div><h3>VaaS Model</h3><p>BYD supplies the fleet. Young Giant runs operations. Revenue shared 60/40 — zero upfront cost.</p></div>
+      <div class="sol reveal"><div class="sol-num">06</div><div class="sol-emoji">🧑🏿‍💼</div><h3>Driver Jobs</h3><p>Certified EV operator training and employment for Nigerian youth in every city we enter.</p></div>
+    </div>
+  </div>
+</section>
+<section id="traction">
+  <div class="s-inner">
+    <div class="traction-inner">
+      <div class="reveal-l">
+        <div class="s-tag">Live Traction</div>
+        <h2 class="s-title">Young Giant<br/>Is Moving.</h2>
+        <p class="s-desc" style="margin-top:16px;">Built in 10 days with zero capital. Here is what we have achieved so far.</p>
+        <div style="margin-top:40px;display:flex;flex-direction:column;gap:12px;">
+          <div style="display:flex;align-items:center;gap:12px;font-size:13px;color:var(--muted);"><span style="color:var(--g);font-size:16px;">✓</span>Live website and booking platform</div>
+          <div style="display:flex;align-items:center;gap:12px;font-size:13px;color:var(--muted);"><span style="color:var(--g);font-size:16px;">✓</span>BYD Nigeria active partnership discussions</div>
+          <div style="display:flex;align-items:center;gap:12px;font-size:13px;color:var(--muted);"><span style="color:var(--g);font-size:16px;">✓</span>Chery Nigeria and SAIC Maxus contacted</div>
+          <div style="display:flex;align-items:center;gap:12px;font-size:13px;color:var(--muted);"><span style="color:var(--g);font-size:16px;">✓</span>Startup Innovation Challenge — Approved</div>
+          <div style="display:flex;align-items:center;gap:12px;font-size:13px;color:var(--muted);"><span style="color:var(--g);font-size:16px;">✓</span>RAISEAfrica 2026 grant — Submitted</div>
+          <div style="display:flex;align-items:center;gap:12px;font-size:13px;color:var(--muted);"><span style="color:var(--g);font-size:16px;">✓</span>Full business proposal and pitch deck complete</div>
+        </div>
+      </div>
+      <div class="reveal-r">
+        <div class="ps-card">
+          <div class="ps-header"><span class="ps-title">Partnership Status Board</span><span class="ps-live">Live</span></div>
+          <div class="ps-items">
+            <div class="ps-item"><div><div class="ps-name">BYD Nigeria</div><div class="ps-sub">VaaS Fleet Partnership</div></div><span class="ps-st bg">Active</span></div>
+            <div class="ps-item"><div><div class="ps-name">Chery Nigeria</div><div class="ps-sub">Fleet Supply Discussion</div></div><span class="ps-st by">Pending</span></div>
+            <div class="ps-item"><div><div class="ps-name">SAIC Maxus / Mikano</div><div class="ps-sub">Commercial Van Partnership</div></div><span class="ps-st by">Pending</span></div>
+            <div class="ps-item"><div><div class="ps-name">Startup Innovation 2026</div><div class="ps-sub">₦10M Prize Competition</div></div><span class="ps-st bg">Approved ✓</span></div>
+            <div class="ps-item"><div><div class="ps-name">RAISEAfrica 2026</div><div class="ps-sub">€10,000 Grant — EIB Backed</div></div><span class="ps-st bb">Submitted</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+<section class="market" id="market">
+  <div class="s-inner">
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:60px;align-items:end;margin-bottom:0;">
+      <div class="reveal-l"><div class="s-tag">Market</div><h2 class="s-title">Why Nigeria.<br/>Why Now.</h2></div>
+      <div class="reveal-r"><p class="s-desc">Nigeria's removal of fuel subsidies and EV import duties has created a once-in-a-generation entry window. Young Giant is seizing it.</p></div>
+    </div>
+    <div class="facts">
+      <div class="fact reveal"><div class="fact-val">220M+</div><div class="fact-label">Population</div><div class="fact-sub">Africa's largest consumer market driving massive delivery demand</div></div>
+      <div class="fact reveal"><div class="fact-val">0%</div><div class="fact-label">EV Import Duty</div><div class="fact-sub">Federal Government removed 5% duty in 2024 lowering entry costs</div></div>
+      <div class="fact reveal"><div class="fact-val">6.8%</div><div class="fact-label">Annual EV Growth</div><div class="fact-sub">Nigerian EV market growing 6.8% annually through 2031</div></div>
+      <div class="fact reveal"><div class="fact-val">₦151B</div><div class="fact-label">FG EV Fund</div><div class="fact-sub">Federal Government approved ₦151 billion EV deployment fund 2025</div></div>
+    </div>
+  </div>
+</section>
+<section id="founder">
+  <div class="s-inner">
+    <div class="founder-inner">
+      <div class="reveal-l">
+        <div class="founder-card">
+          <div class="fc-avatar">MR</div>
+          <div class="fc-name">Moses Reuben</div>
+          <div class="fc-title">Founder & CEO — Young Giant</div>
+          <p class="fc-bio">Moses Reuben is a Nigerian entrepreneur from Warri, Delta State, driven by a passion for clean energy, job creation and Africa's technological future. He founded Young Giant in May 2026 with a vision to revolutionise last-mile delivery across Nigeria through electric vehicles and solar infrastructure.</p>
+          <div class="fc-link">✉️ <span>mosesreuben60@gmail.com</span></div>
+          <div class="fc-link">📍 <span>Warri, Delta State, Nigeria</span></div>
+          <div class="fc-link">📱 <span>@young_giant_ev_l</span></div>
+        </div>
+      </div>
+      <div class="reveal-r">
+        <div class="fq-mark">"</div>
+        <div class="fq-text">Young Giant will move Nigeria forward — one <span class="accent">electric delivery</span> at a time.</div>
+        <p class="fq-sub">Nigeria's businesses deserve better logistics. Clean, affordable and reliable delivery is not a luxury — it is a necessity for Nigeria's growing economy. Young Giant exists to make that a reality for every business owner from Lagos to Abuja.</p>
+      </div>
+    </div>
+  </div>
+</section>
+<section class="investors" id="investors">
+  <div class="s-inner">
+    <div class="invest-grid">
+      <div class="reveal-l">
+        <div class="s-tag">For Investors</div>
+        <h2 class="s-title">Join The<br/>Revolution.</h2>
+        <div class="invest-points">
+          <div class="ip"><span class="ip-num">1</span><div><h4>First Mover Advantage</h4><p>Young Giant is pioneering EV logistics in Nigeria before the market gets crowded. Early investors capture the largest upside.</p></div></div>
+          <div class="ip"><span class="ip-num">2</span><div><h4>$1.8M Revenue by Year 5</h4><p>10 vehicle pilot scales to 150+ vehicles across Lagos, Abuja and Port Harcourt with $1.8M projected annual revenue.</p></div></div>
+          <div class="ip"><span class="ip-num">3</span><div><h4>Government Backed Market</h4><p>₦151B FG EV fund, 0% import duty and fuel subsidy removal create perfect conditions for rapid growth.</p></div></div>
+          <div class="ip"><span class="ip-num">4</span><div><h4>Replicable Across Africa</h4><p>The Young Giant VaaS model works in any African city facing fuel costs and grid challenges.</p></div></div>
+        </div>
+      </div>
+      <div class="reveal-r">
+        <div class="invest-cta">
+          <h3>Ready to Invest<br/>in Nigeria's Future?</h3>
+          <p>We are seeking strategic investors and partners to fund our pilot fleet in Lagos. Join Young Giant and be part of Africa's clean energy revolution.</p>
+          <a href="mailto:mosesreuben60@gmail.com" class="btn-g">Get Our Investor Pack ⚡</a>
+          <div style="margin-top:24px;padding-top:24px;border-top:1px solid var(--border);">
+            <p style="font-family:var(--mono);font-size:10px;letter-spacing:1.5px;color:var(--muted);text-transform:uppercase;margin-bottom:16px;">Investment Breakdown</p>
+            <div style="display:flex;flex-direction:column;gap:8px;">
+              <div style="display:flex;justify-content:space-between;font-size:13px;"><span style="color:var(--muted);">Chinese EV Partner (VaaS)</span><span style="color:var(--g);font-family:var(--mono);font-size:11px;">$325,000</span></div>
+              <div style="display:flex;justify-content:space-between;font-size:13px;"><span style="color:var(--muted);">Nigerian Operations Capital</span><span style="color:var(--g);font-family:var(--mono);font-size:11px;">$35,000</span></div>
+              <div style="display:flex;justify-content:space-between;font-size:13px;border-top:1px solid var(--border);padding-top:8px;margin-top:4px;"><span style="font-weight:600;">Total Project Value</span><span style="color:var(--g);font-family:var(--mono);font-size:11px;font-weight:600;">$360,000</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+<section id="contact">
+  <div class="s-inner" style="text-align:center;">
+    <div class="reveal"><div class="s-tag" style="justify-content:center;">Contact</div><h2 class="s-title">Let's Build Together.</h2><p class="s-desc" style="margin:16px auto 0;text-align:center;">Investor, EV manufacturer, logistics partner or business customer — we want to hear from you.</p></div>
+    <div class="contact-cards">
+      <a href="mailto:mosesreuben60@gmail.com" class="cc reveal"><div class="cc-icon">✉️</div><div class="cc-label">Email Us</div><div class="cc-value">mosesreuben60@gmail.com</div></a>
+      <a href="booking.html" class="cc reveal"><div class="cc-icon">⚡</div><div class="cc-label">Book a Delivery</div><div class="cc-value">Open Booking Platform</div></a>
+      <a href="https://www.instagram.com/young_giant_ev_l" target="_blank" class="cc reveal"><div class="cc-icon">📱</div><div class="cc-label">Instagram</div><div class="cc-value">@young_giant_ev_l</div></a>
+    </div>
+  </div>
+</section>
+<footer>
+  <span class="fl">Young Giant · YG</span>
+  <p class="fc-t">© 2026 Young Giant EV Logistics Nigeria · Built for Africa's Electric Future</p>
+  <div class="fr"><a href="#about">About</a><a href="#solution">Solution</a><a href="#investors">Invest</a><a href="booking.html">Book</a></div>
+</footer>
+<script>
+const els=document.querySelectorAll('.reveal,.reveal-l,.reveal-r');
+const obs=new IntersectionObserver((entries)=>{entries.forEach((e,i)=>{if(e.isIntersecting){setTimeout(()=>e.target.classList.add('visible'),i*70);obs.unobserve(e.target);}});},{threshold:0.08});
+els.forEach(el=>obs.observe(el));
+</script>
+</body>
+      </html>
+  </section>
