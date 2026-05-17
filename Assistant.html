@@ -1,0 +1,665 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>YG Assistant | Young Giant EV Logistics Nigeria</title>
+<link href="https://fonts.googleapis.com/css2?family=Cabinet+Grotesk:wght@300;400;500;700;800&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet"/>
+<style>
+:root{
+  --g:#00E676;--gd:#00C853;--g2:#00FF7F;--g3:rgba(0,230,118,0.08);
+  --dk:#04070A;--dk2:#070C0F;--dk3:#0A1014;
+  --card:#0C1519;--border:rgba(0,230,118,0.1);--border2:rgba(0,230,118,0.22);
+  --txt:#DFF0E8;--muted:#4E7060;--soft:#8AADA0;
+  --mono:'DM Mono',monospace;--display:'Cabinet Grotesk',sans-serif;
+}
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+body{background:var(--dk);color:var(--txt);font-family:var(--display);overflow-x:hidden;-webkit-font-smoothing:antialiased;height:100vh;display:flex;flex-direction:column;}
+::-webkit-scrollbar{width:4px;}::-webkit-scrollbar-track{background:var(--dk);}::-webkit-scrollbar-thumb{background:var(--gd);}
+a{text-decoration:none;color:inherit;}
+
+/* NAV */
+nav{padding:0 52px;height:64px;display:flex;align-items:center;justify-content:space-between;background:rgba(4,7,10,0.95);border-bottom:1px solid var(--border);flex-shrink:0;}
+.nav-logo{display:flex;align-items:center;gap:10px;}
+.nav-logo-mark{width:34px;height:34px;background:var(--g);border-radius:6px;display:flex;align-items:center;justify-content:center;font-family:var(--mono);font-size:14px;font-weight:700;color:var(--dk);}
+.nav-logo-name{font-family:var(--display);font-size:17px;font-weight:800;letter-spacing:1px;}
+.nav-links{display:flex;align-items:center;gap:8px;}
+.nav-links a{font-family:var(--mono);font-size:11px;letter-spacing:1px;text-transform:uppercase;color:var(--muted);padding:8px 14px;border-radius:4px;transition:all 0.2s;}
+.nav-links a:hover,.nav-links a.active{color:var(--g);background:var(--g3);}
+.nav-cta{background:var(--g);color:var(--dk);padding:9px 20px;border-radius:4px;font-family:var(--mono);font-size:11px;font-weight:600;letter-spacing:1px;}
+
+/* MAIN LAYOUT */
+.main{flex:1;display:grid;grid-template-columns:320px 1fr;overflow:hidden;}
+
+/* SIDEBAR */
+.sidebar{background:var(--dk2);border-right:1px solid var(--border);display:flex;flex-direction:column;overflow:hidden;}
+.sidebar-header{padding:24px 20px;border-bottom:1px solid var(--border);}
+.ai-avatar{width:56px;height:56px;background:linear-gradient(135deg,var(--g),var(--gd));border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:24px;margin-bottom:14px;position:relative;}
+.ai-status{position:absolute;bottom:2px;right:2px;width:12px;height:12px;background:#00E676;border-radius:50%;border:2px solid var(--dk2);animation:pulse 2s infinite;}
+@keyframes pulse{0%,100%{opacity:1;}50%{opacity:0.4;}}
+.ai-name{font-family:var(--display);font-size:18px;font-weight:800;margin-bottom:4px;}
+.ai-role{font-family:var(--mono);font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--g);margin-bottom:8px;}
+.ai-desc{font-size:12px;color:var(--muted);line-height:1.6;}
+
+.sidebar-section{padding:16px 20px;border-bottom:1px solid var(--border);}
+.sidebar-section-title{font-family:var(--mono);font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--muted);margin-bottom:12px;}
+.quick-btn{display:flex;align-items:center;gap:10px;padding:10px 12px;background:var(--card);border:1px solid var(--border);border-radius:8px;cursor:pointer;transition:all 0.2s;margin-bottom:8px;font-size:13px;color:var(--soft);width:100%;text-align:left;}
+.quick-btn:hover{border-color:var(--g);color:var(--g);background:var(--g3);}
+.quick-btn-icon{font-size:16px;flex-shrink:0;}
+
+.sidebar-stats{padding:16px 20px;margin-top:auto;}
+.stat-row{display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid var(--border);}
+.stat-row:last-child{border-bottom:none;}
+.stat-label{font-family:var(--mono);font-size:10px;letter-spacing:1px;color:var(--muted);}
+.stat-val{font-family:var(--display);font-size:14px;font-weight:800;color:var(--g);}
+
+/* CHAT AREA */
+.chat-area{display:flex;flex-direction:column;overflow:hidden;}
+.chat-header{padding:16px 28px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;flex-shrink:0;}
+.chat-header-left{display:flex;align-items:center;gap:12px;}
+.chat-header-avatar{width:40px;height:40px;background:linear-gradient(135deg,var(--g),var(--gd));border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:18px;}
+.chat-header-name{font-family:var(--display);font-size:16px;font-weight:800;}
+.chat-header-status{font-family:var(--mono);font-size:10px;color:var(--g);display:flex;align-items:center;gap:6px;}
+.chat-header-status::before{content:'';width:6px;height:6px;background:var(--g);border-radius:50%;animation:pulse 2s infinite;}
+.chat-header-actions{display:flex;gap:8px;}
+.header-btn{background:var(--card);border:1px solid var(--border);border-radius:8px;padding:8px 16px;font-family:var(--mono);font-size:11px;letter-spacing:1px;text-transform:uppercase;color:var(--muted);cursor:pointer;transition:all 0.2s;display:flex;align-items:center;gap:6px;}
+.header-btn:hover{border-color:var(--g);color:var(--g);}
+.header-btn.active{background:rgba(0,230,118,0.1);border-color:var(--g);color:var(--g);}
+
+/* MESSAGES */
+.messages{flex:1;overflow-y:auto;padding:24px 28px;display:flex;flex-direction:column;gap:20px;}
+.message{display:flex;gap:12px;max-width:80%;animation:msgIn 0.4s ease;}
+.message.user{align-self:flex-end;flex-direction:row-reverse;}
+@keyframes msgIn{from{opacity:0;transform:translateY(12px);}to{opacity:1;transform:translateY(0);}}
+.msg-avatar{width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0;}
+.msg-avatar.ai{background:linear-gradient(135deg,var(--g),var(--gd));}
+.msg-avatar.user{background:var(--card);border:1px solid var(--border);font-size:14px;font-family:var(--display);font-weight:800;color:var(--g);}
+.msg-bubble{padding:14px 18px;border-radius:16px;font-size:14px;line-height:1.7;max-width:100%;}
+.message.ai .msg-bubble{background:var(--card);border:1px solid var(--border);border-top-left-radius:4px;color:var(--txt);}
+.message.user .msg-bubble{background:var(--g);color:var(--dk);border-top-right-radius:4px;font-weight:500;}
+.msg-time{font-family:var(--mono);font-size:9px;color:var(--muted);margin-top:6px;text-align:right;}
+.message.ai .msg-time{text-align:left;}
+
+/* TYPING INDICATOR */
+.typing{display:flex;align-items:center;gap:6px;padding:14px 18px;background:var(--card);border:1px solid var(--border);border-radius:16px;border-top-left-radius:4px;width:fit-content;}
+.typing-dot{width:7px;height:7px;background:var(--g);border-radius:50%;animation:typingDot 1.2s infinite;}
+.typing-dot:nth-child(2){animation-delay:0.2s;}
+.typing-dot:nth-child(3){animation-delay:0.4s;}
+@keyframes typingDot{0%,80%,100%{transform:scale(0.6);opacity:0.4;}40%{transform:scale(1);opacity:1;}}
+
+/* INPUT AREA */
+.input-area{padding:16px 28px;border-top:1px solid var(--border);flex-shrink:0;}
+.input-wrapper{display:flex;gap:10px;align-items:flex-end;background:var(--card);border:1px solid var(--border);border-radius:12px;padding:12px 16px;transition:border-color 0.2s;}
+.input-wrapper:focus-within{border-color:var(--g);}
+#chat-input{flex:1;background:transparent;border:none;outline:none;color:var(--txt);font-family:var(--display);font-size:14px;resize:none;max-height:120px;line-height:1.6;}
+#chat-input::placeholder{color:var(--muted);opacity:0.6;}
+.input-actions{display:flex;gap:8px;flex-shrink:0;}
+.action-btn{width:40px;height:40px;border-radius:8px;border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:18px;transition:all 0.2s;}
+.voice-btn{background:var(--card);border:1px solid var(--border);color:var(--muted);}
+.voice-btn:hover,.voice-btn.listening{background:rgba(255,80,80,0.1);border-color:#FF5050;color:#FF5050;}
+.voice-btn.listening{animation:voicePulse 1s infinite;}
+@keyframes voicePulse{0%,100%{box-shadow:0 0 0 0 rgba(255,80,80,0.4);}50%{box-shadow:0 0 0 8px rgba(255,80,80,0);}}
+.send-btn{background:var(--g);color:var(--dk);font-size:16px;}
+.send-btn:hover{background:var(--g2);transform:scale(1.05);}
+.input-hint{font-family:var(--mono);font-size:10px;color:var(--muted);text-align:center;margin-top:10px;letter-spacing:1px;}
+
+/* VOICE MODE OVERLAY */
+.voice-overlay{display:none;position:fixed;inset:0;background:rgba(4,7,10,0.95);z-index:500;flex-direction:column;align-items:center;justify-content:center;gap:32px;}
+.voice-overlay.active{display:flex;}
+.voice-circle{width:160px;height:160px;border-radius:50%;background:linear-gradient(135deg,var(--g),var(--gd));display:flex;align-items:center;justify-content:center;font-size:64px;position:relative;cursor:pointer;}
+.voice-ring{position:absolute;inset:-8px;border-radius:50%;border:2px solid rgba(0,230,118,0.4);animation:voiceRing 1.5s ease-out infinite;}
+.voice-ring2{position:absolute;inset:-20px;border-radius:50%;border:1px solid rgba(0,230,118,0.2);animation:voiceRing 1.5s ease-out infinite 0.4s;}
+@keyframes voiceRing{0%{opacity:1;transform:scale(1);}100%{opacity:0;transform:scale(1.3);}}
+.voice-text{font-family:var(--display);font-size:24px;font-weight:800;color:var(--txt);}
+.voice-subtext{font-family:var(--mono);font-size:12px;color:var(--muted);letter-spacing:2px;text-transform:uppercase;}
+.voice-stop{background:var(--card);border:1px solid var(--border);color:var(--soft);padding:12px 28px;border-radius:100px;font-family:var(--mono);font-size:11px;letter-spacing:1px;cursor:pointer;transition:all 0.2s;}
+.voice-stop:hover{border-color:var(--g);color:var(--g);}
+.voice-transcript{font-size:18px;color:var(--g);font-family:var(--display);font-weight:600;text-align:center;max-width:500px;min-height:32px;}
+
+/* SUGGESTION CHIPS */
+.suggestions{display:flex;gap:8px;flex-wrap:wrap;padding:0 28px 12px;}
+.chip{background:var(--card);border:1px solid var(--border);border-radius:100px;padding:7px 14px;font-family:var(--mono);font-size:11px;letter-spacing:1px;color:var(--soft);cursor:pointer;transition:all 0.2s;white-space:nowrap;}
+.chip:hover{border-color:var(--g);color:var(--g);background:var(--g3);}
+
+/* MOBILE */
+@media(max-width:900px){
+  nav{padding:0 20px;}.nav-links{display:none;}
+  .main{grid-template-columns:1fr;}
+  .sidebar{display:none;}
+}
+</style>
+</head>
+<body><!-- NAV -->
+<nav>
+  <a href="index.html" class="nav-logo">
+    <div class="nav-logo-mark">YG</div>
+    <span class="nav-logo-name">YOUNG GIANT</span>
+  </a>
+  <div class="nav-links">
+    <a href="index.html">Home</a>
+    <a href="about.html">About</a>
+    <a href="booking.html">Book Delivery</a>
+    <a href="register.html">Register</a>
+    <a href="investors.html">Investors</a>
+    <a href="assistant.html" class="active">AI Assistant</a>
+  </div>
+  <a href="booking.html" class="nav-cta">Book Now ⚡</a>
+</nav>
+
+<!-- MAIN -->
+<div class="main">
+
+  <!-- SIDEBAR -->
+  <div class="sidebar">
+    <div class="sidebar-header">
+      <div class="ai-avatar">
+        🤖
+        <div class="ai-status"></div>
+      </div>
+      <div class="ai-name">YG Assistant</div>
+      <div class="ai-role">Young Giant AI · Online 24/7</div>
+      <div class="ai-desc">I know everything about Young Giant EV Logistics. Ask me anything about bookings, pricing, partnerships or our company.</div>
+    </div>
+
+    <div class="sidebar-section">
+      <div class="sidebar-section-title">Quick Questions</div>
+      <button class="quick-btn" onclick="sendQuick('How do I book a delivery?')"><span class="quick-btn-icon">📦</span>How to book a delivery</button>
+      <button class="quick-btn" onclick="sendQuick('What are your pricing plans?')"><span class="quick-btn-icon">💰</span>Pricing plans</button>
+      <button class="quick-btn" onclick="sendQuick('Tell me about Young Giant')"><span class="quick-btn-icon">⚡</span>About Young Giant</button>
+      <button class="quick-btn" onclick="sendQuick('What areas do you cover?')"><span class="quick-btn-icon">📍</span>Coverage areas</button>
+      <button class="quick-btn" onclick="sendQuick('I want to invest in Young Giant')"><span class="quick-btn-icon">💼</span>Investment opportunities</button>
+      <button class="quick-btn" onclick="sendQuick('Tell me about BYD partnership')"><span class="quick-btn-icon">🤝</span>BYD Partnership</button>
+      <button class="quick-btn" onclick="sendQuick('How does the VaaS model work?')"><span class="quick-btn-icon">🚐</span>VaaS model explained</button>
+      <button class="quick-btn" onclick="sendQuick('Who is Moses Reuben?')"><span class="quick-btn-icon">👤</span>Meet the founder</button>
+    </div>
+
+    <div class="sidebar-stats">
+      <div class="sidebar-section-title">Company Stats</div>
+      <div class="stat-row"><span class="stat-label">Founded</span><span class="stat-val">May 2026</span></div>
+      <div class="stat-row"><span class="stat-label">Cost vs Diesel</span><span class="stat-val">10× Cheaper</span></div>
+      <div class="stat-row"><span class="stat-label">Coverage</span><span class="stat-val">Lagos · Abuja</span></div>
+      <div class="stat-row"><span class="stat-label">Emissions</span><span class="stat-val">Zero ✓</span></div>
+      <div class="stat-row"><span class="stat-label">BYD Status</span><span class="stat-val">Active</span></div>
+    </div>
+  </div>
+
+  <!-- CHAT -->
+  <div class="chat-area">
+    <div class="chat-header">
+      <div class="chat-header-left">
+        <div class="chat-header-avatar">🤖</div>
+        <div>
+          <div class="chat-header-name">YG Assistant</div>
+          <div class="chat-header-status">Online — Powered by Claude AI</div>
+        </div>
+      </div>
+      <div class="chat-header-actions">
+        <button class="header-btn" onclick="clearChat()">🗑️ Clear</button>
+        <button class="header-btn" id="voice-mode-btn" onclick="openVoiceMode()">🎙️ Voice Mode</button>
+        <a href="booking.html" class="header-btn" style="text-decoration:none;">⚡ Book Now</a>
+      </div>
+    </div>
+
+    <!-- MESSAGES -->
+    <div class="messages" id="messages">
+      <div class="message ai">
+        <div class="msg-avatar ai">🤖</div>
+        <div>
+          <div class="msg-bubble">
+            👋 Hello! I'm the <strong>YG Assistant</strong>, Young Giant's AI powered by Claude.<br/><br/>
+            I know everything about Young Giant EV Logistics Nigeria — our pricing, booking process, BYD partnership, investment opportunities and more.<br/><br/>
+            You can <strong>type your question</strong> or tap the <strong>🎙️ Voice Mode</strong> button to speak to me directly.<br/><br/>
+            How can I help you today? ⚡🇳🇬
+          </div>
+          <div class="msg-time">Just now</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SUGGESTION CHIPS -->
+    <div class="suggestions" id="suggestions">
+      <div class="chip" onclick="sendQuick('How do I book a delivery?')">📦 Book a delivery</div>
+      <div class="chip" onclick="sendQuick('What are your pricing plans?')">💰 Pricing plans</div>
+      <div class="chip" onclick="sendQuick('What areas do you cover?')">📍 Coverage areas</div>
+      <div class="chip" onclick="sendQuick('I want to invest in Young Giant')">💼 Invest with us</div>
+      <div class="chip" onclick="sendQuick('Tell me about Young Giant')">⚡ About Young Giant</div>
+    </div>
+
+    <!-- INPUT -->
+    <div class="input-area">
+      <div class="input-wrapper">
+        <textarea id="chat-input" placeholder="Ask me anything about Young Giant..." rows="1" onkeydown="handleKey(event)" oninput="autoResize(this)"></textarea>
+        <div class="input-actions">
+          <button class="action-btn voice-btn" id="voice-btn" onclick="toggleVoice()" title="Voice Input">🎙️</button>
+          <button class="action-btn send-btn" onclick="sendMessage()" title="Send">➤</button>
+        </div>
+      </div>
+      <div class="input-hint">POWERED BY CLAUDE AI · YOUNG GIANT 2026</div>
+    </div>
+  </div>
+</div>
+
+<!-- VOICE OVERLAY -->
+<div class="voice-overlay" id="voice-overlay">
+  <div class="voice-circle" onclick="stopVoice()">
+    🎙️
+    <div class="voice-ring"></div>
+    <div class="voice-ring2"></div>
+  </div>
+  <div class="voice-text" id="voice-text">Listening...</div>
+  <div class="voice-transcript" id="voice-transcript">Speak now — I'm listening</div>
+  <div class="voice-subtext">Tap the circle or say your question</div>
+  <button class="voice-stop" onclick="stopVoice()">Stop Listening</button>
+  </div><script>
+// ── YOUNG GIANT BUSINESS KNOWLEDGE ──
+const YG_SYSTEM_PROMPT = `You are the YG Assistant — the official AI assistant for Young Giant EV Logistics Nigeria. You are friendly, professional, knowledgeable and speak with confidence about Young Giant.
+
+ABOUT YOUNG GIANT:
+- Company: Young Giant (YG) EV Logistics Nigeria
+- Founded: May 2026 by Moses Reuben
+- Mission: Nigeria's first solar-powered electric vehicle logistics network
+- Tagline: "Moving Nigeria Forward"
+- Email: younggiantev@gmail.com
+- Website: mosesreuben60-netizen.github.io/Younggiant
+- Instagram: @young_giant_ev_l
+- Location: Warri, Delta State — Launching in Lagos & Abuja
+
+FOUNDER:
+- Name: Moses Reuben
+- Role: Founder & CEO
+- From: Warri, Delta State, Nigeria
+- Age: 24 years old
+- Email: younggiantev@gmail.com
+- Vision: Build Africa's largest EV logistics network starting from Nigeria
+
+WHAT WE DO:
+- Deploy electric delivery vehicles for Nigerian businesses
+- Solar-powered charging hubs — fully off-grid, no NEPA dependency
+- GPS-tracked deliveries with real-time SMS updates
+- 10x cheaper than diesel delivery
+- Zero carbon emissions
+- Cover Lagos and Abuja — Port Harcourt coming soon
+- Certified Nigerian EV drivers employed locally
+
+PRICING PLANS:
+1. Starter Plan: ₦1,500 per delivery (up to 10km)
+   - Same day delivery
+   - SMS tracking updates
+   - Up to 50kg cargo
+   - Lagos & Abuja routes
+   - Proof of delivery
+
+2. Business Plan: ₦35,000 per month (unlimited deliveries)
+   - Unlimited daily deliveries
+   - Dedicated EV driver
+   - Real-time GPS dashboard
+   - Priority pickup in 30 minutes
+   - Monthly invoice and reports
+   - Up to 200kg cargo
+   - Dedicated account manager
+   - Carbon neutral certificate
+
+3. Enterprise Plan: Custom pricing
+   - Dedicated EV fleet
+   - Custom route planning
+   - API integration
+   - Branded vehicle wrapping
+   - SLA guarantee
+   - 24/7 priority support
+
+HOW TO BOOK:
+- Go to our booking page at booking.html
+- Fill in sender details — business name, name, phone, pickup address
+- Fill in receiver details — name, company, phone, delivery address
+- Choose date, time, cargo type and weight
+- Submit — team confirms within 30 minutes by phone call
+
+HOW TO REGISTER A BUSINESS:
+- Go to register.html
+- Choose your plan (Starter, Business or Enterprise)
+- Fill in business details and contact information
+- Submit — Moses Reuben contacts you within 24 hours to activate account
+
+PARTNERSHIP MODEL (VaaS):
+- Vehicle-as-a-Service hybrid Joint Venture model
+- Chinese EV partner supplies: fleet, charging infrastructure, technical support
+- Young Giant provides: land, licenses, drivers, operations, customers
+- Revenue split: 60% Young Giant / 40% Chinese partner
+- Pilot fleet: 10 vehicles
+- Total project value: $360,000
+- Payback period: 4.5 years
+- Year 5 revenue projection: $1.8 million
+
+CURRENT PARTNERSHIPS & TRACTION:
+- BYD Nigeria (CFAO): Active partnership discussions — escalated to business development team
+- Chery Nigeria: Partnership discussions ongoing
+- SAIC Maxus / Mikano Motors: Partnership discussions ongoing
+- Startup Innovation Challenge 2026: Application APPROVED (₦10 million prize)
+- RAISEAfrica 2026 (EIB backed): Application submitted (up to €10,000)
+- Live website and booking platform operational
+- LinkedIn, Instagram social media active
+
+MARKET OPPORTUNITY:
+- Nigeria population: 220 million+
+- EV import duty: 0% (removed by Federal Government 2024)
+- Annual EV market growth: 6.8% through 2031
+- FG EV deployment fund: ₦151 billion approved 2025
+- Fuel subsidy removal making EVs cost-competitive
+
+FINANCIAL PROJECTIONS:
+- Year 1: $120,000 revenue (10 vehicles)
+- Year 2: $300,000 revenue (25 vehicles)
+- Year 3: $600,000 revenue (50 vehicles)
+- Year 4: $1,200,000 revenue (100 vehicles)
+- Year 5: $1,800,000 revenue (150 vehicles)
+
+INVESTMENT BREAKDOWN:
+- EV Fleet (10 vehicles): $250,000 (Chinese partner)
+- Charging Infrastructure: $50,000 (Chinese partner)
+- Technical Support Year 1: $25,000 (Chinese partner)
+- Land/Depot Lease: $15,000 (Young Giant)
+- Registration & Licenses: $5,000 (Young Giant)
+- Marketing & Operations: $15,000 (Young Giant)
+- TOTAL: $360,000
+
+RESPONSE GUIDELINES:
+- Always be friendly, helpful and professional
+- Keep responses concise but complete
+- Use emojis occasionally to be engaging — ⚡🇳🇬🌱📦
+- Always direct users to booking.html for bookings and register.html for registration
+- If asked to contact Young Giant directly: younggiantev@gmail.com
+- Never make up information not in this prompt
+- If unsure about something, say "For the most accurate information, please email younggiantev@gmail.com"
+- Always end responses with a helpful follow-up question or suggestion`;
+
+let conversationHistory = [];
+let isLoading = false;
+let recognition = null;
+let isListening = false;
+let synth = window.speechSynthesis;
+    // ── AUTO RESIZE TEXTAREA ──
+function autoResize(el){
+  el.style.height='auto';
+  el.style.height=Math.min(el.scrollHeight,120)+'px';
+}
+
+// ── HANDLE ENTER KEY ──
+function handleKey(e){
+  if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();sendMessage();}
+}
+
+// ── GET TIME ──
+function getTime(){
+  return new Date().toLocaleTimeString('en-NG',{hour:'2-digit',minute:'2-digit'});
+}
+
+// ── ADD MESSAGE TO UI ──
+function addMessage(role,content){
+  const msgs=document.getElementById('messages');
+  const div=document.createElement('div');
+  div.className=`message ${role}`;
+
+  const avatar=document.createElement('div');
+  avatar.className=`msg-avatar ${role}`;
+  avatar.textContent=role==='ai'?'🤖':'MR';
+
+  const wrap=document.createElement('div');
+  const bubble=document.createElement('div');
+  bubble.className='msg-bubble';
+  bubble.innerHTML=content.replace(/\n/g,'<br/>').replace(/\*\*(.*?)\*\*/g,'<strong>$1</strong>');
+
+  const time=document.createElement('div');
+  time.className='msg-time';
+  time.textContent=getTime();
+
+  wrap.appendChild(bubble);
+  wrap.appendChild(time);
+  div.appendChild(avatar);
+  div.appendChild(wrap);
+  msgs.appendChild(div);
+  msgs.scrollTop=msgs.scrollHeight;
+
+  // Hide suggestions after first user message
+  if(role==='user'){
+    document.getElementById('suggestions').style.display='none';
+  }
+
+  return div;
+}
+
+// ── SHOW TYPING ──
+function showTyping(){
+  const msgs=document.getElementById('messages');
+  const div=document.createElement('div');
+  div.className='message ai';
+  div.id='typing-indicator';
+
+  const avatar=document.createElement('div');
+  avatar.className='msg-avatar ai';
+  avatar.textContent='🤖';
+
+  const typing=document.createElement('div');
+  typing.className='typing';
+  typing.innerHTML='<div class="typing-dot"></div><div class="typing-dot"></div><div class="typing-dot"></div>';
+
+  div.appendChild(avatar);
+  div.appendChild(typing);
+  msgs.appendChild(div);
+  msgs.scrollTop=msgs.scrollHeight;
+}
+
+function hideTyping(){
+  const t=document.getElementById('typing-indicator');
+  if(t)t.remove();
+}
+
+// ── SEND MESSAGE ──
+async function sendMessage(){
+  const input=document.getElementById('chat-input');
+  const text=input.value.trim();
+  if(!text||isLoading)return;
+
+  input.value='';
+  input.style.height='auto';
+  isLoading=true;
+
+  addMessage('user',text);
+  showTyping();
+
+  conversationHistory.push({role:'user',content:text});
+
+  try{
+    const response=await fetch('https://api.anthropic.com/v1/messages',{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({
+        model:'claude-sonnet-4-20250514',
+        max_tokens:1000,
+        system:YG_SYSTEM_PROMPT,
+        messages:conversationHistory
+      })
+    });
+
+    const data=await response.json();
+    hideTyping();
+
+    if(data.content&&data.content[0]){
+      const reply=data.content[0].text;
+      conversationHistory.push({role:'assistant',content:reply});
+      addMessage('ai',reply);
+
+      // Speak the reply if voice mode is on
+      if(document.getElementById('voice-mode-btn').classList.contains('active')){
+        speakText(reply.replace(/<[^>]*>/g,'').substring(0,500));
+      }
+    } else{
+      addMessage('ai','I apologize, I had trouble processing that. Please try again or email younggiantev@gmail.com for direct assistance. ⚡');
+    }
+  }catch(err){
+    hideTyping();
+    addMessage('ai','I\'m having connection issues right now. Please email **younggiantev@gmail.com** for immediate assistance. We typically respond within 30 minutes! ⚡🇳🇬');
+  }
+
+  isLoading=false;
+}
+
+// ── SEND QUICK MESSAGE ──
+function sendQuick(text){
+  document.getElementById('chat-input').value=text;
+  sendMessage();
+}
+
+// ── CLEAR CHAT ──
+function clearChat(){
+  conversationHistory=[];
+  const msgs=document.getElementById('messages');
+  msgs.innerHTML='';
+  document.getElementById('suggestions').style.display='flex';
+  addMessage('ai','Chat cleared! 👋 How can I help you with Young Giant EV Logistics today? ⚡🇳🇬');
+    }// ── TEXT TO SPEECH ──
+function speakText(text){
+  if(!synth)return;
+  synth.cancel();
+  const utterance=new SpeechSynthesisUtterance(text);
+  utterance.lang='en-NG';
+  utterance.rate=0.95;
+  utterance.pitch=1;
+  utterance.volume=1;
+  synth.speak(utterance);
+}
+
+// ── VOICE INPUT ──
+function toggleVoice(){
+  if(isListening){stopListening();return;}
+  startListening();
+}
+
+function startListening(){
+  if(!('webkitSpeechRecognition' in window)&&!('SpeechRecognition' in window)){
+    alert('Voice input is not supported in your browser. Please type your question.');
+    return;
+  }
+
+  const SpeechRecognition=window.SpeechRecognition||window.webkitSpeechRecognition;
+  recognition=new SpeechRecognition();
+  recognition.lang='en-NG';
+  recognition.continuous=false;
+  recognition.interimResults=true;
+
+  recognition.onstart=()=>{
+    isListening=true;
+    document.getElementById('voice-btn').classList.add('listening');
+    document.getElementById('voice-btn').textContent='🔴';
+  };
+
+  recognition.onresult=(e)=>{
+    const transcript=Array.from(e.results).map(r=>r[0].transcript).join('');
+    document.getElementById('chat-input').value=transcript;
+    autoResize(document.getElementById('chat-input'));
+  };
+
+  recognition.onend=()=>{
+    isListening=false;
+    document.getElementById('voice-btn').classList.remove('listening');
+    document.getElementById('voice-btn').textContent='🎙️';
+    const text=document.getElementById('chat-input').value.trim();
+    if(text)sendMessage();
+  };
+
+  recognition.onerror=()=>{
+    isListening=false;
+    document.getElementById('voice-btn').classList.remove('listening');
+    document.getElementById('voice-btn').textContent='🎙️';
+  };
+
+  recognition.start();
+}
+
+function stopListening(){
+  if(recognition){recognition.stop();}
+}
+
+// ── VOICE MODE (Full screen) ──
+function openVoiceMode(){
+  const overlay=document.getElementById('voice-overlay');
+  overlay.classList.add('active');
+  startVoiceMode();
+}
+
+function startVoiceMode(){
+  if(!('webkitSpeechRecognition' in window)&&!('SpeechRecognition' in window)){
+    document.getElementById('voice-text').textContent='Not Supported';
+    document.getElementById('voice-transcript').textContent='Voice not supported in this browser. Please type instead.';
+    return;
+  }
+
+  const SpeechRecognition=window.SpeechRecognition||window.webkitSpeechRecognition;
+  const vmRecognition=new SpeechRecognition();
+  vmRecognition.lang='en-NG';
+  vmRecognition.continuous=false;
+  vmRecognition.interimResults=true;
+
+  vmRecognition.onstart=()=>{
+    document.getElementById('voice-text').textContent='Listening...';
+    document.getElementById('voice-transcript').textContent='Speak now — I\'m listening';
+  };
+
+  vmRecognition.onresult=(e)=>{
+    const transcript=Array.from(e.results).map(r=>r[0].transcript).join('');
+    document.getElementById('voice-transcript').textContent=transcript;
+  };
+
+  vmRecognition.onend=async ()=>{
+    const text=document.getElementById('voice-transcript').textContent;
+    if(text&&text!=='Speak now — I\'m listening'){
+      document.getElementById('voice-text').textContent='Processing...';
+      document.getElementById('chat-input').value=text;
+      closeVoiceMode();
+      await sendMessage();
+      // Speak the response
+      setTimeout(()=>{
+        const msgs=document.getElementById('messages');
+        const lastAI=Array.from(msgs.querySelectorAll('.message.ai .msg-bubble')).pop();
+        if(lastAI){
+          speakText(lastAI.textContent.substring(0,500));
+        }
+      },1000);
+    } else{
+      closeVoiceMode();
+    }
+  };
+
+  vmRecognition.onerror=()=>{
+    document.getElementById('voice-text').textContent='Error';
+    setTimeout(closeVoiceMode,1500);
+  };
+
+  vmRecognition.start();
+  window._vmRecognition=vmRecognition;
+}
+
+function stopVoice(){
+  if(window._vmRecognition){window._vmRecognition.stop();}
+}
+
+function closeVoiceMode(){
+  document.getElementById('voice-overlay').classList.remove('active');
+  document.getElementById('voice-text').textContent='Listening...';
+  document.getElementById('voice-transcript').textContent='Speak now — I\'m listening';
+}
+
+// Toggle voice response mode
+document.getElementById('voice-mode-btn').addEventListener('click',function(){
+  this.classList.toggle('active');
+  if(this.classList.contains('active')){
+    this.textContent='🔊 Voice On';
+    speakText('Voice response mode activated. I will now speak my answers to you.');
+  } else{
+    this.textContent='🎙️ Voice Mode';
+    synth.cancel();
+  }
+});
+</script>
+</body>
+</html>
