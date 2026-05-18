@@ -1,0 +1,910 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Smart Delivery | Young Giant EV Logistics Nigeria</title>
+<link href="https://fonts.googleapis.com/css2?family=Cabinet+Grotesk:wght@300;400;500;700;800&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet"/>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<style>
+:root{
+  --g:#00E676;--gd:#00C853;--g2:#00FF7F;--g3:rgba(0,230,118,0.08);
+  --dk:#04070A;--dk2:#070C0F;--dk3:#0A1014;
+  --card:#0C1519;--border:rgba(0,230,118,0.1);--border2:rgba(0,230,118,0.22);
+  --txt:#DFF0E8;--muted:#4E7060;--soft:#8AADA0;
+  --warn:#FFB74D;--danger:#FF5252;
+  --mono:'DM Mono',monospace;--display:'Cabinet Grotesk',sans-serif;
+}
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+body{background:var(--dk);color:var(--txt);font-family:var(--display);overflow-x:hidden;-webkit-font-smoothing:antialiased;}
+::-webkit-scrollbar{width:3px;}::-webkit-scrollbar-track{background:var(--dk);}::-webkit-scrollbar-thumb{background:var(--gd);}
+a{text-decoration:none;color:inherit;}
+
+/* NAV */
+nav{position:fixed;top:0;left:0;right:0;z-index:200;padding:0 52px;height:64px;display:flex;align-items:center;justify-content:space-between;background:rgba(4,7,10,0.92);backdrop-filter:blur(24px);border-bottom:1px solid var(--border);}
+.nav-logo{display:flex;align-items:center;gap:10px;}
+.nav-logo-mark{width:34px;height:34px;background:var(--g);border-radius:6px;display:flex;align-items:center;justify-content:center;font-family:var(--mono);font-size:14px;font-weight:700;color:var(--dk);}
+.nav-logo-name{font-family:var(--display);font-size:17px;font-weight:800;letter-spacing:1px;}
+.nav-links{display:flex;align-items:center;gap:8px;}
+.nav-links a{font-family:var(--mono);font-size:11px;letter-spacing:1px;text-transform:uppercase;color:var(--muted);padding:8px 14px;border-radius:4px;transition:all 0.2s;}
+.nav-links a:hover,.nav-links a.active{color:var(--g);background:var(--g3);}
+.nav-cta{background:var(--g);color:var(--dk);padding:9px 20px;border-radius:4px;font-family:var(--mono);font-size:11px;font-weight:600;letter-spacing:1px;}
+
+/* TICKER */
+.ticker{margin-top:64px;overflow:hidden;white-space:nowrap;background:var(--dk3);border-bottom:1px solid var(--border);padding:9px 0;}
+.ticker-track{display:inline-flex;gap:56px;animation:ticker 30s linear infinite;}
+.ticker-item{font-family:var(--mono);font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--muted);display:flex;align-items:center;gap:8px;}
+.t-dot{width:4px;height:4px;background:var(--g);border-radius:50%;}
+@keyframes ticker{0%{transform:translateX(0);}100%{transform:translateX(-50%);}}
+
+/* PAGE HERO */
+.page-hero{padding:80px 52px 60px;position:relative;overflow:hidden;border-bottom:1px solid var(--border);background:var(--dk2);}
+.page-hero::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse 60% 70% at 80% 50%,rgba(0,200,80,0.08) 0%,transparent 65%);}
+.hero-inner{max-width:1200px;margin:0 auto;position:relative;z-index:1;display:grid;grid-template-columns:1fr 1fr;gap:60px;align-items:center;}
+.hero-tag{font-family:var(--mono);font-size:10px;letter-spacing:3px;text-transform:uppercase;color:var(--g);margin-bottom:16px;display:flex;align-items:center;gap:10px;}
+.hero-tag::before{content:'';width:24px;height:1px;background:var(--g);}
+.hero-h1{font-family:var(--display);font-size:clamp(44px,6vw,80px);font-weight:800;line-height:0.92;letter-spacing:-2px;margin-bottom:20px;}
+.hero-h1 .accent{color:var(--g);}
+.hero-p{font-size:16px;line-height:1.8;color:var(--soft);}
+.hero-features{display:flex;flex-direction:column;gap:12px;}
+.hf{display:flex;align-items:center;gap:12px;padding:14px 16px;background:var(--card);border:1px solid var(--border);border-radius:10px;}
+.hf-icon{font-size:20px;flex-shrink:0;}
+.hf-text h4{font-family:var(--display);font-size:14px;font-weight:700;margin-bottom:2px;}
+.hf-text p{font-size:12px;color:var(--muted);}
+
+/* MAIN CONTAINER */
+.main{max-width:1200px;margin:0 auto;padding:60px 52px;}
+
+/* STEPS */
+.steps-nav{display:flex;gap:0;margin-bottom:48px;background:var(--card);border:1px solid var(--border);border-radius:12px;overflow:hidden;}
+.step-nav-item{flex:1;padding:16px 20px;text-align:center;cursor:pointer;transition:all 0.2s;position:relative;border-right:1px solid var(--border);}
+.step-nav-item:last-child{border-right:none;}
+.step-nav-item.active{background:var(--g3);border-bottom:2px solid var(--g);}
+.step-nav-item.done{background:rgba(0,230,118,0.04);}
+.step-nav-num{font-family:var(--mono);font-size:10px;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted);margin-bottom:4px;}
+.step-nav-item.active .step-nav-num{color:var(--g);}
+.step-nav-item.done .step-nav-num{color:var(--g);}
+.step-nav-title{font-family:var(--display);font-size:13px;font-weight:700;}
+
+/* STEP PANELS */
+.step-panel{display:none;}
+.step-panel.active{display:block;}
+
+/* CARDS */
+.card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:32px;margin-bottom:24px;position:relative;overflow:hidden;}
+.card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--g),var(--gd),transparent);}
+.card-title{font-family:var(--display);font-size:18px;font-weight:800;margin-bottom:20px;display:flex;align-items:center;gap:10px;}
+.card-title-icon{font-size:20px;}
+
+/* FORM ELEMENTS */
+.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;}
+.form-grid-3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px;}
+.form-group{margin-bottom:0;}
+.form-group.full{grid-column:1/-1;}
+label{display:block;font-family:var(--mono);font-size:10px;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted);margin-bottom:7px;}
+input,select,textarea{width:100%;background:var(--dk);border:1px solid var(--border);border-radius:8px;padding:13px 16px;color:var(--txt);font-family:var(--display);font-size:14px;outline:none;transition:border-color 0.2s;}
+input:focus,select:focus,textarea:focus{border-color:var(--g);}
+input::placeholder{color:var(--muted);opacity:0.5;}
+select option{background:var(--dk2);}
+
+/* BATTERY INDICATOR */
+.battery-check{background:var(--dk);border:1px solid var(--border);border-radius:10px;padding:20px;margin-top:16px;}
+.battery-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;}
+.battery-title{font-family:var(--mono);font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--muted);}
+.battery-val{font-family:var(--display);font-size:24px;font-weight:800;}
+.battery-bar{height:12px;background:var(--dk2);border-radius:100px;overflow:hidden;margin-bottom:8px;}
+.battery-fill{height:100%;border-radius:100px;transition:width 1s ease,background 0.3s;}
+.battery-status{font-size:12px;display:flex;align-items:center;gap:6px;}
+.battery-dot{width:6px;height:6px;border-radius:50%;}
+
+/* ROUTE DISPLAY */
+.route-display{background:var(--dk);border:1px solid var(--border);border-radius:10px;padding:20px;margin-top:16px;}
+.route-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;}
+.route-stat{text-align:center;}
+.route-stat-val{font-family:var(--display);font-size:28px;font-weight:800;color:var(--g);line-height:1;}
+.route-stat-label{font-family:var(--mono);font-size:9px;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted);margin-top:4px;}
+
+/* VEHICLE SELECTOR */
+.vehicle-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-top:16px;}
+.vehicle-card{background:var(--dk);border:2px solid var(--border);border-radius:10px;padding:16px;cursor:pointer;transition:all 0.2s;text-align:center;}
+.vehicle-card.selected{border-color:var(--g);background:var(--g3);}
+.vehicle-card:hover{border-color:var(--border2);}
+.vehicle-icon{font-size:28px;margin-bottom:8px;}
+.vehicle-id{font-family:var(--mono);font-size:10px;letter-spacing:1.5px;color:var(--muted);margin-bottom:4px;}
+.vehicle-name{font-family:var(--display);font-size:13px;font-weight:700;margin-bottom:6px;}
+.vehicle-battery{display:flex;align-items:center;justify-content:center;gap:6px;font-size:12px;}
+.v-bat-bar{width:40px;height:6px;background:var(--dk2);border-radius:100px;overflow:hidden;}
+.v-bat-fill{height:100%;border-radius:100px;}
+
+/* TIMELINE */
+.timeline{display:flex;flex-direction:column;gap:0;margin-top:16px;}
+.tl-item{display:flex;gap:16px;padding:16px 0;border-bottom:1px solid var(--border);}
+.tl-item:last-child{border-bottom:none;}
+.tl-left{display:flex;flex-direction:column;align-items:center;gap:4px;width:40px;flex-shrink:0;}
+.tl-dot{width:14px;height:14px;border-radius:50%;flex-shrink:0;}
+.tl-line{width:2px;flex:1;background:var(--border);min-height:20px;}
+.tl-time{font-family:var(--mono);font-size:11px;color:var(--muted);white-space:nowrap;}
+.tl-title{font-family:var(--display);font-size:14px;font-weight:700;margin-bottom:4px;}
+.tl-desc{font-size:12px;color:var(--muted);line-height:1.6;}
+.tl-badge{display:inline-block;font-family:var(--mono);font-size:9px;letter-spacing:1px;text-transform:uppercase;padding:3px 8px;border-radius:4px;margin-top:6px;}
+
+/* QR CODE SECTION */
+.qr-container{display:grid;grid-template-columns:1fr 1fr;gap:32px;align-items:start;}
+.qr-box{background:var(--dk);border:1px solid var(--border);border-radius:12px;padding:24px;text-align:center;}
+.qr-title{font-family:var(--mono);font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--muted);margin-bottom:16px;}
+.qr-code-wrap{background:white;border-radius:8px;padding:16px;display:inline-block;margin-bottom:16px;}
+.qr-id{font-family:var(--mono);font-size:12px;color:var(--g);letter-spacing:2px;margin-bottom:8px;}
+.qr-instruction{font-size:12px;color:var(--muted);line-height:1.6;}
+
+/* NOTIFICATION PREVIEW */
+.notif-preview{background:var(--dk);border:1px solid var(--border);border-radius:12px;padding:20px;}
+.notif-item{display:flex;gap:12px;padding:14px;background:var(--card);border:1px solid var(--border);border-radius:8px;margin-bottom:10px;}
+.notif-item:last-child{margin-bottom:0;}
+.notif-icon{font-size:22px;flex-shrink:0;}
+.notif-title{font-family:var(--display);font-size:13px;font-weight:700;margin-bottom:4px;}
+.notif-desc{font-size:12px;color:var(--muted);line-height:1.5;}
+.notif-time{font-family:var(--mono);font-size:10px;color:var(--g);margin-top:4px;}
+
+/* SCAN DEMO */
+.scan-demo{background:var(--dk);border:2px dashed var(--border2);border-radius:12px;padding:32px;text-align:center;cursor:pointer;transition:all 0.3s;}
+.scan-demo:hover{border-color:var(--g);background:var(--g3);}
+.scan-icon{font-size:48px;margin-bottom:12px;}
+.scan-title{font-family:var(--display);font-size:18px;font-weight:800;margin-bottom:8px;}
+.scan-desc{font-size:13px;color:var(--muted);}
+
+/* CONFIRMED STATE */
+.confirmed-box{background:rgba(0,230,118,0.06);border:1px solid var(--border2);border-radius:12px;padding:24px;text-align:center;display:none;}
+.confirmed-icon{font-size:52px;margin-bottom:12px;}
+.confirmed-title{font-family:var(--display);font-size:24px;font-weight:800;color:var(--g);margin-bottom:8px;}
+.confirmed-desc{font-size:14px;color:var(--soft);line-height:1.7;}
+
+/* BUTTONS */
+.btn-primary{background:var(--g);color:var(--dk);padding:14px 32px;border-radius:6px;font-family:var(--display);font-weight:800;font-size:15px;border:none;cursor:pointer;transition:all 0.25s;display:inline-flex;align-items:center;gap:10px;}
+.btn-primary:hover{background:var(--g2);transform:translateY(-2px);box-shadow:0 10px 32px rgba(0,230,118,0.25);}
+.btn-secondary{background:transparent;color:var(--txt);padding:14px 32px;border-radius:6px;font-family:var(--display);font-weight:700;font-size:15px;border:1.5px solid var(--border2);cursor:pointer;transition:all 0.25s;}
+.btn-secondary:hover{border-color:var(--g);color:var(--g);}
+.btn-group{display:flex;gap:12px;margin-top:24px;}
+.btn-full{width:100%;}
+
+/* PROGRESS BAR */
+.progress-bar{height:4px;background:var(--border);border-radius:100px;margin-bottom:32px;overflow:hidden;}
+.progress-fill{height:100%;background:linear-gradient(90deg,var(--g),var(--gd));border-radius:100px;transition:width 0.5s ease;}
+
+/* ALERT */
+.alert{padding:14px 18px;border-radius:8px;font-size:13px;margin-bottom:16px;display:flex;align-items:center;gap:10px;}
+.alert-success{background:rgba(0,230,118,0.08);border:1px solid rgba(0,230,118,0.2);color:var(--g);}
+.alert-warning{background:rgba(255,183,77,0.08);border:1px solid rgba(255,183,77,0.2);color:var(--warn);}
+.alert-danger{background:rgba(255,82,82,0.08);border:1px solid rgba(255,82,82,0.2);color:var(--danger);}
+
+/* MODAL */
+.modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.85);z-index:999;align-items:center;justify-content:center;backdrop-filter:blur(10px);}
+.modal.show{display:flex;}
+.modal-box{background:var(--card);border:1px solid var(--border);border-radius:20px;padding:48px;text-align:center;max-width:480px;width:90%;}
+.modal-icon{font-size:56px;margin-bottom:16px;}
+.modal-title{font-family:var(--display);font-size:28px;font-weight:800;color:var(--g);margin-bottom:12px;}
+.modal-desc{font-size:14px;color:var(--soft);line-height:1.75;margin-bottom:28px;}
+.modal-detail{background:var(--dk);border:1px solid var(--border);border-radius:8px;padding:16px;margin-bottom:20px;text-align:left;}
+.modal-detail-row{display:flex;justify-content:space-between;font-size:13px;padding:6px 0;border-bottom:1px solid var(--border);}
+.modal-detail-row:last-child{border-bottom:none;}
+.modal-detail-label{color:var(--muted);}
+.modal-detail-val{font-weight:700;color:var(--txt);}
+.modal-btn{background:var(--g);color:var(--dk);border:none;padding:13px 36px;border-radius:6px;font-family:var(--display);font-size:15px;font-weight:800;cursor:pointer;}
+
+/* FOOTER */
+footer{padding:32px 52px;border-top:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:16px;}
+.footer-logo{display:flex;align-items:center;gap:10px;}
+.footer-logo-mark{width:28px;height:28px;background:var(--g);border-radius:5px;display:flex;align-items:center;justify-content:center;font-family:var(--mono);font-size:12px;font-weight:700;color:var(--dk);}
+.footer-logo-name{font-family:var(--display);font-size:14px;font-weight:800;letter-spacing:1px;color:var(--muted);}
+.footer-copy{font-family:var(--mono);font-size:10px;color:var(--muted);}
+
+@media(max-width:900px){
+  nav{padding:0 20px;}.nav-links{display:none;}
+  .hero-inner{grid-template-columns:1fr;}
+  .page-hero{padding:90px 20px 48px;}
+  .main{padding:40px 20px;}
+  .form-grid,.form-grid-3{grid-template-columns:1fr;}
+  .route-grid{grid-template-columns:1fr 1fr;}
+  .vehicle-grid{grid-template-columns:1fr;}
+  .qr-container{grid-template-columns:1fr;}
+  footer{padding:24px 20px;flex-direction:column;text-align:center;}
+}
+</style>
+</head>
+<body>
+<nav>
+  <a href="index.html" class="nav-logo"><div class="nav-logo-mark">YG</div><span class="nav-logo-name">YOUNG GIANT</span></a>
+  <div class="nav-links">
+    <a href="index.html">Home</a>
+    <a href="booking.html">Book Delivery</a>
+    <a href="register.html">Register</a>
+    <a href="assistant.html">AI Assistant</a>
+    <a href="smart-delivery.html" class="active">Smart Delivery</a>
+  </div>
+  <a href="booking.html" class="nav-cta">Book Now ⚡</a>
+</nav>
+
+<div class="ticker">
+  <div class="ticker-track">
+    <span class="ticker-item"><span class="t-dot"></span>Smart Route Intelligence</span>
+    <span class="ticker-item"><span class="t-dot"></span>Real-Time Battery Management</span>
+    <span class="ticker-item"><span class="t-dot"></span>QR Code Delivery Confirmation</span>
+    <span class="ticker-item"><span class="t-dot"></span>Instant Sender & Receiver Notifications</span>
+    <span class="ticker-item"><span class="t-dot"></span>Young Giant Smart Delivery System</span>
+    <span class="ticker-item"><span class="t-dot"></span>Smart Route Intelligence</span>
+    <span class="ticker-item"><span class="t-dot"></span>Real-Time Battery Management</span>
+    <span class="ticker-item"><span class="t-dot"></span>QR Code Delivery Confirmation</span>
+    <span class="ticker-item"><span class="t-dot"></span>Instant Sender & Receiver Notifications</span>
+    <span class="ticker-item"><span class="t-dot"></span>Young Giant Smart Delivery System</span>
+  </div>
+</div>
+
+<!-- HERO -->
+<div class="page-hero">
+  <div class="hero-inner">
+    <div>
+      <div class="hero-tag">Smart Delivery System</div>
+      <h1 class="hero-h1">Intelligent EV<br/><span class="accent">Delivery</span><br/>Platform.</h1>
+      <p class="hero-p">Young Giant's Smart Delivery System calculates routes, checks battery levels, generates QR codes and sends real-time notifications — all automatically.</p>
+    </div>
+    <div class="hero-features">
+      <div class="hf"><div class="hf-icon">🗺️</div><div class="hf-text"><h4>Route Intelligence</h4><p>Auto-calculates distance, time and optimal route for every delivery</p></div></div>
+      <div class="hf"><div class="hf-icon">🔋</div><div class="hf-text"><h4>Battery Management</h4><p>Checks if vehicle battery is sufficient before dispatching</p></div></div>
+      <div class="hf"><div class="hf-icon">📱</div><div class="hf-text"><h4>QR Code Confirmation</h4><p>Receiver gets unique QR code — driver scans to confirm delivery</p></div></div>
+      <div class="hf"><div class="hf-icon">🔔</div><div class="hf-text"><h4>Live Notifications</h4><p>Sender gets instant notification when delivery is confirmed</p></div></div>
+    </div>
+  </div>
+</div>
+
+<!-- MAIN -->
+<div class="main">
+
+  <!-- PROGRESS -->
+  <div class="progress-bar"><div class="progress-fill" id="progress" style="width:25%"></div></div>
+
+  <!-- STEP NAV -->
+  <div class="steps-nav">
+    <div class="step-nav-item active" id="nav-1" onclick="goToStep(1)"><div class="step-nav-num">Step 01</div><div class="step-nav-title">📦 Delivery Details</div></div>
+    <div class="step-nav-item" id="nav-2" onclick="goToStep(2)"><div class="step-nav-num">Step 02</div><div class="step-nav-title">🔋 Route & Battery</div></div>
+    <div class="step-nav-item" id="nav-3" onclick="goToStep(3)"><div class="step-nav-num">Step 03</div><div class="step-nav-title">📱 QR Code & Notify</div></div>
+    <div class="step-nav-item" id="nav-4" onclick="goToStep(4)"><div class="step-nav-num">Step 04</div><div class="step-nav-title">✅ Driver Scan</div></div>
+  </div>
+
+  <!-- STEP 1: DELIVERY DETAILS -->
+  <div class="step-panel active" id="step-1">
+    <div class="card">
+      <div class="card-title"><span class="card-title-icon">📦</span>Sender Information</div>
+      <div class="form-grid">
+        <div class="form-group"><label>Business / Company Name *</label><input type="text" id="s1-biz" placeholder="e.g. Dangote Foods Ltd"/></div>
+        <div class="form-group"><label>Sender Full Name *</label><input type="text" id="s1-sender" placeholder="Your full name"/></div>
+        <div class="form-group"><label>Sender Phone *</label><input type="tel" id="s1-phone" placeholder="+234 800 000 0000"/></div>
+        <div class="form-group"><label>Sender Email *</label><input type="email" id="s1-email" placeholder="your@email.com"/></div>
+        <div class="form-group full"><label>Pickup Address *</label><input type="text" id="s1-pickup" placeholder="Street address, area, Lagos or Abuja"/></div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title"><span class="card-title-icon">📍</span>Receiver Information</div>
+      <div class="form-grid">
+        <div class="form-group"><label>Receiver Full Name *</label><input type="text" id="s1-receiver" placeholder="Who receives the package"/></div>
+        <div class="form-group"><label>Receiver Company</label><input type="text" id="s1-rcompany" placeholder="Receiver company (optional)"/></div>
+        <div class="form-group"><label>Receiver Phone *</label><input type="tel" id="s1-rphone" placeholder="+234 800 000 0000"/></div>
+        <div class="form-group"><label>Receiver Email *</label><input type="email" id="s1-remail" placeholder="receiver@email.com"/></div>
+        <div class="form-group full"><label>Delivery Address *</label><input type="text" id="s1-dropoff" placeholder="Full delivery address, area, Lagos or Abuja"/></div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title"><span class="card-title-icon">🚐</span>Cargo Details</div>
+      <div class="form-grid-3">
+        <div class="form-group">
+          <label>Cargo Type *</label>
+          <select id="s1-cargo">
+            <option value="">Select type</option>
+            <option>Documents & Packages</option>
+            <option>Food & Perishables</option>
+            <option>Electronics</option>
+            <option>Clothing & Fashion</option>
+            <option>Industrial Goods</option>
+            <option>Fragile Items</option>
+            <option>Medical & Pharma</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Estimated Weight</label>
+          <select id="s1-weight">
+            <option value="">Select weight</option>
+            <option value="5">Under 5kg</option>
+            <option value="20">5kg - 20kg</option>
+            <option value="50">20kg - 50kg</option>
+            <option value="100">50kg - 100kg</option>
+            <option value="200">100kg - 200kg</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Delivery Date *</label>
+          <input type="date" id="s1-date"/>
+        </div>
+      </div>
+    </div>
+
+    <div class="btn-group">
+      <button class="btn-primary" onclick="proceedToStep2()">Calculate Route & Battery ➤</button>
+    </div>
+  </div>
+ 
+  <!-- STEP 2: ROUTE & BATTERY -->
+  <div class="step-panel" id="step-2">
+    <div class="card">
+      <div class="card-title"><span class="card-title-icon">🗺️</span>Route Intelligence</div>
+      <div id="route-alert"></div>
+      <div class="route-display">
+        <div class="route-grid">
+          <div class="route-stat"><div class="route-stat-val" id="r-distance">--</div><div class="route-stat-label">Distance (km)</div></div>
+          <div class="route-stat"><div class="route-stat-val" id="r-time">--</div><div class="route-stat-label">Est. Travel Time</div></div>
+          <div class="route-stat"><div class="route-stat-val" id="r-arrival">--</div><div class="route-stat-label">Arrival Time</div></div>
+          <div class="route-stat"><div class="route-stat-val" id="r-cost">--</div><div class="route-stat-label">Delivery Cost</div></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title"><span class="card-title-icon">🚐</span>Select Available Vehicle</div>
+      <p style="font-size:13px;color:var(--muted);margin-bottom:4px;">Choose a vehicle with sufficient battery for this route. Vehicles with insufficient battery are shown in red.</p>
+      <div class="vehicle-grid" id="vehicle-grid">
+        <!-- Vehicles populated by JS -->
+      </div>
+    </div>
+
+    <div class="card" id="battery-card">
+      <div class="card-title"><span class="card-title-icon">🔋</span>Battery Analysis</div>
+      <div id="battery-alert"></div>
+      <div class="battery-check">
+        <div class="battery-header">
+          <div class="battery-title">Selected Vehicle Battery</div>
+          <div class="battery-val" id="bat-percent">--</div>
+        </div>
+        <div class="battery-bar"><div class="battery-fill" id="bat-fill" style="width:0%"></div></div>
+        <div class="battery-status">
+          <div class="battery-dot" id="bat-dot"></div>
+          <span id="bat-status-text">Select a vehicle above</span>
+        </div>
+      </div>
+      <div style="margin-top:16px;display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;">
+        <div style="background:var(--dk);border:1px solid var(--border);border-radius:8px;padding:14px;text-align:center;">
+          <div style="font-family:var(--display);font-size:20px;font-weight:800;color:var(--g);" id="bat-range">--</div>
+          <div style="font-family:var(--mono);font-size:9px;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted);margin-top:4px;">Range Left (km)</div>
+        </div>
+        <div style="background:var(--dk);border:1px solid var(--border);border-radius:8px;padding:14px;text-align:center;">
+          <div style="font-family:var(--display);font-size:20px;font-weight:800;" id="bat-needed">--</div>
+          <div style="font-family:var(--mono);font-size:9px;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted);margin-top:4px;">Range Needed (km)</div>
+        </div>
+        <div style="background:var(--dk);border:1px solid var(--border);border-radius:8px;padding:14px;text-align:center;">
+          <div style="font-family:var(--display);font-size:20px;font-weight:800;" id="bat-verdict">--</div>
+          <div style="font-family:var(--mono);font-size:9px;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted);margin-top:4px;">Status</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title"><span class="card-title-icon">🕐</span>Delivery Timeline</div>
+      <div class="timeline" id="timeline">
+        <!-- Populated by JS -->
+      </div>
+    </div>
+
+    <div class="btn-group">
+      <button class="btn-secondary" onclick="goToStep(1)">← Back</button>
+      <button class="btn-primary" id="step2-next" onclick="proceedToStep3()" disabled>Generate QR Code ➤</button>
+    </div>
+  </div>
+
+  <!-- STEP 3: QR CODE & NOTIFICATIONS -->
+  <div class="step-panel" id="step-3">
+    <div class="card">
+      <div class="card-title"><span class="card-title-icon">📱</span>Delivery QR Code Generated</div>
+      <div id="step3-alert" class="alert alert-success" style="display:none;"></div>
+      <div class="qr-container">
+        <div class="qr-box">
+          <div class="qr-title">Receiver QR Code</div>
+          <div class="qr-code-wrap"><div id="qr-code"></div></div>
+          <div class="qr-id" id="qr-id">--</div>
+          <div class="qr-instruction">This QR code has been sent to the receiver. The driver will scan this to confirm delivery and trigger sender notification.</div>
+        </div>
+        <div>
+          <div class="notif-preview">
+            <div style="font-family:var(--mono);font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--muted);margin-bottom:14px;">Notification Preview</div>
+            <div class="notif-item">
+              <div class="notif-icon">📧</div>
+              <div>
+                <div class="notif-title">Email to Receiver</div>
+                <div class="notif-desc" id="notif-receiver-text">Your delivery QR code has been sent to the receiver's email with instructions for the driver scan confirmation.</div>
+                <div class="notif-time" id="notif-receiver-time">Sent just now</div>
+              </div>
+            </div>
+            <div class="notif-item">
+              <div class="notif-icon">📦</div>
+              <div>
+                <div class="notif-title">Booking Confirmation to Sender</div>
+                <div class="notif-desc" id="notif-sender-text">Your delivery has been booked and a QR code sent to the receiver. We will notify you the moment delivery is confirmed.</div>
+                <div class="notif-time" id="notif-sender-time">Sent just now</div>
+              </div>
+            </div>
+            <div class="notif-item">
+              <div class="notif-icon">🚐</div>
+              <div>
+                <div class="notif-title">Driver Assignment</div>
+                <div class="notif-desc" id="notif-driver-text">Driver has been assigned and briefed with route, pickup and delivery details including QR code verification requirement.</div>
+                <div class="notif-time" id="notif-driver-time">Sent just now</div>
+              </div>
+            </div>
+          </div>
+
+          <div style="margin-top:16px;background:var(--dk);border:1px solid var(--border);border-radius:10px;padding:16px;">
+            <div style="font-family:var(--mono);font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--muted);margin-bottom:12px;">Delivery Summary</div>
+            <div style="display:flex;flex-direction:column;gap:8px;">
+              <div style="display:flex;justify-content:space-between;font-size:13px;"><span style="color:var(--muted);">Tracking ID</span><span style="color:var(--g);font-family:var(--mono);" id="summary-id">--</span></div>
+              <div style="display:flex;justify-content:space-between;font-size:13px;"><span style="color:var(--muted);">Sender</span><span id="summary-sender">--</span></div>
+              <div style="display:flex;justify-content:space-between;font-size:13px;"><span style="color:var(--muted);">Receiver</span><span id="summary-receiver">--</span></div>
+              <div style="display:flex;justify-content:space-between;font-size:13px;"><span style="color:var(--muted);">Distance</span><span style="color:var(--g);" id="summary-distance">--</span></div>
+              <div style="display:flex;justify-content:space-between;font-size:13px;"><span style="color:var(--muted);">ETA</span><span style="color:var(--g);" id="summary-eta">--</span></div>
+              <div style="display:flex;justify-content:space-between;font-size:13px;"><span style="color:var(--muted);">Vehicle</span><span id="summary-vehicle">--</span></div>
+              <div style="display:flex;justify-content:space-between;font-size:13px;border-top:1px solid var(--border);padding-top:8px;margin-top:4px;"><span style="font-weight:700;">Total Cost</span><span style="color:var(--g);font-weight:800;" id="summary-cost">--</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="btn-group">
+      <button class="btn-secondary" onclick="goToStep(2)">← Back</button>
+      <button class="btn-primary" onclick="goToStep(4)">Proceed to Driver Scan ➤</button>
+    </div>
+  </div>
+
+  <!-- STEP 4: DRIVER SCAN -->
+  <div class="step-panel" id="step-4">
+    <div class="card">
+      <div class="card-title"><span class="card-title-icon">✅</span>Driver Delivery Confirmation</div>
+      <p style="font-size:14px;color:var(--soft);margin-bottom:24px;line-height:1.7;">When the driver arrives at the delivery address, they scan the receiver's QR code. This confirms delivery and automatically sends a notification to the sender.</p>
+
+      <div class="scan-demo" id="scan-demo" onclick="simulateScan()">
+        <div class="scan-icon">📷</div>
+        <div class="scan-title">Tap to Simulate Driver QR Scan</div>
+        <div class="scan-desc">In the real system, the driver opens the Young Giant driver app and scans the receiver's QR code to confirm delivery</div>
+      </div>
+
+      <div class="confirmed-box" id="confirmed-box">
+        <div class="confirmed-icon">✅</div>
+        <div class="confirmed-title">Delivery Confirmed!</div>
+        <div class="confirmed-desc" id="confirmed-desc">Package successfully delivered and confirmed.</div>
+      </div>
+    </div>
+
+    <div class="card" id="post-delivery-card" style="display:none;">
+      <div class="card-title"><span class="card-title-icon">🔔</span>Notifications Sent</div>
+      <div class="notif-preview">
+        <div class="notif-item" style="border:1px solid rgba(0,230,118,0.3);background:rgba(0,230,118,0.04);">
+          <div class="notif-icon">📧</div>
+          <div>
+            <div class="notif-title" style="color:var(--g);">✅ Sender Notified — Delivery Confirmed!</div>
+            <div class="notif-desc" id="sender-confirm-text">Delivery confirmed notification sent to sender.</div>
+            <div class="notif-time" id="confirm-time">Just now</div>
+          </div>
+        </div>
+        <div class="notif-item">
+          <div class="notif-icon">🧾</div>
+          <div>
+            <div class="notif-title">Proof of Delivery Generated</div>
+            <div class="notif-desc">A digital proof of delivery with timestamp and confirmation details has been generated and sent to both sender and receiver.</div>
+            <div class="notif-time" id="proof-time">Just now</div>
+          </div>
+        </div>
+        <div class="notif-item">
+          <div class="notif-icon">⭐</div>
+          <div>
+            <div class="notif-title">Rate Your Delivery</div>
+            <div class="notif-desc">A rating request has been sent to the sender to rate their Young Giant delivery experience.</div>
+            <div class="notif-time">Just now</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="btn-group">
+      <button class="btn-secondary" onclick="goToStep(3)">← Back</button>
+      <button class="btn-primary" onclick="startNewDelivery()">📦 New Delivery</button>
+    </div>
+  </div>
+
+  </div> 
+<!-- FOOTER -->
+<footer>
+  <div class="footer-logo"><div class="footer-logo-mark">YG</div><span class="footer-logo-name">YOUNG GIANT</span></div>
+  <p class="footer-copy">Smart Delivery System · Young Giant EV Logistics Nigeria · 2026 🇳🇬⚡</p>
+</footer>
+
+<!-- MODAL -->
+<div class="modal" id="modal">
+  <div class="modal-box">
+    <div class="modal-icon" id="modal-icon">⚡</div>
+    <div class="modal-title" id="modal-title">Success!</div>
+    <div class="modal-detail" id="modal-detail" style="display:none;"></div>
+    <p class="modal-desc" id="modal-desc">Processing...</p>
+    <button class="modal-btn" onclick="document.getElementById('modal').classList.remove('show')">Done</button>
+  </div>
+</div>
+
+<script>
+// ── DELIVERY DATA ──
+let deliveryData = {};
+let selectedVehicle = null;
+let deliveryDistance = 0;
+let deliveryId = '';
+
+// ── VEHICLES ──
+const vehicles = [
+  {id:'YG-001',name:'BYD EV Van 1',battery:92,icon:'🚐',maxRange:280},
+  {id:'YG-002',name:'BYD EV Van 2',battery:67,icon:'🚐',maxRange:280},
+  {id:'YG-003',name:'EV Tricycle 1',battery:85,icon:'🛺',maxRange:120},
+  {id:'YG-004',name:'EV Tricycle 2',battery:34,icon:'🛺',maxRange:120},
+  {id:'YG-005',name:'BYD EV Van 3',battery:18,icon:'🚐',maxRange:280},
+  {id:'YG-006',name:'EV Cargo 1',battery:78,icon:'🚛',maxRange:200},
+];
+
+// ── SET MIN DATE ──
+const d=document.getElementById('s1-date');
+if(d){const t=new Date().toISOString().split('T')[0];d.min=t;d.value=t;}
+
+// ── GENERATE TRACKING ID ──
+function generateId(){
+  return 'YG-'+Date.now().toString(36).toUpperCase()+'-'+Math.random().toString(36).substr(2,4).toUpperCase();
+}
+
+// ── CALCULATE DISTANCE ──
+function calculateDistance(pickup,dropoff){
+  // Smart distance calculation based on Nigerian cities
+  const p=pickup.toLowerCase();
+  const d=dropoff.toLowerCase();
+
+  // Lagos internal routes
+  if(p.includes('victoria') && d.includes('ikeja')) return 22;
+  if(p.includes('lekki') && d.includes('ikeja')) return 35;
+  if(p.includes('vi') && d.includes('lekki')) return 18;
+  if(p.includes('island') && d.includes('mainland')) return 15;
+  if(p.includes('yaba') && d.includes('ikeja')) return 12;
+  if(p.includes('surulere') && d.includes('ikeja')) return 18;
+
+  // Abuja internal routes
+  if(p.includes('wuse') && d.includes('garki')) return 8;
+  if(p.includes('maitama') && d.includes('garki')) return 10;
+  if(p.includes('gwarinpa') && d.includes('wuse')) return 22;
+  if(p.includes('asokoro') && d.includes('wuse')) return 12;
+
+  // Generate realistic distance based on text length similarity
+  const words1=pickup.split(' ');
+  const words2=dropoff.split(' ');
+  const shared=words1.filter(w=>words2.includes(w)).length;
+  if(shared>2) return Math.floor(Math.random()*15)+5;
+
+  // Default random realistic distance
+  return Math.floor(Math.random()*40)+8;
+}
+
+// ── CALCULATE COST ──
+function calculateCost(distance){
+  if(distance<=10) return '₦1,500';
+  if(distance<=20) return '₦2,800';
+  if(distance<=35) return '₦4,200';
+  return '₦5,500';
+}
+
+// ── STEP NAVIGATION ──
+function goToStep(n){
+  [1,2,3,4].forEach(i=>{
+    document.getElementById('step-'+i).classList.remove('active');
+    document.getElementById('nav-'+i).classList.remove('active');
+  });
+  document.getElementById('step-'+n).classList.add('active');
+  document.getElementById('nav-'+n).classList.add('active');
+  document.getElementById('progress').style.width=(n*25)+'%';
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+// ── STEP 1 → 2 ──
+function proceedToStep2(){
+  const biz=document.getElementById('s1-biz').value;
+  const sender=document.getElementById('s1-sender').value;
+  const phone=document.getElementById('s1-phone').value;
+  const email=document.getElementById('s1-email').value;
+  const pickup=document.getElementById('s1-pickup').value;
+  const receiver=document.getElementById('s1-receiver').value;
+  const rphone=document.getElementById('s1-rphone').value;
+  const remail=document.getElementById('s1-remail').value;
+  const dropoff=document.getElementById('s1-dropoff').value;
+  const cargo=document.getElementById('s1-cargo').value;
+
+  if(!biz||!sender||!phone||!email||!pickup||!receiver||!rphone||!remail||!dropoff||!cargo){
+    alert('Please fill in all required fields marked with *');return;
+  }
+
+  deliveryData={biz,sender,phone,email,pickup,receiver,rphone,remail,dropoff,cargo,
+    rcompany:document.getElementById('s1-rcompany').value,
+    weight:document.getElementById('s1-weight').value,
+    date:document.getElementById('s1-date').value
+  };
+
+  goToStep(2);
+  calculateRoute();
+}
+// ── CALCULATE ROUTE ──
+function calculateRoute(){
+  const dist=calculateDistance(deliveryData.pickup,deliveryData.dropoff);
+  deliveryDistance=dist;
+
+  // Traffic multiplier (Lagos traffic is real!)
+  const hour=new Date().getHours();
+  const trafficMultiplier=(hour>=7&&hour<=9)||(hour>=16&&hour<=19)?1.8:1.2;
+  const travelMins=Math.round((dist/30)*60*trafficMultiplier);
+
+  const now=new Date();
+  const arrival=new Date(now.getTime()+travelMins*60000+30*60000);
+  const arrivalStr=arrival.toLocaleTimeString('en-NG',{hour:'2-digit',minute:'2-digit'});
+
+  document.getElementById('r-distance').textContent=dist+'km';
+  document.getElementById('r-time').textContent=travelMins+'min';
+  document.getElementById('r-arrival').textContent=arrivalStr;
+  document.getElementById('r-cost').textContent=calculateCost(dist);
+
+  // Route alert
+  const routeAlert=document.getElementById('route-alert');
+  if(dist>50){
+    routeAlert.innerHTML='<div class="alert alert-warning">⚠️ This is a long distance route ('+dist+'km). Please ensure you select a vehicle with sufficient battery range.</div>';
+  } else{
+    routeAlert.innerHTML='<div class="alert alert-success">✓ Route calculated successfully. Distance: '+dist+'km | Estimated travel: '+travelMins+' minutes</div>';
+  }
+
+  // Build vehicles
+  buildVehicleGrid(dist);
+
+  // Build timeline
+  buildTimeline(now,travelMins,arrival,arrivalStr);
+}
+
+// ── BUILD VEHICLE GRID ──
+function buildVehicleGrid(dist){
+  const grid=document.getElementById('vehicle-grid');
+  grid.innerHTML='';
+  vehicles.forEach(v=>{
+    const range=Math.round(v.maxRange*(v.battery/100));
+    const sufficient=range>=(dist*1.3);
+    const batColor=v.battery>60?'#00E676':v.battery>30?'#FFB74D':'#FF5252';
+    const div=document.createElement('div');
+    div.className='vehicle-card'+(sufficient?'':' opacity-50');
+    div.style.opacity=sufficient?'1':'0.5';
+    div.innerHTML=`
+      <div class="vehicle-icon">${v.icon}</div>
+      <div class="vehicle-id">${v.id}</div>
+      <div class="vehicle-name">${v.name}</div>
+      <div class="vehicle-battery">
+        <span style="font-size:11px;color:${batColor};font-weight:700;">${v.battery}%</span>
+        <div class="v-bat-bar"><div class="v-bat-fill" style="width:${v.battery}%;background:${batColor};"></div></div>
+      </div>
+      <div style="font-family:'DM Mono',monospace;font-size:9px;color:${sufficient?'#00E676':'#FF5252'};margin-top:8px;letter-spacing:1px;">
+        ${sufficient?'✓ SUFFICIENT':'✗ LOW BATTERY'}
+      </div>
+    `;
+    if(sufficient){
+      div.onclick=()=>selectVehicle(v,div,dist);
+    }
+    grid.appendChild(div);
+  });
+}
+
+// ── SELECT VEHICLE ──
+function selectVehicle(v,el,dist){
+  document.querySelectorAll('.vehicle-card').forEach(c=>c.classList.remove('selected'));
+  el.classList.add('selected');
+  selectedVehicle=v;
+
+  const range=Math.round(v.maxRange*(v.battery/100));
+  const sufficient=range>=(dist*1.3);
+  const batColor=v.battery>60?'#00E676':v.battery>30?'#FFB74D':'#FF5252';
+
+  document.getElementById('bat-percent').textContent=v.battery+'%';
+  document.getElementById('bat-percent').style.color=batColor;
+  document.getElementById('bat-fill').style.width=v.battery+'%';
+  document.getElementById('bat-fill').style.background=batColor;
+  document.getElementById('bat-dot').style.background=batColor;
+  document.getElementById('bat-range').textContent=range+'km';
+  document.getElementById('bat-needed').textContent=Math.round(dist*1.3)+'km';
+  document.getElementById('bat-verdict').textContent=sufficient?'✓ OK':'✗ LOW';
+  document.getElementById('bat-verdict').style.color=sufficient?'#00E676':'#FF5252';
+  document.getElementById('bat-status-text').textContent=sufficient?
+    `${v.name} has sufficient battery for this ${dist}km route`:
+    `Battery too low for this route. Select another vehicle.`;
+
+  const batAlert=document.getElementById('battery-alert');
+  if(sufficient){
+    batAlert.innerHTML='<div class="alert alert-success">✓ '+v.name+' has '+range+'km range remaining. Sufficient for '+dist+'km route.</div>';
+    document.getElementById('step2-next').disabled=false;
+  } else{
+    batAlert.innerHTML='<div class="alert alert-danger">✗ '+v.name+' battery too low. Only '+range+'km range but route needs '+Math.round(dist*1.3)+'km minimum.</div>';
+    document.getElementById('step2-next').disabled=true;
+  }
+}
+
+// ── BUILD TIMELINE ──
+function buildTimeline(now,travelMins,arrival,arrivalStr){
+  const fmt=t=>t.toLocaleTimeString('en-NG',{hour:'2-digit',minute:'2-digit'});
+  const dispatch=new Date(now.getTime()+10*60000);
+  const pickup=new Date(now.getTime()+30*60000);
+  const enRoute=new Date(pickup.getTime()+5*60000);
+
+  const items=[
+    {time:fmt(now),title:'Booking Confirmed',desc:'Delivery request received and processed by Young Giant system',color:'#00E676',badge:'Done'},
+    {time:fmt(dispatch),title:'Driver Dispatched',desc:'Certified Young Giant EV driver assigned and en route to pickup location',color:'#00E676',badge:'Active'},
+    {time:fmt(pickup),title:'Package Picked Up',desc:'Driver arrives at pickup address and collects cargo from sender',color:'#FFB74D',badge:'Pending'},
+    {time:fmt(enRoute),title:'En Route to Receiver',desc:'EV van heading to delivery address via optimized route',color:'#FFB74D',badge:'Pending'},
+    {time:arrivalStr,title:'Delivery & QR Scan',desc:'Driver arrives, receiver presents QR code, driver scans to confirm delivery',color:'var(--border)',badge:'Pending'},
+    {time:'Auto',title:'Sender Notified',desc:'Instant notification sent to sender confirming successful delivery',color:'var(--border)',badge:'Pending'},
+  ];
+
+  const tl=document.getElementById('timeline');
+  tl.innerHTML='';
+  items.forEach((item,i)=>{
+    const div=document.createElement('div');
+    div.className='tl-item';
+    div.innerHTML=`
+      <div class="tl-left">
+        <div class="tl-dot" style="background:${item.color};"></div>
+        ${i<items.length-1?'<div class="tl-line"></div>':''}
+      </div>
+      <div style="flex:1;">
+        <div class="tl-time">${item.time}</div>
+        <div class="tl-title">${item.title}</div>
+        <div class="tl-desc">${item.desc}</div>
+        <span class="tl-badge" style="background:${item.color==='#00E676'?'rgba(0,230,118,0.1)':item.color==='#FFB74D'?'rgba(255,183,77,0.1)':'rgba(255,255,255,0.05)'};color:${item.color};border:1px solid ${item.color}40;">${item.badge}</span>
+      </div>
+    `;
+    tl.appendChild(div);
+  });
+}
+
+// ── STEP 2 → 3 ──
+function proceedToStep3(){
+  if(!selectedVehicle){alert('Please select a vehicle first!');return;}
+
+  deliveryId=generateId();
+  goToStep(3);
+
+  // Generate QR code
+  document.getElementById('qr-code').innerHTML='';
+  const qrData=JSON.stringify({
+    id:deliveryId,
+    receiver:deliveryData.receiver,
+    rphone:deliveryData.rphone,
+    dropoff:deliveryData.dropoff,
+    vehicle:selectedVehicle.id,
+    timestamp:new Date().toISOString()
+  });
+
+  new QRCode(document.getElementById('qr-code'),{
+    text:qrData,
+    width:160,height:160,
+    colorDark:'#000000',colorLight:'#ffffff',
+    correctLevel:QRCode.CorrectLevel.H
+  });
+
+  document.getElementById('qr-id').textContent='ID: '+deliveryId;
+
+  // Update summary
+  document.getElementById('summary-id').textContent=deliveryId;
+  document.getElementById('summary-sender').textContent=deliveryData.sender;
+  document.getElementById('summary-receiver').textContent=deliveryData.receiver;
+  document.getElementById('summary-distance').textContent=document.getElementById('r-distance').textContent;
+  document.getElementById('summary-eta').textContent=document.getElementById('r-arrival').textContent;
+  document.getElementById('summary-vehicle').textContent=selectedVehicle.id+' · '+selectedVehicle.name;
+  document.getElementById('summary-cost').textContent=document.getElementById('r-cost').textContent;
+
+  // Notification texts
+  const now=new Date().toLocaleTimeString('en-NG',{hour:'2-digit',minute:'2-digit'});
+  document.getElementById('notif-receiver-time').textContent=now;
+  document.getElementById('notif-sender-time').textContent=now;
+  document.getElementById('notif-driver-time').textContent=now;
+  document.getElementById('notif-receiver-text').textContent=`QR code sent to ${deliveryData.remail}. Please show this to the Young Giant driver upon arrival at ${deliveryData.dropoff}.`;
+  document.getElementById('notif-sender-text').textContent=`Hi ${deliveryData.sender}, your delivery (ID: ${deliveryId}) is confirmed! Driver ${selectedVehicle.id} will pick up from ${deliveryData.pickup}. You will be notified once delivered.`;
+
+  // Show success alert
+  document.getElementById('step3-alert').style.display='flex';
+  document.getElementById('step3-alert').textContent=`✓ QR Code generated! Notifications sent to ${deliveryData.remail} and ${deliveryData.email}`;
+
+  // Send to Formspree
+  sendToFormspree();
+  }
+// ── SEND TO FORMSPREE ──
+async function sendToFormspree(){
+  try{
+    await fetch('https://formspree.io/f/mvzljkya',{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({
+        type:'🚐 SMART DELIVERY BOOKING',
+        tracking_id:deliveryId,
+        sender_business:deliveryData.biz,
+        sender_name:deliveryData.sender,
+        sender_phone:deliveryData.phone,
+        sender_email:deliveryData.email,
+        pickup_address:deliveryData.pickup,
+        receiver_name:deliveryData.receiver,
+        receiver_company:deliveryData.rcompany||'N/A',
+        receiver_phone:deliveryData.rphone,
+        receiver_email:deliveryData.remail,
+        delivery_address:deliveryData.dropoff,
+        cargo_type:deliveryData.cargo,
+        distance:deliveryDistance+'km',
+        assigned_vehicle:selectedVehicle.id+' - '+selectedVehicle.name,
+        vehicle_battery:selectedVehicle.battery+'%',
+        estimated_cost:document.getElementById('r-cost').textContent,
+        eta:document.getElementById('r-arrival').textContent
+      })
+    });
+  }catch(e){console.log('Formspree error:',e);}
+}
+
+// ── SIMULATE QR SCAN ──
+function simulateScan(){
+  const scanDemo=document.getElementById('scan-demo');
+  scanDemo.innerHTML='<div class="scan-icon">📷</div><div class="scan-title" style="color:var(--g);">Scanning QR Code...</div><div class="scan-desc">Driver is scanning receiver QR code</div>';
+
+  setTimeout(()=>{
+    scanDemo.style.display='none';
+    const confirmedBox=document.getElementById('confirmed-box');
+    confirmedBox.style.display='block';
+
+    const now=new Date().toLocaleTimeString('en-NG',{hour:'2-digit',minute:'2-digit'});
+    confirmedBox.querySelector('.confirmed-desc').textContent=
+      `Package successfully delivered to ${deliveryData.receiver} at ${deliveryData.dropoff} at ${now}. QR code verified. Sender notification sent to ${deliveryData.email}.`;
+
+    document.getElementById('post-delivery-card').style.display='block';
+
+    const confirmTime=document.getElementById('confirm-time');
+    const proofTime=document.getElementById('proof-time');
+    confirmTime.textContent=now;
+    proofTime.textContent=now;
+
+    document.getElementById('sender-confirm-text').textContent=
+      `Great news ${deliveryData.sender}! Your package has been successfully delivered to ${deliveryData.receiver} at ${deliveryData.dropoff}. Delivery ID: ${deliveryId}. Confirmed at ${now}.`;
+
+    // Show modal
+    document.getElementById('modal-icon').textContent='🎉';
+    document.getElementById('modal-title').textContent='Delivery Confirmed!';
+    document.getElementById('modal-detail').style.display='block';
+    document.getElementById('modal-detail').innerHTML=`
+      <div class="modal-detail-row"><span class="modal-detail-label">Tracking ID</span><span class="modal-detail-val">${deliveryId}</span></div>
+      <div class="modal-detail-row"><span class="modal-detail-label">Delivered To</span><span class="modal-detail-val">${deliveryData.receiver}</span></div>
+      <div class="modal-detail-row"><span class="modal-detail-label">Confirmed At</span><span class="modal-detail-val">${now}</span></div>
+      <div class="modal-detail-row"><span class="modal-detail-label">Driver</span><span class="modal-detail-val">${selectedVehicle.id}</span></div>
+    `;
+    document.getElementById('modal-desc').textContent=`Sender ${deliveryData.sender} has been notified at ${deliveryData.email}. Proof of delivery generated.`;
+    document.getElementById('modal').classList.add('show');
+  },2500);
+}
+
+// ── NEW DELIVERY ──
+function startNewDelivery(){
+  deliveryData={};selectedVehicle=null;deliveryDistance=0;deliveryId='';
+  document.getElementById('scan-demo').style.display='block';
+  document.getElementById('scan-demo').innerHTML='<div class="scan-icon">📷</div><div class="scan-title">Tap to Simulate Driver QR Scan</div><div class="scan-desc">In the real system, the driver opens the Young Giant driver app and scans the receiver\'s QR code to confirm delivery</div>';
+  document.getElementById('confirmed-box').style.display='none';
+  document.getElementById('post-delivery-card').style.display='none';
+  document.getElementById('step2-next').disabled=true;
+  ['s1-biz','s1-sender','s1-phone','s1-email','s1-pickup','s1-receiver','s1-rcompany','s1-rphone','s1-remail','s1-dropoff'].forEach(id=>document.getElementById(id).value='');
+  ['s1-cargo','s1-weight'].forEach(id=>document.getElementById(id).value='');
+  goToStep(1);
+}
+
+document.getElementById('modal').addEventListener('click',function(e){if(e.target===this)this.classList.remove('show');});
+</script>
+</body>
+</html>
