@@ -1,0 +1,562 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Young Giant — App Demo</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Oxanium:wght@400;600;700;800&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet"/>
+<style>
+:root{
+  --g:#00FF87;--gd:#00C853;--g2:#00FFB3;--g3:rgba(0,255,135,0.08);
+  --dk:#030508;--dk2:#070A0E;--dk3:#0A0F14;
+  --card:#0D1219;--border:rgba(0,255,135,0.1);--border2:rgba(0,255,135,0.25);
+  --txt:#E0F2E9;--muted:#3D6B52;--soft:#7BA890;
+  --warn:#FFB800;--danger:#FF4444;--info:#00B4FF;
+  --mono:'DM Mono',monospace;--head:'Oxanium',sans-serif;--body:'Space Grotesk',sans-serif;
+}
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box;}
+html,body{height:100%;overflow:hidden;}
+body{background:var(--dk);color:var(--txt);font-family:var(--body);display:flex;flex-direction:column;}
+
+/* ── APP WRAPPER ── */
+.app-wrapper{flex:1;display:flex;flex-direction:column;overflow:hidden;position:relative;}
+
+/* ── TOP BAR ── */
+.top-bar{height:56px;background:rgba(3,5,8,0.95);border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;padding:0 20px;flex-shrink:0;backdrop-filter:blur(20px);position:relative;z-index:10;}
+.top-bar-logo{display:flex;align-items:center;gap:8px;}
+.top-bar-mark{width:30px;height:30px;background:var(--g);border-radius:5px;display:flex;align-items:center;justify-content:center;font-family:var(--head);font-size:12px;font-weight:800;color:var(--dk);}
+.top-bar-name{font-family:var(--head);font-size:14px;font-weight:700;letter-spacing:1px;}
+.top-bar-name span{color:var(--g);}
+.view-tabs{display:flex;gap:4px;background:var(--card);border:1px solid var(--border);border-radius:8px;padding:3px;}
+.view-tab{padding:6px 14px;border-radius:6px;font-family:var(--mono);font-size:10px;letter-spacing:1px;text-transform:uppercase;cursor:pointer;transition:all 0.2s;color:var(--muted);border:none;background:transparent;}
+.view-tab.active{background:var(--g);color:var(--dk);font-weight:700;}
+.top-bar-status{display:flex;align-items:center;gap:6px;font-family:var(--mono);font-size:10px;color:var(--g);}
+.status-dot{width:6px;height:6px;background:var(--g);border-radius:50%;animation:pulse 2s infinite;}
+@keyframes pulse{0%,100%{opacity:1;}50%{opacity:0.3;}}
+
+/* ── PHONE FRAME ── */
+.demo-stage{flex:1;display:flex;align-items:center;justify-content:center;gap:32px;padding:20px;overflow:hidden;position:relative;}
+.demo-stage::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse 60% 60% at 50% 50%,rgba(0,255,135,0.04) 0%,transparent 70%);}
+
+.phone-frame{width:280px;height:580px;background:var(--dk2);border:2px solid rgba(255,255,255,0.1);border-radius:36px;overflow:hidden;position:relative;flex-shrink:0;box-shadow:0 32px 80px rgba(0,0,0,0.8),0 0 0 1px rgba(255,255,255,0.05);transition:transform 0.3s;}
+.phone-frame:hover{transform:translateY(-4px);}
+.phone-notch{position:absolute;top:0;left:50%;transform:translateX(-50%);width:80px;height:24px;background:var(--dk2);border-bottom-left-radius:12px;border-bottom-right-radius:12px;z-index:10;display:flex;align-items:center;justify-content:center;gap:6px;}
+.notch-dot{width:8px;height:8px;background:#1a1a1a;border-radius:50%;}
+.notch-line{width:32px;height:4px;background:#1a1a1a;border-radius:2px;}
+.phone-label{font-family:var(--head);font-size:11px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--muted);text-align:center;margin-top:8px;}
+.phone-label span{color:var(--g);}
+
+/* ── PHONE SCREENS ── */
+.phone-screen{width:100%;height:100%;overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch;}
+.phone-screen::-webkit-scrollbar{display:none;}
+
+/* ── CUSTOMER APP ── */
+.customer-app{background:linear-gradient(180deg,#040810 0%,#060C10 100%);min-height:100%;}
+.app-header{padding:36px 16px 20px;position:relative;overflow:hidden;}
+.app-header::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse 100% 80% at 50% 0%,rgba(0,255,135,0.12) 0%,transparent 70%);}
+.app-header-inner{position:relative;z-index:1;}
+.app-greeting{font-family:var(--mono);font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--muted);margin-bottom:4px;}
+.app-title{font-family:var(--head);font-size:22px;font-weight:800;margin-bottom:2px;}
+.app-title span{color:var(--g);}
+.app-subtitle{font-size:12px;color:var(--soft);}
+
+.quick-book{margin:0 16px 16px;background:var(--g);border-radius:14px;padding:16px;cursor:pointer;transition:all 0.2s;}
+.quick-book:active{transform:scale(0.98);}
+.qb-label{font-family:var(--mono);font-size:9px;letter-spacing:2px;text-transform:uppercase;color:rgba(0,0,0,0.6);margin-bottom:4px;}
+.qb-title{font-family:var(--head);font-size:16px;font-weight:800;color:var(--dk);margin-bottom:12px;}
+.qb-input{background:rgba(0,0,0,0.15);border:none;border-radius:8px;padding:10px 12px;font-family:var(--body);font-size:12px;color:var(--dk);width:100%;margin-bottom:8px;}
+.qb-input::placeholder{color:rgba(0,0,0,0.4);}
+.qb-btn{background:var(--dk);color:var(--g);border:none;border-radius:8px;padding:10px;width:100%;font-family:var(--head);font-size:13px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px;}
+
+.section-title{font-family:var(--head);font-size:13px;font-weight:700;letter-spacing:1px;margin:0 16px 10px;display:flex;justify-content:space-between;align-items:center;}
+.section-title span{font-family:var(--mono);font-size:10px;color:var(--g);}
+
+.service-row{display:flex;gap:10px;padding:0 16px 16px;overflow-x:auto;}
+.service-row::-webkit-scrollbar{display:none;}
+.service-card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:14px 12px;flex-shrink:0;width:90px;text-align:center;cursor:pointer;transition:all 0.2s;}
+.service-card:active{transform:scale(0.95);}
+.service-icon{font-size:24px;margin-bottom:8px;}
+.service-name{font-size:10px;font-weight:600;color:var(--soft);}
+
+.active-delivery{margin:0 16px 16px;background:var(--card);border:1px solid var(--border2);border-radius:14px;padding:16px;position:relative;overflow:hidden;}
+.ad-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;}
+.ad-title{font-family:var(--head);font-size:13px;font-weight:700;}
+.ad-badge{background:rgba(0,255,135,0.1);color:var(--g);font-family:var(--mono);font-size:9px;letter-spacing:1px;padding:3px 8px;border-radius:4px;}
+.ad-route{display:flex;flex-direction:column;gap:8px;margin-bottom:14px;}
+.ad-point{display:flex;align-items:center;gap:8px;font-size:12px;}
+.ad-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;}
+.ad-progress{height:4px;background:rgba(0,255,135,0.1);border-radius:2px;overflow:hidden;}
+.ad-progress-fill{height:100%;background:var(--g);border-radius:2px;animation:progress 8s linear infinite;}
+@keyframes progress{0%{width:30%;}100%{width:85%;}}
+.ad-stats{display:flex;gap:12px;margin-top:12px;}
+.ad-stat{flex:1;text-align:center;background:rgba(0,255,135,0.05);border-radius:8px;padding:8px;}
+.ad-stat-val{font-family:var(--head);font-size:16px;font-weight:800;color:var(--g);}
+.ad-stat-label{font-family:var(--mono);font-size:8px;letter-spacing:1px;color:var(--muted);margin-top:2px;}
+
+.pricing-section{margin:0 16px 16px;}
+.price-row{display:flex;gap:8px;}
+.price-mini{flex:1;background:var(--card);border:1px solid var(--border);border-radius:10px;padding:12px;cursor:pointer;transition:all 0.2s;}
+.price-mini.active-plan{border-color:var(--g);background:var(--g3);}
+.price-mini-name{font-family:var(--mono);font-size:9px;letter-spacing:1px;color:var(--muted);margin-bottom:4px;}
+.price-mini-val{font-family:var(--head);font-size:16px;font-weight:800;color:var(--g);}
+.price-mini-period{font-size:9px;color:var(--muted);}
+
+.bottom-nav{display:flex;background:var(--dk3);border-top:1px solid var(--border);padding:8px 0 4px;}
+.bn-item{flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;cursor:pointer;padding:4px;}
+.bn-icon{font-size:18px;}
+.bn-label{font-family:var(--mono);font-size:8px;letter-spacing:1px;color:var(--muted);}
+.bn-item.active .bn-label{color:var(--g);}
+
+/* ── DRIVER APP ── */
+.driver-app{background:#040810;min-height:100%;display:flex;flex-direction:column;}
+.driver-header{padding:36px 16px 16px;background:linear-gradient(180deg,rgba(0,255,135,0.08) 0%,transparent 100%);}
+.driver-status-bar{display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;}
+.driver-name{font-family:var(--head);font-size:16px;font-weight:800;}
+.driver-id{font-family:var(--mono);font-size:10px;color:var(--g);}
+.online-toggle{background:var(--g);color:var(--dk);border:none;border-radius:20px;padding:6px 14px;font-family:var(--head);font-size:11px;font-weight:700;cursor:pointer;display:flex;align-items:center;gap:6px;}
+.driver-stats{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:16px;}
+.ds-card{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:10px;text-align:center;}
+.ds-val{font-family:var(--head);font-size:18px;font-weight:800;color:var(--g);}
+.ds-label{font-family:var(--mono);font-size:8px;letter-spacing:1px;color:var(--muted);margin-top:2px;}
+
+.battery-widget{margin:0 16px 16px;background:var(--card);border:1px solid var(--border);border-radius:12px;padding:14px;}
+.bw-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;}
+.bw-title{font-family:var(--head);font-size:13px;font-weight:700;}
+.bw-val{font-family:var(--head);font-size:20px;font-weight:800;color:var(--g);}
+.bw-bar{height:10px;background:rgba(0,255,135,0.1);border-radius:5px;overflow:hidden;margin-bottom:8px;}
+.bw-fill{height:100%;background:linear-gradient(90deg,var(--g),var(--g2));border-radius:5px;width:78%;}
+.bw-info{display:flex;justify-content:space-between;font-family:var(--mono);font-size:10px;color:var(--muted);}
+
+.order-card{margin:0 16px 12px;background:var(--card);border:2px solid var(--border2);border-radius:14px;padding:14px;cursor:pointer;}
+.oc-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;}
+.oc-id{font-family:var(--mono);font-size:10px;color:var(--g);}
+.oc-priority{background:rgba(255,184,0,0.1);color:var(--warn);font-family:var(--mono);font-size:9px;padding:3px 8px;border-radius:4px;}
+.oc-route{display:flex;flex-direction:column;gap:6px;margin-bottom:12px;}
+.oc-point{display:flex;align-items:center;gap:8px;font-size:11px;}
+.oc-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;}
+.oc-stats{display:flex;gap:8px;margin-bottom:12px;}
+.oc-stat{background:var(--dk);border-radius:6px;padding:6px 10px;text-align:center;flex:1;}
+.oc-stat-val{font-family:var(--head);font-size:14px;font-weight:700;color:var(--g);}
+.oc-stat-label{font-family:var(--mono);font-size:8px;color:var(--muted);}
+.oc-btns{display:flex;gap:8px;}
+.oc-btn{flex:1;border-radius:8px;padding:10px;font-family:var(--head);font-size:12px;font-weight:700;cursor:pointer;border:none;transition:all 0.2s;}
+.oc-btn.accept{background:var(--g);color:var(--dk);}
+.oc-btn.decline{background:var(--card);color:var(--soft);border:1px solid var(--border);}
+
+.qr-scan-btn{margin:0 16px 16px;background:linear-gradient(135deg,rgba(0,255,135,0.1),rgba(0,255,135,0.05));border:1px solid var(--border2);border-radius:14px;padding:16px;text-align:center;cursor:pointer;}
+.qsb-icon{font-size:32px;margin-bottom:8px;}
+.qsb-title{font-family:var(--head);font-size:14px;font-weight:700;color:var(--g);margin-bottom:4px;}
+.qsb-desc{font-size:11px;color:var(--muted);}
+
+/* ── DISPATCH DASHBOARD ── */
+.dispatch-app{background:#030508;min-height:100%;display:flex;flex-direction:column;}
+.dispatch-header{padding:36px 14px 14px;}
+.dispatch-title{font-family:var(--head);font-size:18px;font-weight:800;margin-bottom:4px;}
+.dispatch-title span{color:var(--g);}
+.dispatch-subtitle{font-family:var(--mono);font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--muted);}
+
+.kpi-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;padding:0 14px 14px;}
+.kpi-card{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:12px;}
+.kpi-val{font-family:var(--head);font-size:24px;font-weight:800;color:var(--g);line-height:1;}
+.kpi-label{font-family:var(--mono);font-size:9px;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted);margin-top:4px;}
+.kpi-change{font-size:10px;color:var(--g);margin-top:2px;}
+
+.fleet-section{padding:0 14px 14px;}
+.fleet-title{font-family:var(--head);font-size:12px;font-weight:700;margin-bottom:10px;display:flex;justify-content:space-between;}
+.fleet-title span{font-family:var(--mono);font-size:9px;color:var(--g);}
+.fleet-item{display:flex;align-items:center;gap:10px;padding:10px;background:var(--card);border:1px solid var(--border);border-radius:8px;margin-bottom:6px;}
+.fi-icon{font-size:18px;flex-shrink:0;}
+.fi-info{flex:1;}
+.fi-id{font-family:var(--mono);font-size:10px;color:var(--g);}
+.fi-status{font-size:11px;color:var(--soft);}
+.fi-bat{display:flex;align-items:center;gap:6px;}
+.fi-bat-bar{width:36px;height:5px;background:var(--dk);border-radius:2px;overflow:hidden;}
+.fi-bat-fill{height:100%;border-radius:2px;}
+.fi-bat-val{font-family:var(--mono);font-size:9px;}
+
+.orders-section{padding:0 14px 14px;}
+.orders-title{font-family:var(--head);font-size:12px;font-weight:700;margin-bottom:10px;display:flex;justify-content:space-between;}
+.orders-title span{font-family:var(--mono);font-size:9px;color:var(--warn);}
+.order-item{display:flex;align-items:center;gap:8px;padding:10px;background:var(--card);border:1px solid var(--border);border-radius:8px;margin-bottom:6px;cursor:pointer;}
+.oi-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;}
+.oi-info{flex:1;}
+.oi-id{font-family:var(--mono);font-size:10px;color:var(--g);}
+.oi-route{font-size:11px;color:var(--soft);}
+.oi-badge{font-family:var(--mono);font-size:9px;padding:2px 7px;border-radius:4px;}
+
+.map-preview{margin:0 14px 14px;background:var(--card);border:1px solid var(--border);border-radius:12px;overflow:hidden;height:120px;position:relative;}
+.map-bg{width:100%;height:100%;background:linear-gradient(135deg,#060D10,#0A1519);display:flex;align-items:center;justify-content:center;position:relative;}
+.map-grid{position:absolute;inset:0;background-image:linear-gradient(rgba(0,255,135,0.05) 1px,transparent 1px),linear-gradient(90deg,rgba(0,255,135,0.05) 1px,transparent 1px);background-size:20px 20px;}
+.map-vehicle{position:absolute;font-size:16px;animation:mapMove 4s ease-in-out infinite;}
+.map-vehicle:nth-child(2){top:30%;left:25%;animation-delay:0s;}
+.map-vehicle:nth-child(3){top:55%;left:55%;animation-delay:1s;}
+.map-vehicle:nth-child(4){top:20%;left:65%;animation-delay:2s;}
+@keyframes mapMove{0%,100%{transform:translate(0,0);}50%{transform:translate(8px,-6px);}}
+.map-label{position:absolute;bottom:8px;left:8px;font-family:var(--mono);font-size:9px;letter-spacing:1.5px;text-transform:uppercase;color:var(--g);background:rgba(3,5,8,0.8);padding:3px 8px;border-radius:4px;}
+
+/* ── NOTIFICATION TOAST ── */
+.toast{position:fixed;bottom:80px;left:50%;transform:translateX(-50%) translateY(100px);background:var(--card);border:1px solid var(--border2);border-radius:12px;padding:12px 16px;display:flex;align-items:center;gap:10px;font-size:12px;z-index:100;transition:transform 0.4s cubic-bezier(0.16,1,0.3,1);min-width:240px;max-width:300px;box-shadow:0 16px 40px rgba(0,0,0,0.5);}
+.toast.show{transform:translateX(-50%) translateY(0);}
+.toast-icon{font-size:20px;flex-shrink:0;}
+.toast-title{font-family:var(--head);font-size:12px;font-weight:700;margin-bottom:2px;}
+.toast-desc{font-size:11px;color:var(--muted);}
+
+/* ── FEATURE LABELS ── */
+.feature-labels{display:flex;flex-direction:column;gap:10px;max-width:200px;}
+.fl-item{display:flex;align-items:center;gap:10px;padding:10px 14px;background:var(--card);border:1px solid var(--border);border-radius:8px;}
+.fl-icon{font-size:16px;flex-shrink:0;}
+.fl-text{font-family:var(--mono);font-size:10px;letter-spacing:1px;color:var(--soft);}
+
+@media(max-width:900px){
+  .demo-stage{flex-direction:column;align-items:center;overflow-y:auto;}
+  .feature-labels{display:none;}
+  .phone-frame{width:260px;height:520px;}
+}
+@media(max-width:600px){
+  .top-bar{padding:0 12px;}
+  .view-tabs{gap:2px;}
+  .view-tab{padding:5px 8px;font-size:9px;}
+}
+</style>
+</head>
+<body>
+  <div class="app-wrapper">
+
+  <!-- TOP BAR -->
+  <div class="top-bar">
+    <div class="top-bar-logo">
+      <div class="top-bar-mark">YG</div>
+      <span class="top-bar-name">YOUNG <span>GIANT</span></span>
+    </div>
+    <div class="view-tabs">
+      <button class="view-tab active" onclick="switchView('customer')">📱 Customer</button>
+      <button class="view-tab" onclick="switchView('driver')">🚐 Driver</button>
+      <button class="view-tab" onclick="switchView('dispatch')">📊 Dispatch</button>
+    </div>
+    <div class="top-bar-status"><div class="status-dot"></div>Live Demo</div>
+  </div>
+
+  <!-- DEMO STAGE -->
+  <div class="demo-stage">
+
+    <!-- LEFT LABELS -->
+    <div class="feature-labels" id="left-labels">
+      <div class="fl-item"><div class="fl-icon">📦</div><div class="fl-text">Book EV Delivery</div></div>
+      <div class="fl-item"><div class="fl-icon">📍</div><div class="fl-text">Live GPS Tracking</div></div>
+      <div class="fl-item"><div class="fl-icon">💰</div><div class="fl-text">Instant Pricing</div></div>
+      <div class="fl-item"><div class="fl-icon">📱</div><div class="fl-text">QR Code Receipt</div></div>
+    </div>
+
+    <!-- PHONE -->
+    <div>
+      <div class="phone-frame" id="phone">
+        <div class="phone-notch">
+          <div class="notch-dot"></div>
+          <div class="notch-line"></div>
+          <div class="notch-dot"></div>
+        </div>
+
+        <!-- CUSTOMER SCREEN -->
+        <div class="phone-screen" id="screen-customer">
+          <div class="customer-app">
+            <div class="app-header">
+              <div class="app-header-inner">
+                <div class="app-greeting">Good afternoon</div>
+                <div class="app-title">Hello, <span>Lagos</span> 🇳🇬</div>
+                <div class="app-subtitle">What are you delivering today?</div>
+              </div>
+            </div>
+
+            <div class="quick-book" onclick="showToast('📦','Booking Started','Enter your pickup and delivery details below')">
+              <div class="qb-label">Quick Book</div>
+              <div class="qb-title">Book EV Delivery ⚡</div>
+              <input class="qb-input" placeholder="📍 Pickup address..."/>
+              <input class="qb-input" placeholder="📦 Delivery address..."/>
+              <button class="qb-btn" onclick="showToast('✅','Route Calculated','Distance: 18km · ETA: 42min · Cost: ₦2,800')">Calculate Route →</button>
+            </div>
+
+            <div class="section-title">Services <span>See all</span></div>
+            <div class="service-row">
+              <div class="service-card" onclick="showToast('📦','Standard Delivery','₦1,500 per delivery up to 10km')"><div class="service-icon">📦</div><div class="service-name">Standard</div></div>
+              <div class="service-card" onclick="showToast('⚡','Express EV','Priority pickup in 30 minutes')"><div class="service-icon">⚡</div><div class="service-name">Express</div></div>
+              <div class="service-card" onclick="showToast('🏢','Business Plan','₦35,000/month unlimited deliveries')"><div class="service-icon">🏢</div><div class="service-name">Business</div></div>
+              <div class="service-card" onclick="showToast('🌡️','Cold Chain','Temperature controlled EV delivery')"><div class="service-icon">🌡️</div><div class="service-name">Cold Chain</div></div>
+            </div>
+
+            <div class="section-title">Active Delivery</div>
+            <div class="active-delivery">
+              <div class="ad-header">
+                <div class="ad-title">YG-A3F9-X2K1</div>
+                <div class="ad-badge">⚡ EN ROUTE</div>
+              </div>
+              <div class="ad-route">
+                <div class="ad-point"><div class="ad-dot" style="background:#00FF87;"></div><span>Victoria Island, Lagos</span></div>
+                <div class="ad-point"><div class="ad-dot" style="background:#FF4444;"></div><span>Ikeja GRA, Lagos</span></div>
+              </div>
+              <div class="ad-progress"><div class="ad-progress-fill"></div></div>
+              <div class="ad-stats">
+                <div class="ad-stat"><div class="ad-stat-val">18km</div><div class="ad-stat-label">Distance</div></div>
+                <div class="ad-stat"><div class="ad-stat-val">23min</div><div class="ad-stat-label">ETA</div></div>
+                <div class="ad-stat"><div class="ad-stat-val">0g</div><div class="ad-stat-label">CO₂</div></div>
+              </div>
+            </div>
+
+            <div class="section-title">Your Plans</div>
+            <div class="pricing-section">
+              <div class="price-row">
+                <div class="price-mini" onclick="showToast('💡','Starter Plan','₦1,500 per delivery selected')"><div class="price-mini-name">Starter</div><div class="price-mini-val">₦1.5K</div><div class="price-mini-period">per delivery</div></div>
+                <div class="price-mini active-plan" onclick="showToast('🏢','Business Plan','₦35,000/month — unlimited deliveries')"><div class="price-mini-name">Business</div><div class="price-mini-val">₦35K</div><div class="price-mini-period">per month</div></div>
+                <div class="price-mini" onclick="showToast('🚛','Enterprise','Custom fleet solution — contact us')"><div class="price-mini-name">Enterprise</div><div class="price-mini-val">Custom</div><div class="price-mini-period">fleet</div></div>
+              </div>
+            </div>
+
+            <div style="height:60px;"></div>
+            <div class="bottom-nav">
+              <div class="bn-item active"><div class="bn-icon">🏠</div><div class="bn-label">Home</div></div>
+              <div class="bn-item" onclick="showToast('📦','My Deliveries','3 active deliveries · 12 completed')"><div class="bn-icon">📦</div><div class="bn-label">Deliveries</div></div>
+              <div class="bn-item" onclick="showToast('📍','Track Live','Opening live tracking map...')"><div class="bn-icon">📍</div><div class="bn-label">Track</div></div>
+              <div class="bn-item" onclick="showToast('👤','Profile','Moses Reuben · Business Plan')"><div class="bn-icon">👤</div><div class="bn-label">Profile</div></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- DRIVER SCREEN -->
+        <div class="phone-screen" id="screen-driver" style="display:none;">
+          <div class="driver-app">
+            <div class="driver-header">
+              <div class="driver-status-bar">
+                <div>
+                  <div class="driver-name">Chukwuemeka O.</div>
+                  <div class="driver-id">YG-DRV-004 · Lagos Fleet</div>
+                </div>
+                <button class="online-toggle" onclick="showToast('✅','Status Updated','You are now Online and ready for orders')">🟢 Online</button>
+              </div>
+              <div class="driver-stats">
+                <div class="ds-card"><div class="ds-val">7</div><div class="ds-label">Today</div></div>
+                <div class="ds-card"><div class="ds-val">₦12K</div><div class="ds-label">Earned</div></div>
+                <div class="ds-card"><div class="ds-val">4.9⭐</div><div class="ds-label">Rating</div></div>
+              </div>
+            </div>
+
+            <div class="battery-widget">
+              <div class="bw-header">
+                <div class="bw-title">🔋 Vehicle Battery</div>
+                <div class="bw-val">78%</div>
+              </div>
+              <div class="bw-bar"><div class="bw-fill"></div></div>
+              <div class="bw-info">
+                <span>Range: ~218km remaining</span>
+                <span style="color:var(--g);">✓ Ready for dispatch</span>
+              </div>
+            </div>
+
+            <div class="section-title" style="padding:0 16px;margin-bottom:10px;">New Orders <span style="color:var(--warn);">2 Pending</span></div>
+
+            <div class="order-card" onclick="showToast('📋','Order Details','YG-B7K2 assigned to you. Accept to proceed.')">
+              <div class="oc-header">
+                <div class="oc-id">YG-B7K2-M3N8</div>
+                <div class="oc-priority">⚡ URGENT</div>
+              </div>
+              <div class="oc-route">
+                <div class="oc-point"><div class="oc-dot" style="background:#00FF87;"></div><span>Lekki Phase 1 — Pickup</span></div>
+                <div class="oc-point"><div class="oc-dot" style="background:#FF4444;"></div><span>Yaba, Lagos — Drop-off</span></div>
+              </div>
+              <div class="oc-stats">
+                <div class="oc-stat"><div class="oc-stat-val">28km</div><div class="oc-stat-label">Distance</div></div>
+                <div class="oc-stat"><div class="oc-stat-val">52min</div><div class="oc-stat-label">Est. Time</div></div>
+                <div class="oc-stat"><div class="oc-stat-val">₦4.2K</div><div class="oc-stat-label">Payout</div></div>
+              </div>
+              <div class="oc-btns">
+                <button class="oc-btn accept" onclick="showToast('✅','Order Accepted!','Navigate to Lekki Phase 1 for pickup')">Accept ✓</button>
+                <button class="oc-btn decline">Decline</button>
+              </div>
+            </div>
+
+            <div class="qr-scan-btn" onclick="simulateQRScan()">
+              <div class="qsb-icon">📷</div>
+              <div class="qsb-title">Scan Receiver QR Code</div>
+              <div class="qsb-desc">Tap to confirm delivery at destination</div>
+            </div>
+
+            <div style="height:16px;"></div>
+          </div>
+      </div>
+                                                   <!-- DISPATCH SCREEN -->
+        <div class="phone-screen" id="screen-dispatch" style="display:none;">
+          <div class="dispatch-app">
+            <div class="dispatch-header">
+              <div class="dispatch-title">YG <span>Dispatch</span></div>
+              <div class="dispatch-subtitle">Operations Dashboard · Lagos</div>
+            </div>
+
+            <div class="kpi-grid">
+              <div class="kpi-card"><div class="kpi-val">12</div><div class="kpi-label">Active Orders</div><div class="kpi-change">↑ 3 new today</div></div>
+              <div class="kpi-card"><div class="kpi-val">8</div><div class="kpi-label">Drivers Online</div><div class="kpi-change">↑ 2 available</div></div>
+              <div class="kpi-card"><div class="kpi-val">₦48K</div><div class="kpi-label">Today Revenue</div><div class="kpi-change">↑ +12% vs yesterday</div></div>
+              <div class="kpi-card"><div class="kpi-val">0g</div><div class="kpi-label">CO₂ Emitted</div><div class="kpi-change">✓ Zero emissions</div></div>
+            </div>
+
+            <div class="map-preview">
+              <div class="map-bg">
+                <div class="map-grid"></div>
+                <div class="map-vehicle" style="top:30%;left:25%;">🚐</div>
+                <div class="map-vehicle" style="top:55%;left:55%;">🚐</div>
+                <div class="map-vehicle" style="top:20%;left:65%;">🛺</div>
+                <div class="map-label">Lagos Fleet · Live View</div>
+              </div>
+            </div>
+
+            <div class="fleet-section">
+              <div class="fleet-title">Fleet Status <span>6 vehicles</span></div>
+              <div id="fleet-list">
+                <!-- Populated by JS -->
+              </div>
+            </div>
+
+            <div class="orders-section">
+              <div class="orders-title">Live Orders <span>3 pending</span></div>
+              <div class="order-item" onclick="showToast('📦','Order YG-A3F9','En route to Ikeja · ETA 23min · Driver YG-001')">
+                <div class="oi-dot" style="background:#00FF87;"></div>
+                <div class="oi-info"><div class="oi-id">YG-A3F9-X2K1</div><div class="oi-route">VI → Ikeja GRA · 18km</div></div>
+                <span class="oi-badge" style="background:rgba(0,255,135,0.1);color:#00FF87;">En Route</span>
+              </div>
+              <div class="order-item" onclick="showToast('⏳','Order YG-B7K2','Awaiting driver assignment · Pickup in Lekki')">
+                <div class="oi-dot" style="background:#FFB800;"></div>
+                <div class="oi-info"><div class="oi-id">YG-B7K2-M3N8</div><div class="oi-route">Lekki → Yaba · 28km</div></div>
+                <span class="oi-badge" style="background:rgba(255,184,0,0.1);color:#FFB800;">Pending</span>
+              </div>
+              <div class="order-item" onclick="showToast('✅','Order YG-C1P5','Delivered! QR confirmed at 2:34 PM')">
+                <div class="oi-dot" style="background:#00B4FF;"></div>
+                <div class="oi-info"><div class="oi-id">YG-C1P5-R7T3</div><div class="oi-route">Surulere → Maryland · 12km</div></div>
+                <span class="oi-badge" style="background:rgba(0,180,255,0.1);color:#00B4FF;">Delivered ✓</span>
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+      </div>
+      <div class="phone-label" id="phone-label">📱 <span>Customer</span> App</div>
+                </div>
+<!-- TOAST -->
+<div class="toast" id="toast">
+  <div class="toast-icon" id="toast-icon">⚡</div>
+  <div>
+    <div class="toast-title" id="toast-title">Notification</div>
+    <div class="toast-desc" id="toast-desc">Message here</div>
+  </div>
+</div>
+
+<script>
+// ── FLEET DATA ──
+const fleet = [
+  {id:'YG-001',name:'BYD Van 1',icon:'🚐',battery:92,status:'En Route',color:'#00FF87'},
+  {id:'YG-002',name:'BYD Van 2',icon:'🚐',battery:67,status:'Available',color:'#00FF87'},
+  {id:'YG-003',name:'EV Trike 1',icon:'🛺',battery:85,status:'Available',color:'#00FF87'},
+  {id:'YG-004',name:'EV Trike 2',icon:'🛺',battery:34,status:'Charging',color:'#FFB800'},
+  {id:'YG-005',name:'BYD Van 3',icon:'🚐',battery:18,status:'Low Battery',color:'#FF4444'},
+  {id:'YG-006',name:'Cargo Van 1',icon:'🚛',battery:78,status:'Available',color:'#00FF87'},
+];
+
+// Build fleet list
+function buildFleet(){
+  const list=document.getElementById('fleet-list');
+  if(!list)return;
+  list.innerHTML='';
+  fleet.forEach(v=>{
+    const batColor=v.battery>60?'#00FF87':v.battery>30?'#FFB800':'#FF4444';
+    const div=document.createElement('div');
+    div.className='fleet-item';
+    div.onclick=()=>showToast(v.icon,v.id+' · '+v.name,'Battery: '+v.battery+'% · Status: '+v.status);
+    div.innerHTML=`
+      <div class="fi-icon">${v.icon}</div>
+      <div class="fi-info">
+        <div class="fi-id">${v.id}</div>
+        <div class="fi-status" style="color:${v.color};">${v.status}</div>
+      </div>
+      <div class="fi-bat">
+        <div class="fi-bat-bar"><div class="fi-bat-fill" style="width:${v.battery}%;background:${batColor};"></div></div>
+        <div class="fi-bat-val" style="color:${batColor};font-size:10px;">${v.battery}%</div>
+      </div>
+    `;
+    list.appendChild(div);
+  });
+}
+buildFleet();
+
+// ── SWITCH VIEW ──
+function switchView(view){
+  // Update tabs
+  document.querySelectorAll('.view-tab').forEach(t=>t.classList.remove('active'));
+  event.target.classList.add('active');
+
+  // Hide all screens
+  document.getElementById('screen-customer').style.display='none';
+  document.getElementById('screen-driver').style.display='none';
+  document.getElementById('screen-dispatch').style.display='none';
+
+  // Show selected
+  document.getElementById('screen-'+view).style.display='block';
+
+  // Update label
+  const labels={customer:'📱 Customer App',driver:'🚐 Driver App',dispatch:'📊 Dispatch Dashboard'};
+  const label=document.getElementById('phone-label');
+  const names={customer:'Customer',driver:'Driver',dispatch:'Dispatch'};
+  label.innerHTML=`${view==='customer'?'📱':view==='driver'?'🚐':'📊'} <span>${names[view]}</span> App`;
+
+  // Update side labels
+  const leftLabels={
+    customer:['📦 Book EV Delivery','📍 Live GPS Tracking','💰 Instant Pricing','📱 QR Code Receipt'],
+    driver:['🗺️ Route Navigation','🔋 Battery Status','📋 Order Management','📷 QR Scanner'],
+    dispatch:['📊 Fleet Overview','🚐 Vehicle Tracking','📦 Order Management','📈 Revenue Analytics']
+  };
+  const rightLabels={
+    customer:['⭐ Rate Delivery','🔔 Live Notifications','🧾 Invoice History','💬 Support Chat'],
+    driver:['💰 Earnings Tracker','⭐ Rating System','📞 Customer Contact','🔔 Push Alerts'],
+    dispatch:['🔋 Battery Monitor','👤 Driver Management','🗺️ Live Map View','⚡ Smart Dispatch']
+  };
+
+  document.getElementById('left-labels').innerHTML=leftLabels[view].map(l=>`<div class="fl-item"><div class="fl-icon">${l.split(' ')[0]}</div><div class="fl-text">${l.split(' ').slice(1).join(' ')}</div></div>`).join('');
+  document.getElementById('right-labels').innerHTML=rightLabels[view].map(l=>`<div class="fl-item"><div class="fl-icon">${l.split(' ')[0]}</div><div class="fl-text">${l.split(' ').slice(1).join(' ')}</div></div>`).join('');
+
+  const toasts={customer:'📱 Customer view — Book deliveries and track packages',driver:'🚐 Driver view — Manage orders and scan QR codes',dispatch:'📊 Dispatch view — Fleet management and live monitoring'};
+  showToast(view==='customer'?'📱':view==='driver'?'🚐':'📊','Switched to '+names[view]+' App',toasts[view]);
+}
+
+// ── TOAST ──
+let toastTimer=null;
+function showToast(icon,title,desc){
+  const toast=document.getElementById('toast');
+  document.getElementById('toast-icon').textContent=icon;
+  document.getElementById('toast-title').textContent=title;
+  document.getElementById('toast-desc').textContent=desc;
+  toast.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer=setTimeout(()=>toast.classList.remove('show'),3500);
+}
+
+// ── QR SCAN SIMULATION ──
+function simulateQRScan(){
+  showToast('📷','Scanning QR Code...','Point camera at receiver QR code');
+  setTimeout(()=>{
+    showToast('✅','Delivery Confirmed!','QR verified! Sender notified. Proof of delivery sent.');
+  },2000);
+}
+
+// ── AUTO NOTIFICATIONS ──
+const notifications=[
+  {icon:'📦',title:'New Order Received',desc:'YG-D4K8 · Lekki → Surulere · 22km · ₦3,200'},
+  {icon:'🔋',title:'Vehicle Battery Low',desc:'YG-005 at 18% — needs charging before next dispatch'},
+  {icon:'✅',title:'Delivery Confirmed',desc:'YG-C1P5 delivered to Adaeze Okonkwo via QR scan'},
+  {icon:'⭐',title:'5-Star Rating Received',desc:'Customer Emeka rated delivery ⭐⭐⭐⭐⭐ "Very fast!"'},
+  {icon:'🚐',title:'Driver Online',desc:'Chidi M. · YG-DRV-007 is now available in Abuja'},
+];
+let notifIndex=0;
+setInterval(()=>{
+  const n=notifications[notifIndex%notifications.length];
+  showToast(n.icon,n.title,n.desc);
+  notifIndex++;
+},8000);
+</script>
+</body>
+  </html>
