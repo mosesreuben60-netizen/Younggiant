@@ -1,0 +1,756 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>YG Social — Young Giant</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Outfit:wght@300;400;500;600;700;800&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet"/>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+:root{--g:#00FF87;--gd:#00C853;--dk:#050C05;--s:#0A130A;--card:#0F1A0F;--b:#162416;--b2:#1E3A1E;--txt:#F0FFF0;--m:#4A7A4A;--red:#FF4444;--yellow:#FFB300;--blue:#4FC3F7;--purple:#CE93D8;--display:'Bebas Neue',sans-serif;--body:'Outfit',sans-serif;--mono:'DM Mono',monospace;}
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+html,body{height:100%;overflow:hidden;}
+body{background:var(--dk);color:var(--txt);font-family:var(--body);}
+@keyframes fu{from{opacity:0;transform:translateY(10px);}to{opacity:1;transform:translateY(0);}}
+@keyframes spin{to{transform:rotate(360deg);}}
+@keyframes bounce{0%,80%,100%{transform:translateY(0);}40%{transform:translateY(-5px);}}
+@keyframes logoIn{from{opacity:0;transform:scale(0.85) translateY(24px);}to{opacity:1;transform:scale(1) translateY(0);}}
+
+/* SCREENS */
+.screen{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;padding:16px;opacity:0;pointer-events:none;transition:opacity 0.4s,transform 0.4s;transform:translateY(14px);overflow-y:auto;}
+.screen.active{opacity:1;pointer-events:all;transform:translateY(0);}
+.gbg{position:fixed;inset:0;pointer-events:none;z-index:0;}
+.gbg::before{content:'';position:absolute;width:400px;height:400px;background:radial-gradient(circle,rgba(0,255,135,0.07),transparent 70%);top:-100px;left:-80px;animation:drift 12s ease-in-out infinite alternate;}
+.gbg::after{content:'';position:absolute;width:350px;height:350px;background:radial-gradient(circle,rgba(0,200,83,0.05),transparent 70%);bottom:-60px;right:-60px;animation:drift 16s ease-in-out infinite alternate-reverse;}
+@keyframes drift{from{transform:translate(0,0);}to{transform:translate(40px,25px);}}
+
+/* SPLASH */
+#s-splash{flex-direction:column;text-align:center;background:var(--dk);z-index:1;}
+.spl-logo{font-family:var(--display);font-size:clamp(3rem,15vw,5.5rem);color:var(--g);letter-spacing:0.05em;line-height:0.9;text-shadow:0 0 60px rgba(0,255,135,0.2);animation:logoIn 1s cubic-bezier(0.16,1,0.3,1) forwards;opacity:0;}
+.spl-sub{font-family:var(--mono);font-size:0.65rem;letter-spacing:0.3em;text-transform:uppercase;color:var(--m);margin-top:8px;animation:fu 0.8s 0.4s ease forwards;opacity:0;}
+.spl-tag{font-size:0.9rem;color:rgba(240,255,240,0.45);margin-top:16px;animation:fu 0.8s 0.7s ease forwards;opacity:0;max-width:280px;line-height:1.65;}
+.spl-tag strong{color:var(--g);font-weight:600;}
+.spl-btns{display:flex;gap:10px;margin-top:28px;animation:fu 0.8s 1s ease forwards;opacity:0;flex-wrap:wrap;justify-content:center;}
+.spl-switch{margin-top:20px;animation:fu 0.8s 1.2s ease forwards;opacity:0;}
+.spl-switch a{font-family:var(--mono);font-size:0.68rem;color:var(--m);text-decoration:none;border:1px solid var(--b2);border-radius:99px;padding:8px 16px;transition:all 0.2s;}
+.spl-switch a:hover{border-color:var(--g);color:var(--g);}
+
+/* AUTH */
+.acard{background:var(--card);border:1px solid var(--b2);border-radius:16px;padding:28px 24px;width:100%;max-width:400px;position:relative;overflow:hidden;z-index:1;max-height:90vh;overflow-y:auto;}
+.acard::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,var(--g),transparent);}
+.alogo{font-family:var(--display);font-size:1.6rem;color:var(--g);text-align:center;letter-spacing:0.1em;}
+.asub{text-align:center;font-family:var(--mono);font-size:0.62rem;letter-spacing:0.1em;text-transform:uppercase;color:var(--m);margin-bottom:20px;}
+.atabs{display:flex;background:var(--s);border:1px solid var(--b);border-radius:8px;padding:3px;margin-bottom:18px;}
+.atab{flex:1;padding:8px;border:none;border-radius:6px;background:transparent;color:var(--m);font-family:var(--body);font-size:0.78rem;font-weight:600;cursor:pointer;transition:all 0.2s;}
+.atab.active{background:var(--g);color:#000;}
+.f{margin-bottom:11px;}
+.f label{display:block;font-family:var(--mono);font-size:0.6rem;letter-spacing:0.1em;text-transform:uppercase;color:var(--m);margin-bottom:5px;}
+.f input,.f select,.f textarea{width:100%;background:var(--s);border:1px solid var(--b2);border-radius:7px;padding:10px 12px;color:var(--txt);font-family:var(--body);font-size:0.85rem;outline:none;transition:border-color 0.2s;}
+.f input:focus,.f select:focus{border-color:var(--g);}
+.f select option{background:var(--card);}
+.f2{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+.bta{width:100%;padding:12px;border:none;border-radius:8px;background:var(--g);color:#000;font-family:var(--body);font-size:0.88rem;font-weight:700;cursor:pointer;margin-top:4px;display:flex;align-items:center;justify-content:center;gap:8px;transition:all 0.2s;}
+.bta:hover{background:var(--gd);}
+.bta:disabled{opacity:0.4;cursor:not-allowed;}
+.btg{width:100%;padding:10px;border:1px solid var(--b2);border-radius:8px;background:transparent;color:var(--txt);font-family:var(--body);font-size:0.8rem;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;transition:all 0.2s;margin-top:8px;}
+.btg:hover{border-color:var(--g);}
+.divd{display:flex;align-items:center;gap:8px;margin:10px 0;color:var(--m);font-size:0.68rem;}
+.divd::before,.divd::after{content:'';flex:1;height:1px;background:var(--b2);}
+.amsg{margin-top:10px;padding:10px;border-radius:7px;font-size:0.76rem;display:none;line-height:1.5;}
+.amsg.show{display:block;}
+.amsg.err{background:rgba(255,68,68,0.1);border:1px solid rgba(255,68,68,0.2);color:#ff8a8a;}
+.amsg.ok{background:rgba(0,255,135,0.07);border:1px solid rgba(0,255,135,0.18);color:var(--g);}
+.pwdb{display:flex;gap:3px;margin-top:5px;}
+.pwdbar{height:3px;flex:1;border-radius:99px;background:var(--b2);transition:background 0.3s;}
+
+/* MAIN APP */
+#s-app{padding:0;align-items:flex-start;justify-content:flex-start;flex-direction:column;background:var(--dk);}
+.app{width:100%;height:100vh;display:flex;flex-direction:column;overflow:hidden;}
+
+/* TOP NAV */
+.topnav{height:52px;background:rgba(5,12,5,0.95);backdrop-filter:blur(20px);border-bottom:1px solid var(--b2);display:flex;align-items:center;justify-content:space-between;padding:0 14px;flex-shrink:0;z-index:50;}
+.tnlogo{font-family:var(--display);font-size:1.2rem;color:var(--g);letter-spacing:0.08em;}
+.tnsub{font-family:var(--mono);font-size:0.55rem;color:var(--m);letter-spacing:0.1em;text-transform:uppercase;margin-left:6px;}
+.tnr{display:flex;align-items:center;gap:8px;}
+.icbtn{width:32px;height:32px;border-radius:50%;background:var(--s);border:1px solid var(--b2);display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:0.85rem;position:relative;transition:all 0.2s;}
+.icbtn:hover{border-color:var(--g);}
+.ndot{position:absolute;top:5px;right:5px;width:6px;height:6px;border-radius:50%;background:var(--red);border:1px solid var(--dk);}
+.uav{width:32px;height:32px;border-radius:50%;background:var(--g);color:#000;display:flex;align-items:center;justify-content:center;font-size:0.68rem;font-weight:800;cursor:pointer;font-family:var(--mono);}
+
+/* SWITCH BANNER */
+.switch-banner{background:linear-gradient(90deg,rgba(0,255,135,0.08),rgba(0,100,40,0.05));border-bottom:1px solid rgba(0,255,135,0.12);padding:8px 14px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0;}
+.sb-text{font-family:var(--mono);font-size:0.6rem;letter-spacing:0.08em;text-transform:uppercase;color:var(--m);}
+.sb-btn{padding:5px 14px;border:1px solid var(--g);border-radius:99px;background:transparent;color:var(--g);font-family:var(--mono);font-size:0.6rem;letter-spacing:0.06em;cursor:pointer;transition:all 0.2s;text-decoration:none;display:inline-block;}
+.sb-btn:hover{background:var(--g);color:#000;}
+
+/* PLATFORM TABS */
+.platform-tabs{display:flex;background:var(--s);border-bottom:1px solid var(--b2);flex-shrink:0;}
+.ptab{flex:1;padding:10px 4px;border:none;background:transparent;color:var(--m);font-family:var(--mono);font-size:0.58rem;letter-spacing:0.06em;text-transform:uppercase;cursor:pointer;border-bottom:2px solid transparent;transition:all 0.2s;display:flex;flex-direction:column;align-items:center;gap:3px;}
+.ptab.active{color:var(--g);border-bottom-color:var(--g);}
+.ptab-ic{font-size:0.9rem;}
+
+/* CONTENT */
+.abody{flex:1;overflow:hidden;position:relative;}
+.tp{position:absolute;inset:0;overflow-y:auto;overflow-x:hidden;display:none;-webkit-overflow-scrolling:touch;}
+.tp.active{display:block;animation:fu 0.25s ease;}
+
+/* BOTTOM NAV */
+.botnav{height:56px;background:rgba(5,12,5,0.98);backdrop-filter:blur(20px);border-top:1px solid var(--b2);display:flex;align-items:center;flex-shrink:0;z-index:50;}
+.bn{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;cursor:pointer;padding:6px 2px;border:none;background:transparent;color:var(--m);transition:color 0.2s;}
+.bn.active{color:var(--g);}
+.bnic{font-size:1rem;line-height:1;}
+.bnlb{font-family:var(--mono);font-size:0.46rem;letter-spacing:0.07em;text-transform:uppercase;}
+
+/* FEED */
+.feed{padding-bottom:20px;}
+.stories{display:flex;gap:10px;padding:12px 14px;overflow-x:auto;scrollbar-width:none;border-bottom:1px solid var(--b);}
+.stories::-webkit-scrollbar{display:none;}
+.story{display:flex;flex-direction:column;align-items:center;gap:5px;cursor:pointer;flex-shrink:0;}
+.sring{width:52px;height:52px;border-radius:50%;background:linear-gradient(135deg,var(--g),var(--gd));padding:2px;transition:transform 0.2s;}
+.sring:hover{transform:scale(1.06);}
+.sring.new{background:linear-gradient(135deg,#FF6B6B,#FFE66D);}
+.sin{width:100%;height:100%;border-radius:50%;background:var(--card);display:flex;align-items:center;justify-content:center;font-size:1.2rem;overflow:hidden;border:2px solid var(--dk);}
+.snm{font-family:var(--mono);font-size:0.5rem;color:var(--m);text-align:center;max-width:58px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+
+/* CREATE POST BAR */
+.cpbar{display:flex;align-items:center;gap:10px;padding:10px 14px;background:var(--card);border-bottom:1px solid var(--b);cursor:pointer;}
+.cpbar:hover{background:var(--s);}
+.cpav{width:34px;height:34px;border-radius:50%;background:var(--g);color:#000;display:flex;align-items:center;justify-content:center;font-size:0.7rem;font-weight:800;font-family:var(--mono);flex-shrink:0;}
+.cpph{flex:1;background:var(--s);border:1px solid var(--b2);border-radius:99px;padding:8px 14px;font-size:0.82rem;color:var(--m);}
+
+/* POST */
+.post{background:var(--card);border-bottom:1px solid var(--b);}
+.posthd{display:flex;align-items:center;gap:10px;padding:10px 14px;}
+.postav{width:36px;height:36px;border-radius:50%;background:var(--g);color:#000;display:flex;align-items:center;justify-content:center;font-size:0.7rem;font-weight:800;flex-shrink:0;cursor:pointer;font-family:var(--mono);overflow:hidden;}
+.postav img{width:100%;height:100%;object-fit:cover;}
+.postuname{font-size:0.86rem;font-weight:700;cursor:pointer;display:flex;align-items:center;gap:4px;}
+.postuname:hover{color:var(--g);}
+.verified{color:var(--blue);font-size:0.8rem;}
+.posttime{font-family:var(--mono);font-size:0.58rem;color:var(--m);}
+.platform-tag{font-family:var(--mono);font-size:0.52rem;letter-spacing:0.06em;text-transform:uppercase;padding:2px 7px;border-radius:3px;margin-left:auto;}
+.pt-tiktok{background:rgba(255,0,80,0.12);color:#ff0050;border:1px solid rgba(255,0,80,0.2);}
+.pt-instagram{background:rgba(225,48,108,0.12);color:#e1306c;border:1px solid rgba(225,48,108,0.2);}
+.pt-x{background:rgba(255,255,255,0.07);color:#aaa;border:1px solid rgba(255,255,255,0.15);}
+.pt-facebook{background:rgba(24,119,242,0.12);color:#1877f2;border:1px solid rgba(24,119,242,0.2);}
+.flwbtn{padding:5px 12px;border:1px solid var(--b2);border-radius:99px;background:transparent;color:var(--m);font-family:var(--mono);font-size:0.56rem;letter-spacing:0.06em;cursor:pointer;transition:all 0.2s;white-space:nowrap;}
+.flwbtn:hover,.flwbtn.flwing{background:var(--g);color:#000;border-color:var(--g);}
+.postmedia{width:100%;position:relative;overflow:hidden;background:var(--s);}
+.postmedia img{width:100%;display:block;max-height:400px;object-fit:cover;}
+.postmedia video{width:100%;display:block;max-height:500px;object-fit:cover;background:#000;}
+.mtag{position:absolute;top:8px;right:8px;background:var(--g);color:#000;font-family:var(--mono);font-size:0.52rem;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;padding:3px 7px;border-radius:3px;}
+.vidov{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;cursor:pointer;}
+.playbtn{width:50px;height:50px;border-radius:50%;background:rgba(0,255,135,0.15);border:2px solid var(--g);display:flex;align-items:center;justify-content:center;font-size:1rem;backdrop-filter:blur(4px);}
+.postcap{padding:10px 14px 6px;font-size:0.83rem;line-height:1.55;color:rgba(240,255,240,0.82);}
+.postcap strong{color:var(--g);}
+.postcap .ht{color:var(--blue);cursor:pointer;}
+.postcap .mention{color:var(--g);cursor:pointer;}
+.postacts{display:flex;align-items:center;gap:2px;padding:5px 14px 10px;}
+.actbtn{display:flex;align-items:center;gap:4px;padding:6px 8px;border:none;background:transparent;color:var(--m);font-family:var(--mono);font-size:0.6rem;cursor:pointer;border-radius:6px;transition:all 0.2s;}
+.actbtn:hover{background:var(--s);color:var(--txt);}
+.actbtn.liked{color:var(--red);}
+.actbtn.disliked{color:var(--yellow);}
+.actbtn.saved{color:var(--yellow);}
+.actsep{flex:1;}
+
+/* COMMENTS */
+.cmtsec{border-top:1px solid var(--b);padding:0 14px 10px;display:none;}
+.cmtsec.open{display:block;}
+.cmtitem{display:flex;gap:8px;padding:8px 0;border-bottom:1px solid var(--b);}
+.cmtitem:last-child{border-bottom:none;}
+.cmtav{width:26px;height:26px;border-radius:50%;background:var(--g);color:#000;display:flex;align-items:center;justify-content:center;font-size:0.6rem;font-weight:800;flex-shrink:0;font-family:var(--mono);}
+.cmtnm{font-size:0.76rem;font-weight:600;margin-bottom:2px;}
+.cmttx{font-size:0.78rem;color:rgba(240,255,240,0.7);line-height:1.5;}
+.cmttm{font-family:var(--mono);font-size:0.56rem;color:var(--m);margin-top:2px;}
+.cmtinrow{display:flex;gap:8px;padding:10px 0 4px;border-top:1px solid var(--b);margin-top:4px;}
+.cmtinrow input{flex:1;background:var(--s);border:1px solid var(--b2);border-radius:99px;padding:8px 14px;color:var(--txt);font-family:var(--body);font-size:0.8rem;outline:none;}
+.cmtinrow input:focus{border-color:var(--g);}
+.btncmt{padding:7px 13px;border:none;border-radius:99px;background:var(--g);color:#000;font-family:var(--body);font-size:0.76rem;font-weight:700;cursor:pointer;}
+
+/* TIKTOK VIEW */
+.tiktok-feed{height:100%;display:flex;flex-direction:column;overflow-y:scroll;scroll-snap-type:y mandatory;-webkit-overflow-scrolling:touch;}
+.tiktok-feed::-webkit-scrollbar{display:none;}
+.tkvid{height:100%;flex-shrink:0;scroll-snap-align:start;position:relative;background:#000;display:flex;align-items:center;justify-content:center;overflow:hidden;}
+.tkvid video,.tkvid img{width:100%;height:100%;object-fit:cover;}
+.tk-overlay{position:absolute;inset:0;background:linear-gradient(transparent 40%,rgba(0,0,0,0.7));}
+.tk-info{position:absolute;bottom:70px;left:14px;right:60px;}
+.tk-user{display:flex;align-items:center;gap:8px;margin-bottom:8px;}
+.tk-av{width:36px;height:36px;border-radius:50%;background:var(--g);color:#000;display:flex;align-items:center;justify-content:center;font-size:0.7rem;font-weight:800;font-family:var(--mono);}
+.tk-uname{font-size:0.88rem;font-weight:700;color:#fff;}
+.tk-flw{padding:3px 10px;border:1px solid #fff;border-radius:99px;background:transparent;color:#fff;font-family:var(--mono);font-size:0.55rem;cursor:pointer;}
+.tk-caption{font-size:0.82rem;color:rgba(255,255,255,0.9);line-height:1.5;margin-bottom:8px;}
+.tk-caption .ht{color:var(--g);}
+.tk-sound{display:flex;align-items:center;gap:6px;font-family:var(--mono);font-size:0.6rem;color:rgba(255,255,255,0.7);}
+.tk-actions{position:absolute;bottom:70px;right:10px;display:flex;flex-direction:column;gap:16px;align-items:center;}
+.tka{display:flex;flex-direction:column;align-items:center;gap:3px;cursor:pointer;}
+.tka-ic{width:40px;height:40px;border-radius:50%;background:rgba(255,255,255,0.15);backdrop-filter:blur(4px);display:flex;align-items:center;justify-content:center;font-size:1.1rem;}
+.tka-lb{font-family:var(--mono);font-size:0.55rem;color:rgba(255,255,255,0.8);}
+
+/* CREATE POST MODAL */
+.modal{position:fixed;inset:0;background:rgba(0,0,0,0.85);backdrop-filter:blur(8px);z-index:200;display:flex;align-items:flex-end;justify-content:center;opacity:0;pointer-events:none;transition:opacity 0.3s;}
+.modal.open{opacity:1;pointer-events:all;}
+.msheet{background:var(--card);border:1px solid var(--b2);border-radius:20px 20px 0 0;width:100%;max-width:600px;padding:18px 18px 28px;transform:translateY(100%);transition:transform 0.4s cubic-bezier(0.16,1,0.3,1);}
+.modal.open .msheet{transform:translateY(0);}
+.mhandle{width:36px;height:3px;background:var(--b2);border-radius:99px;margin:0 auto 14px;}
+.mtitle{font-family:var(--display);font-size:1.3rem;color:var(--g);letter-spacing:0.05em;margin-bottom:12px;}
+.platform-sel{display:flex;gap:7px;margin-bottom:12px;overflow-x:auto;scrollbar-width:none;}
+.platform-sel::-webkit-scrollbar{display:none;}
+.plbtn{padding:7px 12px;border-radius:8px;border:1px solid var(--b2);background:transparent;color:var(--m);font-family:var(--mono);font-size:0.6rem;letter-spacing:0.06em;cursor:pointer;white-space:nowrap;transition:all 0.2s;display:flex;flex-direction:column;align-items:center;gap:3px;}
+.plbtn.active{border-color:var(--g);background:rgba(0,255,135,0.07);color:var(--g);}
+.ptrow{display:flex;gap:7px;margin-bottom:12px;overflow-x:auto;scrollbar-width:none;}
+.ptrow::-webkit-scrollbar{display:none;}
+.ptbtn{padding:6px 12px;border-radius:99px;border:1px solid var(--b2);background:transparent;color:var(--m);font-family:var(--mono);font-size:0.6rem;letter-spacing:0.06em;cursor:pointer;white-space:nowrap;transition:all 0.2s;}
+.ptbtn.active{background:var(--g);color:#000;border-color:var(--g);}
+
+/* PROFILE */
+.profwrap{padding-bottom:60px;}
+.profcover{height:100px;background:linear-gradient(135deg,rgba(0,255,135,0.1),var(--dk));position:relative;}
+.profinfo{padding:0 16px 14px;margin-top:-34px;position:relative;}
+.profavlg{width:68px;height:68px;border-radius:50%;border:3px solid var(--dk);overflow:hidden;background:var(--g);display:flex;align-items:center;justify-content:center;font-family:var(--display);font-size:1.3rem;color:#000;margin-bottom:8px;}
+.profname{font-family:var(--display);font-size:1.3rem;letter-spacing:0.04em;color:var(--g);display:flex;align-items:center;gap:6px;}
+.profhandle{font-family:var(--mono);font-size:0.65rem;color:var(--m);margin-bottom:7px;}
+.profbio{font-size:0.8rem;color:rgba(240,255,240,0.55);line-height:1.55;margin-bottom:10px;}
+.profstats{display:flex;gap:18px;margin-bottom:12px;}
+.ps{text-align:center;cursor:pointer;}
+.psn{font-family:var(--display);font-size:1.15rem;color:var(--txt);}
+.psl{font-family:var(--mono);font-size:0.55rem;color:var(--m);letter-spacing:0.06em;text-transform:uppercase;}
+.prof-btns{display:flex;gap:8px;margin-bottom:14px;}
+.btn-edit{padding:9px 20px;border:1px solid var(--b2);border-radius:8px;background:transparent;color:var(--txt);font-family:var(--body);font-size:0.8rem;font-weight:600;cursor:pointer;transition:all 0.2s;}
+.btn-edit:hover{border-color:var(--g);color:var(--g);}
+.btn-deliver{padding:9px 20px;border:none;border-radius:8px;background:var(--g);color:#000;font-family:var(--body);font-size:0.8rem;font-weight:700;cursor:pointer;transition:all 0.2s;text-decoration:none;display:inline-flex;align-items:center;gap:6px;}
+.proftabs{display:flex;border-bottom:1px solid var(--b);}
+.proftab{flex:1;padding:10px;border:none;background:transparent;color:var(--m);font-family:var(--mono);font-size:0.6rem;letter-spacing:0.08em;text-transform:uppercase;cursor:pointer;border-bottom:2px solid transparent;transition:all 0.2s;}
+.proftab.active{color:var(--g);border-bottom-color:var(--g);}
+.profgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:2px;padding:2px;}
+.pgitem{aspect-ratio:1;background:var(--s);overflow:hidden;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:1.3rem;}
+.pgitem img,.pgitem video{width:100%;height:100%;object-fit:cover;}
+
+/* SEARCH */
+.searchbar{padding:12px 14px;border-bottom:1px solid var(--b);}
+.searchbar input{width:100%;background:var(--s);border:1px solid var(--b2);border-radius:99px;padding:10px 16px;color:var(--txt);font-family:var(--body);font-size:0.84rem;outline:none;}
+.searchbar input:focus{border-color:var(--g);}
+.trend-section{padding:14px;}
+.trend-title{font-family:var(--mono);font-size:0.62rem;letter-spacing:0.1em;text-transform:uppercase;color:var(--m);margin-bottom:12px;}
+.trend-item{display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid var(--b);cursor:pointer;}
+.trend-item:hover .trend-tag{color:var(--g);}
+.trend-num{font-family:var(--mono);font-size:0.65rem;color:var(--m);width:20px;}
+.trend-tag{font-size:0.88rem;font-weight:600;transition:color 0.2s;}
+.trend-count{font-family:var(--mono);font-size:0.6rem;color:var(--m);margin-left:auto;}
+
+/* MISC */
+.sp{width:14px;height:14px;border:2px solid rgba(0,0,0,0.2);border-top-color:#000;border-radius:50%;animation:spin 0.6s linear infinite;display:none;}
+.sp.on{display:block;}
+.btnp{display:inline-flex;align-items:center;gap:7px;padding:11px 20px;border:none;border-radius:8px;background:var(--g);color:#000;font-family:var(--body);font-size:0.8rem;font-weight:700;cursor:pointer;transition:all 0.2s;}
+.btnp:hover{background:var(--gd);}
+.btng{display:inline-flex;align-items:center;gap:7px;padding:10px 20px;border:1px solid var(--b2);border-radius:8px;background:transparent;color:var(--txt);font-family:var(--body);font-size:0.8rem;cursor:pointer;transition:all 0.2s;}
+.btng:hover{border-color:var(--g);color:var(--g);}
+.notif-panel{position:fixed;top:52px;left:0;right:0;background:var(--card);border-bottom:1px solid var(--b2);z-index:100;max-height:280px;overflow-y:auto;transform:translateY(-8px);opacity:0;pointer-events:none;transition:all 0.3s;}
+.notif-panel.open{transform:translateY(0);opacity:1;pointer-events:all;}
+.nitem{display:flex;align-items:flex-start;gap:10px;padding:11px 14px;border-bottom:1px solid var(--b);}
+.nitem:last-child{border-bottom:none;}
+.ntx h4{font-size:0.82rem;font-weight:600;margin-bottom:2px;}
+.ntx p{font-family:var(--mono);font-size:0.62rem;color:var(--m);}
+@media(max-width:360px){.acard{padding:20px 14px;}.f2{grid-template-columns:1fr;}}
+</style>
+</head>
+<body>
+<div class="gbg"></div>
+
+<!-- LOADING -->
+<div class="screen active" id="s-loading" style="flex-direction:column;gap:14px;z-index:10;">
+  <div style="width:42px;height:42px;border:3px solid var(--b2);border-top-color:var(--g);border-radius:50%;animation:spin 0.8s linear infinite;"></div>
+  <div style="font-family:var(--mono);font-size:0.7rem;letter-spacing:0.1em;text-transform:uppercase;color:var(--m);">YG Social Loading...</div>
+</div>
+
+<!-- SPLASH -->
+<div class="screen" id="s-splash" style="z-index:5;">
+  <div style="display:flex;flex-direction:column;align-items:center;text-align:center;position:relative;z-index:1;">
+    <div class="spl-logo">YG<br/>SOCIAL</div>
+    <div class="spl-sub">Young Giant Community</div>
+    <div class="spl-tag"><strong>Post. Follow. Connect.</strong><br/>Nigeria's EV community — share experiences, watch videos, grow together 🇳🇬⚡</div>
+    <div class="spl-btns">
+      <button class="btnp" onclick="goAuth('signup')">Join the Community</button>
+      <button class="btng" onclick="goAuth('login')">Sign In</button>
+    </div>
+    <div class="spl-switch">
+      <a href="yg-delivery.html">📦 Switch to YG Delivery & Transport →</a>
+    </div>
+  </div>
+</div>
+
+<!-- AUTH -->
+<div class="screen" id="s-auth" style="z-index:5;">
+  <div class="acard">
+    <div class="alogo">YG SOCIAL</div>
+    <div class="asub">Nigeria's EV Community</div>
+    <div class="atabs">
+      <button class="atab active" id="tab-su" onclick="switchTab('signup')">Join</button>
+      <button class="atab" id="tab-li" onclick="switchTab('login')">Sign In</button>
+    </div>
+    <div id="form-su">
+      <div class="f2">
+        <div class="f"><label>First Name</label><input type="text" id="su-fn" placeholder="Moses"/></div>
+        <div class="f"><label>Last Name</label><input type="text" id="su-ln" placeholder="Reuben"/></div>
+      </div>
+      <div class="f"><label>Username</label><input type="text" id="su-un" placeholder="@moses_yg"/></div>
+      <div class="f"><label>Email</label><input type="email" id="su-em" placeholder="you@email.com"/></div>
+      <div class="f"><label>Password</label><input type="password" id="su-pw" placeholder="Min. 8 characters" oninput="chkPwd(this.value)"/>
+        <div class="pwdb"><div class="pwdbar" id="pb1"></div><div class="pwdbar" id="pb2"></div><div class="pwdbar" id="pb3"></div><div class="pwdbar" id="pb4"></div></div>
+      </div>
+      <div class="f"><label>Bio (optional)</label><input type="text" id="su-bio" placeholder="Tell the community about yourself..."/></div>
+      <div class="f"><label>How Did You Find Us?</label>
+        <select id="su-src"><option value="">Select...</option><option>Google</option><option>Instagram</option><option>TikTok</option><option>Twitter / X</option><option>Facebook</option><option>WhatsApp</option><option>Friend Referral</option><option>Referral Code</option></select>
+      </div>
+      <div class="f" id="ref-field" style="display:none;"><label>Referral Code</label><input type="text" id="su-ref" placeholder="Enter code"/></div>
+      <button class="bta" onclick="doSignup()" id="btn-su"><div class="sp" id="sp-su"></div>Join YG Social ⚡</button>
+      <div class="divd">or</div>
+      <button class="btg" onclick="doGoogle()">🔑 Continue with Google</button>
+      <p style="text-align:center;margin-top:10px;"><button onclick="goBack()" style="background:none;border:none;color:var(--m);font-family:var(--body);font-size:0.72rem;cursor:pointer;">← Back</button></p>
+    </div>
+    <div id="form-li" style="display:none;">
+      <div class="f"><label>Email</label><input type="email" id="li-em" placeholder="you@email.com"/></div>
+      <div class="f"><label>Password</label><input type="password" id="li-pw" placeholder="Your password" onkeydown="if(event.key==='Enter')doLogin()"/></div>
+      <button class="bta" onclick="doLogin()" id="btn-li"><div class="sp" id="sp-li"></div>Sign In ⚡</button>
+      <div class="divd">or</div>
+      <button class="btg" onclick="doGoogle()">🔑 Continue with Google</button>
+      <p style="text-align:center;margin-top:8px;"><a href="#" onclick="forgotPwd()" style="font-size:0.72rem;color:var(--m);">Forgot password?</a></p>
+      <p style="text-align:center;margin-top:8px;"><button onclick="goBack()" style="background:none;border:none;color:var(--m);font-family:var(--body);font-size:0.72rem;cursor:pointer;">← Back</button></p>
+    </div>
+    <div class="amsg" id="amsg"></div>
+  </div>
+</div>
+
+<!-- MAIN APP -->
+<div class="screen" id="s-app" style="z-index:5;">
+  <div class="app">
+    <nav class="topnav">
+      <div style="display:flex;align-items:center;">
+        <div class="tnlogo">YG</div>
+        <div class="tnsub">Social</div>
+      </div>
+      <div class="tnr">
+        <div class="icbtn" onclick="openPost()">✏️</div>
+        <div class="icbtn" onclick="toggleNotif()">🔔<div class="ndot"></div></div>
+        <div class="uav" id="uav" onclick="goP('profile')">YG</div>
+      </div>
+    </nav>
+
+    <!-- SWITCH BANNER -->
+    <div class="switch-banner">
+      <div class="sb-text">📦 Need a delivery or transport?</div>
+      <a href="yg-delivery.html" class="sb-btn">YG Delivery →</a>
+    </div>
+
+    <!-- PLATFORM TABS -->
+    <div class="platform-tabs">
+      <button class="ptab active" id="ptab-all" onclick="switchPlatform('all',this)"><div class="ptab-ic">🏠</div>All</button>
+      <button class="ptab" id="ptab-tiktok" onclick="switchPlatform('tiktok',this)"><div class="ptab-ic">🎵</div>TikTok</button>
+      <button class="ptab" id="ptab-instagram" onclick="switchPlatform('instagram',this)"><div class="ptab-ic">📸</div>Insta</button>
+      <button class="ptab" id="ptab-x" onclick="switchPlatform('x',this)"><div class="ptab-ic">𝕏</div>X</button>
+      <button class="ptab" id="ptab-facebook" onclick="switchPlatform('facebook',this)"><div class="ptab-ic">👥</div>FB</button>
+    </div>
+
+    <!-- NOTIF -->
+    <div class="notif-panel" id="npanel">
+      <div style="padding:12px 14px;font-family:var(--mono);font-size:0.62rem;letter-spacing:0.1em;text-transform:uppercase;color:var(--m);">Notifications</div>
+      <div class="nitem"><div style="font-size:1rem;">❤️</div><div class="ntx"><h4>@young_giant_official liked your post</h4><p>Just now</p></div></div>
+      <div class="nitem"><div style="font-size:1rem;">👥</div><div class="ntx"><h4>@adaeze_nwosu started following you</h4><p>2 minutes ago</p></div></div>
+      <div class="nitem"><div style="font-size:1rem;">💬</div><div class="ntx"><h4>New comment on your post</h4><p>5 minutes ago</p></div></div>
+    </div>
+
+    <div class="abody">
+
+      <!-- ALL FEED -->
+      <div class="tp active" id="p-home">
+        <div class="feed">
+          <div class="stories">
+            <div class="story" onclick="openPost()"><div class="sring new"><div class="sin">➕</div></div><div class="snm">Your Story</div></div>
+            <div class="story"><div class="sring"><div class="sin">🚐</div></div><div class="snm">YG Fleet</div></div>
+            <div class="story"><div class="sring"><div class="sin">🇳🇬</div></div><div class="snm">Nigeria</div></div>
+            <div class="story"><div class="sring"><div class="sin">📦</div></div><div class="snm">Delivery</div></div>
+            <div class="story"><div class="sring"><div class="sin">☀️</div></div><div class="snm">Solar</div></div>
+            <div class="story"><div class="sring"><div class="sin">🏙️</div></div><div class="snm">Lagos</div></div>
+          </div>
+          <div class="cpbar" onclick="openPost()">
+            <div class="cpav" id="cpav">YG</div>
+            <div class="cpph">Share something with the YG community...</div>
+            <span style="font-size:1rem;color:var(--m);">📷</span>
+          </div>
+          <div id="feedposts">
+            <!-- POST 1 -->
+            <div class="post" data-id="p1">
+              <div class="posthd">
+                <div class="postav">YG</div>
+                <div style="flex:1;">
+                  <div class="postuname">@young_giant_official <span class="verified">✓</span></div>
+                  <div class="posttime">Just now · Lagos 🇳🇬</div>
+                </div>
+                <span class="platform-tag pt-instagram">📸 Insta</span>
+              </div>
+              <div class="postmedia"><img src="fleet.png" alt="YG Fleet" onerror="this.parentElement.style.display='none'"/><div class="mtag">⚡ LIVE</div></div>
+              <div class="postcap"><strong>⚡ Ikeja Hub FULLY OPERATIONAL.</strong> 5 EVs charged and ready. Zero emissions. Solar powered. Nigeria's logistics future is HERE. 🇳🇬 <span class="ht">#YoungGiant</span> <span class="ht">#EVLogistics</span> <span class="ht">#MadeInNigeria</span></div>
+              <div class="postacts">
+                <button class="actbtn" onclick="tgLike(this,'p1')"><span>❤️</span><span id="lc-p1">247</span></button>
+                <button class="actbtn" onclick="tgDislike(this,'p1')"><span>👎</span><span id="dc-p1">3</span></button>
+                <button class="actbtn" onclick="tgCmt('p1')"><span>💬</span><span id="cc-p1">18</span></button>
+                <button class="actbtn" onclick="sharePost()"><span>🔗</span></button>
+                <div class="actsep"></div>
+                <button class="actbtn" onclick="tgSave(this)"><span>🔖</span></button>
+              </div>
+              <div class="cmtsec" id="cs-p1">
+                <div class="cmtitem"><div class="cmtav">AD</div><div><div class="cmtnm">@adaeze_nwosu</div><div class="cmttx">Just booked my first delivery! So excited 🚐⚡</div><div class="cmttm">2 min ago</div></div></div>
+                <div class="cmtitem"><div class="cmtav">CK</div><div><div class="cmtnm">@chukwuemeka_k</div><div class="cmttx">Finally a Nigerian logistics company doing it right 🙌🇳🇬</div><div class="cmttm">5 min ago</div></div></div>
+                <div id="ec-p1"></div>
+                <div class="cmtinrow"><input type="text" id="cin-p1" placeholder="Add a comment..." onkeydown="if(event.key==='Enter')postCmt('p1')"/><button class="btncmt" onclick="postCmt('p1')">Post</button></div>
+              </div>
+            </div>
+            <!-- POST 2: X style -->
+            <div class="post" data-id="p2">
+              <div class="posthd">
+                <div class="postav">MR</div>
+                <div style="flex:1;">
+                  <div class="postuname">@moses_reuben_yg <span class="verified">✓</span></div>
+                  <div class="posttime">2 hours ago · Founder</div>
+                </div>
+                <span class="platform-tag pt-x">𝕏 Post</span>
+              </div>
+              <div class="postcap" style="padding:14px;font-size:0.88rem;">Young Giant is not just a logistics company. It's a movement. Every EV delivery we make is one less diesel truck polluting Nigeria's air. We're just getting started. 🔋⚡🇳🇬 <span class="ht">#YoungGiant</span> <span class="ht">#CleanNigeria</span></div>
+              <div class="postacts">
+                <button class="actbtn" onclick="tgLike(this,'p2')"><span>❤️</span><span id="lc-p2">1.2K</span></button>
+                <button class="actbtn" onclick="tgDislike(this,'p2')"><span>👎</span><span id="dc-p2">5</span></button>
+                <button class="actbtn" onclick="tgCmt('p2')"><span>💬</span><span id="cc-p2">89</span></button>
+                <button class="actbtn" onclick="sharePost()"><span>🔗</span></button>
+                <div class="actsep"></div>
+                <button class="actbtn" onclick="tgSave(this)"><span>🔖</span></button>
+              </div>
+              <div class="cmtsec" id="cs-p2">
+                <div class="cmtitem"><div class="cmtav">TN</div><div><div class="cmtnm">@tunde_ng</div><div class="cmttx">This is the energy we need in Nigeria 🚀🇳🇬</div><div class="cmttm">1 hour ago</div></div></div>
+                <div id="ec-p2"></div>
+                <div class="cmtinrow"><input type="text" id="cin-p2" placeholder="Add a comment..." onkeydown="if(event.key==='Enter')postCmt('p2')"/><button class="btncmt" onclick="postCmt('p2')">Post</button></div>
+              </div>
+            </div>
+            <!-- POST 3: TikTok video -->
+            <div class="post" data-id="p3">
+              <div class="posthd">
+                <div class="postav">YG</div>
+                <div style="flex:1;">
+                  <div class="postuname">@young_giant_official <span class="verified">✓</span></div>
+                  <div class="posttime">Yesterday</div>
+                </div>
+                <span class="platform-tag pt-tiktok">🎵 TikTok</span>
+              </div>
+              <div class="postmedia" style="background:#000;aspect-ratio:9/16;max-height:400px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;">
+                <span style="font-size:3rem;">🎬</span>
+                <p style="font-family:var(--mono);font-size:0.65rem;text-transform:uppercase;letter-spacing:0.1em;color:var(--m);">Upload video to GitHub</p>
+                <p style="font-family:var(--mono);font-size:0.55rem;color:rgba(74,122,74,0.4);">Name it: delivery-demo.mp4</p>
+                <div class="vidov"><div class="playbtn">▶</div></div>
+                <div class="mtag">📹 VIDEO</div>
+              </div>
+              <div class="postcap">Watch a Young Giant delivery in action 🚐⚡ From booking to your door — fast, clean and affordable. This is the future of logistics in Nigeria 🇳🇬 <span class="ht">#YoungGiant</span> <span class="ht">#EVDelivery</span></div>
+              <div class="postacts">
+                <button class="actbtn" onclick="tgLike(this,'p3')"><span>❤️</span><span id="lc-p3">3.4K</span></button>
+                <button class="actbtn" onclick="tgDislike(this,'p3')"><span>👎</span><span id="dc-p3">12</span></button>
+                <button class="actbtn" onclick="tgCmt('p3')"><span>💬</span><span id="cc-p3">156</span></button>
+                <button class="actbtn" onclick="sharePost()"><span>🔗</span></button>
+                <div class="actsep"></div>
+                <button class="actbtn" onclick="tgSave(this)"><span>🔖</span></button>
+              </div>
+              <div class="cmtsec" id="cs-p3">
+                <div class="cmtitem"><div class="cmtav">FK</div><div><div class="cmtnm">@fatima_k</div><div class="cmttx">I've used Young Giant twice already. Best delivery service in Lagos 💯</div><div class="cmttm">3 hours ago</div></div></div>
+                <div id="ec-p3"></div>
+                <div class="cmtinrow"><input type="text" id="cin-p3" placeholder="Add a comment..." onkeydown="if(event.key==='Enter')postCmt('p3')"/><button class="btncmt" onclick="postCmt('p3')">Post</button></div>
+              </div>
+            </div>
+            <div id="uposts"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- TIKTOK VIEW -->
+      <div class="tp" id="p-tiktok">
+        <div class="tiktok-feed" id="tk-feed">
+          <div class="tkvid">
+            <div style="width:100%;height:100%;background:linear-gradient(135deg,#0a1f0a,#050c05);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;">
+              <span style="font-size:4rem;">🎬</span>
+              <p style="font-family:var(--mono);font-size:0.7rem;letter-spacing:0.1em;text-transform:uppercase;color:var(--m);text-align:center;">Upload your videos to GitHub<br/>as .mp4 files to show here</p>
+            </div>
+            <div class="tk-overlay"></div>
+            <div class="tk-info">
+              <div class="tk-user"><div class="tk-av">YG</div><span class="tk-uname">@young_giant_official ✓</span><button class="tk-flw">+ Follow</button></div>
+              <div class="tk-caption">Young Giant EV delivery — Lagos to VI in under 30 minutes ⚡🚐 <span class="ht">#YoungGiant</span> <span class="ht">#EVDelivery</span> <span class="ht">#Nigeria</span></div>
+              <div class="tk-sound">🎵 Young Giant Theme · Original Sound</div>
+            </div>
+            <div class="tk-actions">
+              <div class="tka"><div class="tka-ic">❤️</div><div class="tka-lb">3.4K</div></div>
+              <div class="tka"><div class="tka-ic">💬</div><div class="tka-lb">156</div></div>
+              <div class="tka"><div class="tka-ic">🔗</div><div class="tka-lb">Share</div></div>
+              <div class="tka"><div class="tka-ic">🔖</div><div class="tka-lb">Save</div></div>
+            </div>
+          </div>
+          <div class="tkvid">
+            <div style="width:100%;height:100%;background:linear-gradient(180deg,#0d0d0d,#0a1f0a);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;">
+              <span style="font-size:4rem;">☀️</span>
+              <p style="font-family:var(--display);font-size:2rem;color:var(--g);letter-spacing:0.05em;text-align:center;">SOLAR POWERED</p>
+              <p style="font-family:var(--mono);font-size:0.7rem;letter-spacing:0.1em;text-transform:uppercase;color:var(--m);">Zero Emissions · 10X Cheaper</p>
+            </div>
+            <div class="tk-overlay"></div>
+            <div class="tk-info">
+              <div class="tk-user"><div class="tk-av">MR</div><span class="tk-uname">@moses_reuben_yg ✓</span><button class="tk-flw">+ Follow</button></div>
+              <div class="tk-caption">Our charging hub runs entirely on solar — no NEPA needed ☀️⚡ <span class="ht">#CleanEnergy</span> <span class="ht">#Nigeria</span></div>
+              <div class="tk-sound">🎵 EV Nation · Original Sound</div>
+            </div>
+            <div class="tk-actions">
+              <div class="tka"><div class="tka-ic">❤️</div><div class="tka-lb">1.8K</div></div>
+              <div class="tka"><div class="tka-ic">💬</div><div class="tka-lb">67</div></div>
+              <div class="tka"><div class="tka-ic">🔗</div><div class="tka-lb">Share</div></div>
+              <div class="tka"><div class="tka-ic">🔖</div><div class="tka-lb">Save</div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- SEARCH/EXPLORE -->
+      <div class="tp" id="p-search">
+        <div class="searchbar"><input type="text" placeholder="Search people, hashtags, posts..."/></div>
+        <div class="trend-section">
+          <div class="trend-title">🔥 Trending in Nigeria</div>
+          <div class="trend-item"><div class="trend-num">1</div><div><div class="trend-tag">#YoungGiant</div><div style="font-family:var(--mono);font-size:0.6rem;color:var(--m);">EV Logistics · Nigeria</div></div><div class="trend-count">12.4K posts</div></div>
+          <div class="trend-item"><div class="trend-num">2</div><div><div class="trend-tag">#EVNigeria</div><div style="font-family:var(--mono);font-size:0.6rem;color:var(--m);">Electric Vehicles</div></div><div class="trend-count">8.1K posts</div></div>
+          <div class="trend-item"><div class="trend-num">3</div><div><div class="trend-tag">#MadeInNigeria</div><div style="font-family:var(--mono);font-size:0.6rem;color:var(--m);">Nigerian Innovation</div></div><div class="trend-count">45.2K posts</div></div>
+          <div class="trend-item"><div class="trend-num">4</div><div><div class="trend-tag">#YoungGiantTransport</div><div style="font-family:var(--mono);font-size:0.6rem;color:var(--m);">Lagos–Abuja Transport</div></div><div class="trend-count">3.8K posts</div></div>
+          <div class="trend-item"><div class="trend-num">5</div><div><div class="trend-tag">#SolarNigeria</div><div style="font-family:var(--mono);font-size:0.6rem;color:var(--m);">Clean Energy</div></div><div class="trend-count">22.1K posts</div></div>
+        </div>
+      </div>
+
+      <!-- PROFILE -->
+      <div class="tp" id="p-profile">
+        <div class="profwrap">
+          <div class="profcover"></div>
+          <div class="profinfo">
+            <div class="profavlg" id="myavlg">YG</div>
+            <div class="profname" id="myname">Loading... <span id="my-verified" style="display:none;color:var(--blue);font-size:1rem;">✓</span></div>
+            <div class="profhandle" id="myhandle">@loading</div>
+            <div class="profbio" id="mybio">Young Giant member ⚡ Nigeria's EV community 🇳🇬</div>
+            <div class="profstats">
+              <div class="ps"><div class="psn" id="myposts">0</div><div class="psl">Posts</div></div>
+              <div class="ps"><div class="psn" id="myfollow">0</div><div class="psl">Followers</div></div>
+              <div class="ps"><div class="psn" id="myfollowing">0</div><div class="psl">Following</div></div>
+            </div>
+            <div class="prof-btns">
+              <button class="btn-edit">Edit Profile</button>
+              <a href="yg-delivery.html" class="btn-deliver">📦 Book Delivery</a>
+            </div>
+          </div>
+          <div class="proftabs">
+            <button class="proftab active" onclick="switchPTab('posts',this)">Posts</button>
+            <button class="proftab" onclick="switchPTab('saved',this)">Saved</button>
+            <button class="proftab" onclick="switchPTab('liked',this)">Liked</button>
+          </div>
+          <div id="pt-posts" class="profgrid">
+            <div class="pgitem" onclick="openPost()">➕</div>
+          </div>
+          <div id="pt-saved" style="display:none;padding:24px;text-align:center;color:var(--m);font-family:var(--mono);font-size:0.7rem;">No saved posts yet</div>
+          <div id="pt-liked" style="display:none;padding:24px;text-align:center;color:var(--m);font-family:var(--mono);font-size:0.7rem;">No liked posts yet</div>
+          <div style="padding:14px;">
+            <button class="bta" onclick="doSignout()" style="background:transparent;border:1px solid rgba(255,68,68,0.3);color:var(--red);">Sign Out</button>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <nav class="botnav">
+      <button class="bn active" id="bn-home" onclick="goP('home')"><div class="bnic">🏠</div><div class="bnlb">Home</div></button>
+      <button class="bn" id="bn-tiktok" onclick="goP('tiktok')"><div class="bnic">🎵</div><div class="bnlb">TikTok</div></button>
+      <button class="bn" id="bn-search" onclick="goP('search')"><div class="bnic">🔍</div><div class="bnlb">Explore</div></button>
+      <button class="bn" id="bn-profile" onclick="goP('profile')"><div class="bnic">👤</div><div class="bnlb">Profile</div></button>
+    </nav>
+  </div>
+</div>
+
+<!-- CREATE POST MODAL -->
+<div class="modal" id="postmodal" onclick="if(event.target===this)closePost()">
+  <div class="msheet">
+    <div class="mhandle"></div>
+    <div class="mtitle">Create Post</div>
+    <div style="font-family:var(--mono);font-size:0.62rem;letter-spacing:0.08em;text-transform:uppercase;color:var(--m);margin-bottom:8px;">Post to platform:</div>
+    <div class="platform-sel">
+      <button class="plbtn active" onclick="selPlatform(this,'all')"><div>🌐</div>All</button>
+      <button class="plbtn" onclick="selPlatform(this,'tiktok')"><div>🎵</div>TikTok</button>
+      <button class="plbtn" onclick="selPlatform(this,'instagram')"><div>📸</div>Instagram</button>
+      <button class="plbtn" onclick="selPlatform(this,'x')"><div>𝕏</div>X / Twitter</button>
+      <button class="plbtn" onclick="selPlatform(this,'facebook')"><div>👥</div>Facebook</button>
+    </div>
+    <div class="ptrow">
+      <button class="ptbtn active" onclick="setPT(this,'experience')">⭐ Experience</button>
+      <button class="ptbtn" onclick="setPT(this,'delivery')">📦 Delivery</button>
+      <button class="ptbtn" onclick="setPT(this,'photo')">📷 Photo</button>
+      <button class="ptbtn" onclick="setPT(this,'video')">🎬 Video</button>
+      <button class="ptbtn" onclick="setPT(this,'question')">❓ Question</button>
+    </div>
+    <div class="f"><label>What's on your mind?</label><textarea id="posttxt" placeholder="Share with the YG community..." style="min-height:90px;"></textarea></div>
+    <div class="f"><label>Add Photo / Video</label><input type="file" id="postfile" accept="image/*,video/*" style="background:var(--s);border:1px solid var(--b2);border-radius:7px;padding:10px;color:var(--m);font-size:0.8rem;"/></div>
+    <div class="f2">
+      <div class="f"><label>Location</label><input type="text" id="postloc" placeholder="Lagos, Nigeria"/></div>
+      <div class="f"><label>Rating</label><select id="postrating"><option value="">None</option><option>⭐⭐⭐⭐⭐ Amazing</option><option>⭐⭐⭐⭐ Great</option><option>⭐⭐⭐ Good</option><option>⭐⭐ Fair</option><option>⭐ Poor</option></select></div>
+    </div>
+    <button class="bta" onclick="publishPost()" id="btn-pub"><div class="sp" id="sp-pub"></div>⚡ Post Now</button>
+    <div class="amsg" id="pubmsg" style="margin-top:8px;"></div>
+  </div>
+</div>
+
+<script>
+const SURL='https://vkpemsxmygokgmaqstbi.supabase.co';
+const SKEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZrcGVtc3hteWdva2dtYXFzdGJpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzkzMTMzMjcsImV4cCI6MjA5NDg4OTMyN30.4BXwDMsd48KuNoc3xo6j6bmac9t38Oh2_XvIUvho758';
+const {createClient}=supabase;const db=createClient(SURL,SKEY);
+let CU=null,ptType='experience',postPlatform='all';
+
+window.addEventListener('DOMContentLoaded',async()=>{
+  setTimeout(async()=>{try{const{data:{session}}=await db.auth.getSession();if(session?.user)showApp(session.user);else showS('splash');}catch{showS('splash');}},1200);
+  db.auth.onAuthStateChange((_e,s)=>{if(s?.user)showApp(s.user);});
+  loadPosts();
+});
+
+function showS(n){document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));document.getElementById('s-'+n).classList.add('active');}
+function goAuth(t){showS('auth');switchTab(t);}
+function goBack(){showS('splash');}
+function switchTab(t){document.getElementById('form-su').style.display=t==='signup'?'block':'none';document.getElementById('form-li').style.display=t==='login'?'block':'none';document.getElementById('tab-su').classList.toggle('active',t==='signup');document.getElementById('tab-li').classList.toggle('active',t==='login');document.getElementById('amsg').className='amsg';}
+
+document.getElementById('su-src').addEventListener('change',()=>{document.getElementById('ref-field').style.display=document.getElementById('su-src').value==='Referral Code'?'block':'none';});
+
+async function doSignup(){
+  const fn=document.getElementById('su-fn').value.trim(),ln=document.getElementById('su-ln').value.trim();
+  const un=document.getElementById('su-un').value.trim()||('@'+fn.toLowerCase().replace(/\s/g,'_'));
+  const em=document.getElementById('su-em').value.trim(),pw=document.getElementById('su-pw').value;
+  const bio=document.getElementById('su-bio').value.trim(),src=document.getElementById('su-src').value;
+  if(!fn||!em||!pw)return showAmsg('Please fill in all required fields.','err');
+  if(pw.length<8)return showAmsg('Password must be at least 8 characters.','err');
+  setL('su',true);
+  const{data,error}=await db.auth.signUp({email:em,password:pw,options:{data:{full_name:`${fn} ${ln}`,first_name:fn,username:un,bio,how_found:src,app_type:'social',verified:false}}});
+  setL('su',false);
+  if(error)showAmsg(error.message,'err');
+  else if(data.user?.identities?.length===0)showAmsg('Account exists. Please sign in.','err');
+  else{showAmsg('✅ Account created! Check email to verify, then sign in.','ok');setTimeout(()=>switchTab('login'),3000);}
+}
+async function doLogin(){
+  const em=document.getElementById('li-em').value.trim(),pw=document.getElementById('li-pw').value;
+  if(!em||!pw)return showAmsg('Enter your email and password.','err');
+  setL('li',true);
+  const{data,error}=await db.auth.signInWithPassword({email:em,password:pw});
+  setL('li',false);
+  if(error)showAmsg('Incorrect email or password.','err');
+  else showApp(data.user);
+}
+async function doGoogle(){await db.auth.signInWithOAuth({provider:'google',options:{redirectTo:window.location.href}});}
+async function forgotPwd(){const em=document.getElementById('li-em').value.trim();if(!em)return showAmsg('Enter email first.','err');await db.auth.resetPasswordForEmail(em);showAmsg('✅ Reset email sent!','ok');}
+
+function showApp(user){
+  CU=user;const m=user.user_metadata||{};
+  const name=m.first_name||m.full_name?.split(' ')[0]||user.email?.split('@')[0]||'User';
+  const un=m.username||('@'+name.toLowerCase().replace(/\s/g,'_'));
+  const init=name.slice(0,2).toUpperCase();
+  document.getElementById('uav').textContent=init;
+  document.getElementById('cpav').textContent=init;
+  document.getElementById('myavlg').textContent=init;
+  document.getElementById('myname').firstChild.textContent=m.full_name||name;
+  document.getElementById('myhandle').textContent=un;
+  if(m.bio)document.getElementById('mybio').textContent=m.bio;
+  if(m.verified)document.getElementById('my-verified').style.display='inline';
+  showS('app');
+}
+async function doSignout(){await db.auth.signOut();showS('splash');}
+
+function goP(n){
+  document.querySelectorAll('.tp').forEach(p=>{p.classList.remove('active');if(p.id==='p-tiktok')p.style.display='';});
+  document.querySelectorAll('.bn').forEach(b=>b.classList.remove('active'));
+  const p=document.getElementById('p-'+n);if(p)p.classList.add('active');
+  const b=document.getElementById('bn-'+n);if(b)b.classList.add('active');
+  document.getElementById('npanel').classList.remove('open');
+}
+
+function switchPlatform(p,el){
+  document.querySelectorAll('.ptab').forEach(t=>t.classList.remove('active'));el.classList.add('active');
+  if(p==='tiktok')goP('tiktok');else goP('home');
+}
+
+function toggleNotif(){document.getElementById('npanel').classList.toggle('open');}
+function tgLike(btn,id){btn.classList.toggle('liked');if(btn.classList.contains('disliked'))btn.classList.remove('disliked');const e=document.getElementById('lc-'+id);if(e){let n=parseFloat(e.textContent);e.textContent=btn.classList.contains('liked')?n+1:n-1;}}
+function tgDislike(btn,id){btn.classList.toggle('disliked');if(btn.classList.contains('liked'))btn.classList.remove('liked');const e=document.getElementById('dc-'+id);if(e){let n=parseInt(e.textContent);e.textContent=btn.classList.contains('disliked')?n+1:n-1;}}
+function tgSave(btn){btn.classList.toggle('saved');}
+function tgCmt(id){document.getElementById('cs-'+id).classList.toggle('open');}
+function sharePost(){if(navigator.share)navigator.share({title:'Young Giant Social',url:window.location.href});else navigator.clipboard.writeText(window.location.href);}
+function toggleFollow(btn){btn.classList.toggle('flwing');btn.textContent=btn.classList.contains('flwing')?'Following':'Follow';}
+
+function postCmt(pid){
+  const inp=document.getElementById('cin-'+pid),txt=inp.value.trim();if(!txt)return;
+  const name=CU?.user_metadata?.first_name||'User',init=name.slice(0,2).toUpperCase();
+  const un=CU?.user_metadata?.username||('@'+name.toLowerCase());
+  const cont=document.getElementById('ec-'+pid);
+  if(cont){const d=document.createElement('div');d.className='cmtitem';d.innerHTML=`<div class="cmtav">${init}</div><div><div class="cmtnm">${un}</div><div class="cmttx">${txt}</div><div class="cmttm">Just now</div></div>`;cont.appendChild(d);}
+  const cc=document.getElementById('cc-'+pid);if(cc){let n=parseInt(cc.textContent);cc.textContent=n+1;}
+  inp.value='';
+  saveCmt(pid,txt);
+}
+
+async function saveCmt(postId,txt){
+  if(!CU)return;
+  await db.from('comments').insert({post_id:postId,user_id:CU.id,username:CU.user_metadata?.username||CU.email,content:txt}).catch(()=>{});
+}
+
+function openPost(){document.getElementById('postmodal').classList.add('open');}
+function closePost(){document.getElementById('postmodal').classList.remove('open');}
+function setPT(el,t){ptType=t;document.querySelectorAll('.ptbtn').forEach(b=>b.classList.remove('active'));el.classList.add('active');}
+function selPlatform(el,p){postPlatform=p;document.querySelectorAll('.plbtn').forEach(b=>b.classList.remove('active'));el.classList.add('active');}
+
+const platformTags={all:'',tiktok:'<span class="platform-tag pt-tiktok">🎵 TikTok</span>',instagram:'<span class="platform-tag pt-instagram">📸 Insta</span>',x:'<span class="platform-tag pt-x">𝕏 Post</span>',facebook:'<span class="platform-tag pt-facebook">👥 FB</span>'};
+
+async function publishPost(){
+  const txt=document.getElementById('posttxt').value.trim();
+  if(!txt)return showPubMsg('Please write something first.','err');
+  const loc=document.getElementById('postloc').value.trim(),rtg=document.getElementById('postrating').value;
+  const file=document.getElementById('postfile').files[0];
+  setLE('btn-pub','sp-pub',true);
+  const name=CU?.user_metadata?.first_name||'User',init=name.slice(0,2).toUpperCase();
+  const un=CU?.user_metadata?.username||('@'+name.toLowerCase().replace(/\s/g,'_'));
+  const isVerified=CU?.user_metadata?.verified;
+  const pid='up-'+Date.now();
+  let mhtml='';
+  if(file){const url=URL.createObjectURL(file);if(file.type.startsWith('video')){mhtml=`<div class="postmedia"><video src="${url}" controls playsinline></video><div class="mtag">📹 VIDEO</div></div>`;}else{mhtml=`<div class="postmedia"><img src="${url}"/></div>`;}}
+  const ptag=platformTags[postPlatform]||'';
+  const ph=`<div class="post" data-id="${pid}" style="animation:fu 0.4s ease;"><div class="posthd"><div class="postav">${init}</div><div style="flex:1;"><div class="postuname">${un}${isVerified?' <span class="verified">✓</span>':''}</div><div class="posttime">Just now${loc?' · '+loc:''}</div></div>${ptag}</div>${mhtml}<div class="postcap">${rtg?'<strong>'+rtg+'</strong> ':''}${txt.replace(/(#\w+)/g,'<span class="ht">$1</span>').replace(/(@\w+)/g,'<span class="mention">$1</span>')}</div><div class="postacts"><button class="actbtn" onclick="tgLike(this,'${pid}')"><span>❤️</span><span id="lc-${pid}">0</span></button><button class="actbtn" onclick="tgDislike(this,'${pid}')"><span>👎</span><span id="dc-${pid}">0</span></button><button class="actbtn" onclick="tgCmt('${pid}')"><span>💬</span><span id="cc-${pid}">0</span></button><button class="actbtn" onclick="sharePost()"><span>🔗</span></button><div class="actsep"></div><button class="actbtn" onclick="tgSave(this)"><span>🔖</span></button></div><div class="cmtsec" id="cs-${pid}"><div id="ec-${pid}"></div><div class="cmtinrow"><input type="text" id="cin-${pid}" placeholder="Add a comment..." onkeydown="if(event.key==='Enter')postCmt('${pid}')"/><button class="btncmt" onclick="postCmt('${pid}')">Post</button></div></div></div>`;
+  document.getElementById('uposts').insertAdjacentHTML('afterbegin',ph);
+  const grid=document.getElementById('pt-posts'),item=document.createElement('div');
+  item.className='pgitem';item.textContent=file?(file.type.startsWith('video')?'🎬':'📷'):'📝';
+  grid.insertBefore(item,grid.firstChild);
+  const pe=document.getElementById('myposts');if(pe)pe.textContent=parseInt(pe.textContent||'0')+1;
+  await db.from('posts').insert({user_id:CU?.id,user_name:CU?.user_metadata?.full_name||'User',username:CU?.user_metadata?.username||CU?.email,content:txt,location:loc,rating:rtg,post_type:ptType,platform:postPlatform,likes:0,dislikes:0,comments:0,status:'active'}).catch(()=>{});
+  setLE('btn-pub','sp-pub',false);
+  document.getElementById('posttxt').value='';document.getElementById('postfile').value='';document.getElementById('postloc').value='';document.getElementById('postrating').value='';
+  closePost();goP('home');document.getElementById('p-home').scrollTop=0;
+}
+
+async function loadPosts(){
+  try{
+    const{data}=await db.from('posts').select('*').eq('status','active').order('created_at',{ascending:false}).limit(20);
+    if(!data||!data.length)return;
+    const container=document.getElementById('uposts');
+    data.forEach(p=>{
+      const init=(p.user_name||p.username||'U').slice(0,2).toUpperCase();
+      const un=p.username||'@user';
+      const ptag=platformTags[p.platform]||'';
+      const dt=p.created_at?new Date(p.created_at).toLocaleDateString('en-NG',{day:'numeric',month:'short'}):'-';
+      const pid='db-'+p.id;
+      const html=`<div class="post" data-id="${pid}"><div class="posthd"><div class="postav">${init}</div><div style="flex:1;"><div class="postuname">${un}</div><div class="posttime">${dt}</div></div>${ptag}</div><div class="postcap">${(p.content||'').replace(/(#\w+)/g,'<span class="ht">$1</span>').replace(/(@\w+)/g,'<span class="mention">$1</span>')}</div><div class="postacts"><button class="actbtn" onclick="tgLike(this,'${pid}')"><span>❤️</span><span id="lc-${pid}">${p.likes||0}</span></button><button class="actbtn" onclick="tgDislike(this,'${pid}')"><span>👎</span><span id="dc-${pid}">${p.dislikes||0}</span></button><button class="actbtn" onclick="tgCmt('${pid}')"><span>💬</span><span id="cc-${pid}">${p.comments||0}</span></button><button class="actbtn" onclick="sharePost()"><span>🔗</span></button><div class="actsep"></div><button class="actbtn" onclick="tgSave(this)"><span>🔖</span></button></div><div class="cmtsec" id="cs-${pid}"><div id="ec-${pid}"></div><div class="cmtinrow"><input type="text" id="cin-${pid}" placeholder="Add a comment..." onkeydown="if(event.key==='Enter')postCmt('${pid}')"/><button class="btncmt" onclick="postCmt('${pid}')">Post</button></div></div></div>`;
+      container.insertAdjacentHTML('beforeend',html);
+    });
+  }catch(e){}
+}
+
+function switchPTab(t,el){document.querySelectorAll('.proftab').forEach(b=>b.classList.remove('active'));el.classList.add('active');document.getElementById('pt-posts').style.display=t==='posts'?'grid':'none';document.getElementById('pt-saved').style.display=t==='saved'?'block':'none';document.getElementById('pt-liked').style.display=t==='liked'?'block':'none';}
+function showPubMsg(m,t){const e=document.getElementById('pubmsg');e.textContent=m;e.className='amsg show '+t;}
+function showAmsg(m,t){const e=document.getElementById('amsg');e.textContent=m;e.className='amsg show '+t;}
+function setL(f,l){document.getElementById('btn-'+f).disabled=l;document.getElementById('sp-'+f).classList.toggle('on',l);}
+function setLE(b,s,l){document.getElementById(b).disabled=l;document.getElementById(s).classList.toggle('on',l);}
+function chkPwd(p){let s=0;if(p.length>=8)s++;if(/[A-Z]/.test(p))s++;if(/[0-9]/.test(p))s++;if(/[^A-Za-z0-9]/.test(p))s++;const c=['','#ff4444','#ffb300','#00b894','#00FF87'];for(let i=1;i<=4;i++)document.getElementById('pb'+i).style.background=i<=s?c[s]:'var(--b2)';}
+</script>
+</body>
+</html>

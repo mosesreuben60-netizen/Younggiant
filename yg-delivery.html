@@ -1,0 +1,730 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>YG Delivery — Young Giant</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Outfit:wght@300;400;500;600;700;800&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet"/>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+:root{--g:#00FF87;--gd:#00C853;--dk:#050C05;--s:#0A130A;--card:#0F1A0F;--b:#162416;--b2:#1E3A1E;--txt:#F0FFF0;--m:#4A7A4A;--red:#FF4444;--yellow:#FFB300;--blue:#4FC3F7;--display:'Bebas Neue',sans-serif;--body:'Outfit',sans-serif;--mono:'DM Mono',monospace;}
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+html,body{height:100%;overflow:hidden;}
+body{background:var(--dk);color:var(--txt);font-family:var(--body);}
+@keyframes fu{from{opacity:0;transform:translateY(10px);}to{opacity:1;transform:translateY(0);}}
+@keyframes spin{to{transform:rotate(360deg);}}
+@keyframes logoIn{from{opacity:0;transform:scale(0.85) translateY(24px);}to{opacity:1;transform:scale(1) translateY(0);}}
+@keyframes drift{from{transform:translate(0,0);}to{transform:translate(40px,25px);}}
+
+.screen{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;padding:16px;opacity:0;pointer-events:none;transition:opacity 0.4s,transform 0.4s;transform:translateY(14px);overflow-y:auto;}
+.screen.active{opacity:1;pointer-events:all;transform:translateY(0);}
+.gbg{position:fixed;inset:0;pointer-events:none;z-index:0;}
+.gbg::before{content:'';position:absolute;width:400px;height:400px;background:radial-gradient(circle,rgba(0,255,135,0.07),transparent 70%);top:-100px;left:-80px;animation:drift 12s ease-in-out infinite alternate;}
+
+/* SPLASH */
+#s-splash{flex-direction:column;text-align:center;background:var(--dk);z-index:1;}
+.spl-logo{font-family:var(--display);font-size:clamp(3rem,15vw,5.5rem);color:var(--g);letter-spacing:0.05em;line-height:0.9;text-shadow:0 0 60px rgba(0,255,135,0.2);animation:logoIn 1s cubic-bezier(0.16,1,0.3,1) forwards;opacity:0;}
+.spl-sub{font-family:var(--mono);font-size:0.65rem;letter-spacing:0.3em;text-transform:uppercase;color:var(--m);margin-top:8px;animation:fu 0.8s 0.4s ease forwards;opacity:0;}
+.spl-tag{font-size:0.9rem;color:rgba(240,255,240,0.45);margin-top:16px;animation:fu 0.8s 0.7s ease forwards;opacity:0;max-width:280px;line-height:1.65;}
+.spl-tag strong{color:var(--g);font-weight:600;}
+.spl-btns{display:flex;gap:10px;margin-top:28px;animation:fu 0.8s 1s ease forwards;opacity:0;flex-wrap:wrap;justify-content:center;}
+.spl-switch{margin-top:20px;animation:fu 0.8s 1.2s ease forwards;opacity:0;}
+.spl-switch a{font-family:var(--mono);font-size:0.68rem;color:var(--m);text-decoration:none;border:1px solid var(--b2);border-radius:99px;padding:8px 16px;transition:all 0.2s;}
+.spl-switch a:hover{border-color:var(--g);color:var(--g);}
+
+/* AUTH */
+.acard{background:var(--card);border:1px solid var(--b2);border-radius:16px;padding:28px 24px;width:100%;max-width:400px;position:relative;overflow:hidden;z-index:1;max-height:90vh;overflow-y:auto;}
+.acard::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,var(--g),transparent);}
+.alogo{font-family:var(--display);font-size:1.6rem;color:var(--g);text-align:center;letter-spacing:0.1em;}
+.asub{text-align:center;font-family:var(--mono);font-size:0.62rem;letter-spacing:0.1em;text-transform:uppercase;color:var(--m);margin-bottom:20px;}
+.atabs{display:flex;background:var(--s);border:1px solid var(--b);border-radius:8px;padding:3px;margin-bottom:18px;}
+.atab{flex:1;padding:8px;border:none;border-radius:6px;background:transparent;color:var(--m);font-family:var(--body);font-size:0.78rem;font-weight:600;cursor:pointer;transition:all 0.2s;}
+.atab.active{background:var(--g);color:#000;}
+.f{margin-bottom:11px;}
+.f label{display:block;font-family:var(--mono);font-size:0.6rem;letter-spacing:0.1em;text-transform:uppercase;color:var(--m);margin-bottom:5px;}
+.f input,.f select,.f textarea{width:100%;background:var(--s);border:1px solid var(--b2);border-radius:7px;padding:10px 12px;color:var(--txt);font-family:var(--body);font-size:0.85rem;outline:none;transition:border-color 0.2s;}
+.f input:focus,.f select:focus{border-color:var(--g);}
+.f select option{background:var(--card);}
+.f2{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+.bta{width:100%;padding:12px;border:none;border-radius:8px;background:var(--g);color:#000;font-family:var(--body);font-size:0.88rem;font-weight:700;cursor:pointer;margin-top:4px;display:flex;align-items:center;justify-content:center;gap:8px;transition:all 0.2s;}
+.bta:hover{background:var(--gd);}
+.bta:disabled{opacity:0.4;cursor:not-allowed;}
+.btg{width:100%;padding:10px;border:1px solid var(--b2);border-radius:8px;background:transparent;color:var(--txt);font-family:var(--body);font-size:0.8rem;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;transition:all 0.2s;margin-top:8px;}
+.btg:hover{border-color:var(--g);}
+.divd{display:flex;align-items:center;gap:8px;margin:10px 0;color:var(--m);font-size:0.68rem;}
+.divd::before,.divd::after{content:'';flex:1;height:1px;background:var(--b2);}
+.amsg{margin-top:10px;padding:10px;border-radius:7px;font-size:0.76rem;display:none;line-height:1.5;}
+.amsg.show{display:block;}
+.amsg.err{background:rgba(255,68,68,0.1);border:1px solid rgba(255,68,68,0.2);color:#ff8a8a;}
+.amsg.ok{background:rgba(0,255,135,0.07);border:1px solid rgba(0,255,135,0.18);color:var(--g);}
+.pwdb{display:flex;gap:3px;margin-top:5px;}
+.pwdbar{height:3px;flex:1;border-radius:99px;background:var(--b2);transition:background 0.3s;}
+.plgrid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:4px;}
+.plcard{background:var(--s);border:1px solid var(--b2);border-radius:8px;padding:11px;cursor:pointer;transition:all 0.2s;text-align:center;}
+.plcard:hover,.plcard.sel{border-color:var(--g);background:rgba(0,255,135,0.05);}
+.plic{font-size:1.3rem;margin-bottom:5px;}
+.plnm{font-size:0.8rem;font-weight:700;margin-bottom:2px;}
+.plds{font-family:var(--mono);font-size:0.58rem;color:var(--m);line-height:1.5;}
+.plpr{font-family:var(--mono);font-size:0.68rem;color:var(--g);margin-top:4px;font-weight:600;}
+
+/* MAIN APP */
+#s-app{padding:0;align-items:flex-start;justify-content:flex-start;flex-direction:column;background:var(--dk);}
+.app{width:100%;height:100vh;display:flex;flex-direction:column;overflow:hidden;}
+.topnav{height:52px;background:rgba(5,12,5,0.95);backdrop-filter:blur(20px);border-bottom:1px solid var(--b2);display:flex;align-items:center;justify-content:space-between;padding:0 14px;flex-shrink:0;z-index:50;}
+.tnlogo{font-family:var(--display);font-size:1.2rem;color:var(--g);letter-spacing:0.08em;}
+.tnsub{font-family:var(--mono);font-size:0.55rem;color:var(--m);letter-spacing:0.1em;text-transform:uppercase;margin-left:6px;}
+.tnr{display:flex;align-items:center;gap:8px;}
+.uav{width:32px;height:32px;border-radius:50%;background:var(--g);color:#000;display:flex;align-items:center;justify-content:center;font-size:0.68rem;font-weight:800;cursor:pointer;font-family:var(--mono);}
+.switch-banner{background:linear-gradient(90deg,rgba(0,255,135,0.08),rgba(0,100,40,0.05));border-bottom:1px solid rgba(0,255,135,0.12);padding:8px 14px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0;}
+.sb-text{font-family:var(--mono);font-size:0.6rem;letter-spacing:0.08em;text-transform:uppercase;color:var(--m);}
+.sb-btn{padding:5px 14px;border:1px solid var(--g);border-radius:99px;background:transparent;color:var(--g);font-family:var(--mono);font-size:0.6rem;letter-spacing:0.06em;cursor:pointer;transition:all 0.2s;text-decoration:none;display:inline-block;}
+.sb-btn:hover{background:var(--g);color:#000;}
+.abody{flex:1;overflow:hidden;position:relative;}
+.tp{position:absolute;inset:0;overflow-y:auto;overflow-x:hidden;display:none;-webkit-overflow-scrolling:touch;}
+.tp.active{display:block;animation:fu 0.25s ease;}
+.botnav{height:58px;background:rgba(5,12,5,0.98);backdrop-filter:blur(20px);border-top:1px solid var(--b2);display:flex;align-items:center;flex-shrink:0;z-index:50;}
+.bn{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;cursor:pointer;padding:6px 2px;border:none;background:transparent;color:var(--m);transition:color 0.2s;}
+.bn.active{color:var(--g);}
+.bnic{font-size:1rem;line-height:1;}
+.bnlb{font-family:var(--mono);font-size:0.46rem;letter-spacing:0.07em;text-transform:uppercase;}
+
+/* HOME DASHBOARD */
+.dash-wrap{padding:14px 14px 80px;}
+.welcome-card{background:linear-gradient(135deg,rgba(0,255,135,0.09),rgba(0,100,40,0.04));border:1px solid rgba(0,255,135,0.15);border-radius:12px;padding:20px;margin-bottom:16px;}
+.wc-greet{font-family:var(--display);font-size:1.5rem;color:var(--g);letter-spacing:0.05em;margin-bottom:4px;}
+.wc-sub{font-family:var(--mono);font-size:0.65rem;color:var(--m);letter-spacing:0.08em;}
+
+/* WALLET CARD */
+.wallet-card{background:linear-gradient(135deg,#0F2A0F,#0a1f0a);border:1px solid var(--b2);border-radius:14px;padding:22px;margin-bottom:16px;position:relative;overflow:hidden;}
+.wallet-card::before{content:'';position:absolute;top:-40px;right:-40px;width:120px;height:120px;border-radius:50%;background:rgba(0,255,135,0.06);}
+.wallet-label{font-family:var(--mono);font-size:0.62rem;letter-spacing:0.12em;text-transform:uppercase;color:var(--m);margin-bottom:8px;}
+.wallet-balance{font-family:var(--display);font-size:2.4rem;color:var(--g);letter-spacing:0.05em;line-height:1;margin-bottom:4px;}
+.wallet-sub{font-family:var(--mono);font-size:0.62rem;color:var(--m);margin-bottom:18px;}
+.wallet-actions{display:flex;gap:10px;}
+.btn-fund{padding:10px 20px;border:none;border-radius:8px;background:var(--g);color:#000;font-family:var(--body);font-size:0.8rem;font-weight:700;cursor:pointer;transition:all 0.2s;}
+.btn-fund:hover{background:var(--gd);}
+.btn-history{padding:10px 20px;border:1px solid var(--b2);border-radius:8px;background:transparent;color:var(--m);font-family:var(--body);font-size:0.8rem;cursor:pointer;transition:all 0.2s;}
+.btn-history:hover{border-color:var(--g);color:var(--g);}
+
+/* QUICK ACTIONS */
+.qa-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-bottom:16px;}
+.qa-card{background:var(--card);border:1px solid var(--b2);border-radius:10px;padding:18px;cursor:pointer;transition:all 0.2s;text-align:center;}
+.qa-card:hover{border-color:var(--g);transform:translateY(-2px);}
+.qa-ic{font-size:1.8rem;margin-bottom:8px;}
+.qa-nm{font-size:0.88rem;font-weight:700;margin-bottom:3px;}
+.qa-ds{font-family:var(--mono);font-size:0.62rem;color:var(--m);line-height:1.5;}
+
+/* RECENT ORDERS */
+.section-hd{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;}
+.section-title{font-family:var(--display);font-size:1.1rem;color:var(--g);letter-spacing:0.05em;}
+.order-card{background:var(--card);border:1px solid var(--b2);border-radius:10px;padding:14px;margin-bottom:10px;}
+.oc-top{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:8px;}
+.oc-route{font-size:0.86rem;font-weight:600;}
+.oc-date{font-family:var(--mono);font-size:0.6rem;color:var(--m);}
+.status-tag{font-family:var(--mono);font-size:0.58rem;letter-spacing:0.06em;text-transform:uppercase;padding:3px 8px;border-radius:3px;}
+.st-new{background:rgba(0,255,135,0.1);color:var(--g);border:1px solid rgba(0,255,135,0.2);}
+.st-confirmed{background:rgba(79,195,247,0.1);color:var(--blue);border:1px solid rgba(79,195,247,0.2);}
+.st-delivered{background:rgba(100,100,100,0.15);color:#666;border:1px solid #333;}
+.oc-amount{font-family:var(--mono);font-size:0.75rem;color:var(--g);margin-top:4px;}
+
+/* BOOKING */
+.bkwrap{padding:14px 14px 80px;}
+.sh{font-family:var(--display);font-size:1.4rem;color:var(--g);letter-spacing:0.05em;margin-bottom:3px;}
+.ss{font-family:var(--mono);font-size:0.62rem;color:var(--m);letter-spacing:0.08em;margin-bottom:16px;}
+.bcard{background:var(--card);border:1px solid var(--b2);border-radius:10px;padding:15px;margin-bottom:12px;}
+.bcardt{font-family:var(--mono);font-size:0.6rem;letter-spacing:0.1em;text-transform:uppercase;color:var(--m);margin-bottom:12px;}
+.ygchk{display:flex;align-items:center;gap:10px;padding:9px 12px;background:var(--s);border:1px solid var(--b2);border-radius:7px;margin-top:8px;cursor:pointer;}
+.ygchk input{width:15px;height:15px;accent-color:var(--g);}
+.ygchk label{font-size:0.8rem;cursor:pointer;color:rgba(240,255,240,0.65);}
+
+/* PAYMENT OPTION */
+.pay-options{display:flex;gap:8px;margin-bottom:12px;}
+.pay-opt{flex:1;padding:10px;border:1px solid var(--b2);border-radius:8px;background:transparent;color:var(--m);font-family:var(--mono);font-size:0.62rem;letter-spacing:0.06em;text-transform:uppercase;cursor:pointer;transition:all 0.2s;text-align:center;}
+.pay-opt.active{border-color:var(--g);background:rgba(0,255,135,0.07);color:var(--g);}
+.wallet-balance-sm{background:var(--s);border:1px solid var(--b2);border-radius:8px;padding:12px;margin-bottom:12px;display:flex;align-items:center;justify-content:space-between;}
+.wbal-label{font-family:var(--mono);font-size:0.62rem;color:var(--m);}
+.wbal-amount{font-family:var(--mono);font-size:0.88rem;color:var(--g);font-weight:600;}
+.btnbk{width:100%;padding:13px;border:none;border-radius:8px;background:var(--g);color:#000;font-family:var(--body);font-size:0.88rem;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;transition:all 0.2s;margin-top:4px;}
+.btnbk:hover{background:var(--gd);}
+.bmsg{margin-top:10px;padding:10px;border-radius:7px;font-size:0.76rem;display:none;line-height:1.5;}
+.bmsg.on{display:block;}
+.bmsg.err{background:rgba(255,68,68,0.1);border:1px solid rgba(255,68,68,0.2);color:#ff8a8a;}
+.bmsg.ok{background:rgba(0,255,135,0.07);border:1px solid rgba(0,255,135,0.18);color:var(--g);}
+
+/* WAITING */
+.waiting{position:fixed;inset:0;background:rgba(5,12,5,0.97);backdrop-filter:blur(20px);z-index:300;display:none;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:24px;}
+.waiting.show{display:flex;}
+.wring{width:110px;height:110px;border-radius:50%;border:3px solid var(--b2);border-top-color:var(--g);animation:spin 1.2s linear infinite;display:flex;align-items:center;justify-content:center;position:relative;margin-bottom:22px;}
+.wring::after{content:'🚐';position:absolute;font-size:1.8rem;}
+.wtitle{font-family:var(--display);font-size:1.6rem;color:var(--g);letter-spacing:0.05em;margin-bottom:6px;}
+.wsub{font-family:var(--mono);font-size:0.68rem;color:var(--m);letter-spacing:0.1em;text-transform:uppercase;margin-bottom:14px;}
+.wtimer{font-family:var(--display);font-size:2.8rem;color:var(--txt);letter-spacing:0.05em;}
+.wnote{font-size:0.78rem;color:rgba(240,255,240,0.35);margin-top:10px;line-height:1.65;max-width:260px;}
+.wfeed-link{margin-top:20px;background:var(--card);border:1px solid var(--b2);border-radius:8px;padding:12px;cursor:pointer;width:100%;max-width:320px;text-decoration:none;display:block;text-align:left;}
+
+/* TRANSPORT */
+.twrap{padding:14px 14px 80px;}
+.thero{background:linear-gradient(135deg,rgba(0,255,135,0.07),rgba(0,100,40,0.03));border:1px solid rgba(0,255,135,0.12);border-radius:10px;padding:18px;margin-bottom:14px;text-align:center;}
+.thero h2{font-family:var(--display);font-size:1.8rem;color:var(--g);letter-spacing:0.05em;margin-bottom:5px;}
+.soonatg{display:inline-block;background:rgba(255,179,0,0.1);border:1px solid rgba(255,179,0,0.25);color:var(--yellow);font-family:var(--mono);font-size:0.6rem;letter-spacing:0.1em;text-transform:uppercase;padding:3px 9px;border-radius:3px;margin-bottom:8px;}
+.rtcard{background:var(--card);border:1px solid var(--b2);border-radius:10px;padding:14px;margin-bottom:10px;cursor:pointer;transition:all 0.2s;}
+.rtcard:hover{border-color:var(--g);}
+.svcgrid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:12px;}
+.svcard{background:var(--s);border:1px solid var(--b2);border-radius:7px;padding:11px;cursor:pointer;transition:all 0.2s;}
+.svcard:hover,.svcard.sel{border-color:var(--g);background:rgba(0,255,135,0.04);}
+.svic{font-size:1.3rem;margin-bottom:5px;}
+.svnm{font-size:0.8rem;font-weight:600;margin-bottom:3px;}
+.svds{font-size:0.68rem;color:var(--m);line-height:1.5;}
+.svpr{font-family:var(--mono);font-size:0.68rem;color:var(--g);margin-top:4px;}
+
+/* TRACKING */
+.track-wrap{padding:14px 14px 80px;}
+.track-map{background:var(--s);border:1px solid var(--b2);border-radius:12px;height:200px;overflow:hidden;position:relative;margin-bottom:14px;display:flex;align-items:center;justify-content:center;}
+.van-dot{position:absolute;width:34px;height:34px;border-radius:50%;background:var(--g);display:flex;align-items:center;justify-content:center;font-size:1rem;animation:vanMove 6s ease-in-out infinite;box-shadow:0 0 20px rgba(0,255,135,0.4);}
+@keyframes vanMove{0%,100%{top:40%;left:20%;}50%{top:30%;left:60%;}}
+.pulse-ring{position:absolute;width:56px;height:56px;border-radius:50%;border:2px solid rgba(0,255,135,0.3);animation:pring 2s ease-out infinite;}
+@keyframes pring{0%{transform:scale(0.8);opacity:1;}100%{transform:scale(1.8);opacity:0;}}
+.track-step{display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid var(--b);}
+.track-step:last-child{border-bottom:none;}
+.tdot{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:0.72rem;flex-shrink:0;}
+.tdot.done{background:var(--g);color:#000;}
+.tdot.active{background:rgba(0,255,135,0.12);border:2px solid var(--g);color:var(--g);}
+.tdot.pend{background:var(--s);border:1px solid var(--b2);color:var(--m);}
+.tinfo h4{font-size:0.84rem;font-weight:600;margin-bottom:2px;}
+.tinfo p{font-family:var(--mono);font-size:0.65rem;color:var(--m);}
+
+/* WALLET PAGE */
+.wallet-wrap{padding:14px 14px 80px;}
+.wallet-full-card{background:linear-gradient(135deg,#0F2A0F,#071407);border:1px solid var(--b2);border-radius:14px;padding:24px;margin-bottom:16px;position:relative;overflow:hidden;}
+.wallet-full-card::before{content:'';position:absolute;top:-50px;right:-50px;width:150px;height:150px;border-radius:50%;background:rgba(0,255,135,0.05);}
+.wf-label{font-family:var(--mono);font-size:0.62rem;letter-spacing:0.12em;text-transform:uppercase;color:var(--m);margin-bottom:8px;}
+.wf-balance{font-family:var(--display);font-size:3rem;color:var(--g);letter-spacing:0.05em;line-height:1;margin-bottom:6px;}
+.wf-btns{display:flex;gap:10px;margin-top:16px;flex-wrap:wrap;}
+.btn-w{padding:11px 20px;border:none;border-radius:8px;font-family:var(--body);font-size:0.82rem;font-weight:700;cursor:pointer;transition:all 0.2s;}
+.btn-w-green{background:var(--g);color:#000;}
+.btn-w-outline{background:transparent;border:1px solid var(--b2);color:var(--m);}
+.btn-w-outline:hover{border-color:var(--g);color:var(--g);}
+.fund-modal{background:var(--card);border:1px solid var(--b2);border-radius:12px;padding:20px;margin-bottom:16px;display:none;}
+.fund-modal.open{display:block;animation:fu 0.3s ease;}
+.bank-details{background:var(--s);border:1px solid var(--b2);border-radius:8px;padding:14px;margin-top:12px;}
+.bd-row{display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid var(--b);}
+.bd-row:last-child{border-bottom:none;}
+.bd-label{font-family:var(--mono);font-size:0.62rem;color:var(--m);}
+.bd-value{font-size:0.85rem;font-weight:600;}
+.copy-btn{padding:4px 10px;border:1px solid var(--b2);border-radius:4px;background:transparent;color:var(--m);font-family:var(--mono);font-size:0.58rem;cursor:pointer;transition:all 0.2s;}
+.copy-btn:hover{border-color:var(--g);color:var(--g);}
+.tx-list{background:var(--card);border:1px solid var(--b2);border-radius:10px;overflow:hidden;}
+.tx-item{display:flex;align-items:center;gap:12px;padding:12px 14px;border-bottom:1px solid var(--b);}
+.tx-item:last-child{border-bottom:none;}
+.tx-ic{width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:1rem;flex-shrink:0;}
+.tx-ic.credit{background:rgba(0,255,135,0.1);}
+.tx-ic.debit{background:rgba(255,68,68,0.1);}
+.tx-info{flex:1;}
+.tx-name{font-size:0.84rem;font-weight:600;margin-bottom:2px;}
+.tx-date{font-family:var(--mono);font-size:0.6rem;color:var(--m);}
+.tx-amount{font-family:var(--mono);font-size:0.84rem;font-weight:600;}
+.tx-amount.credit{color:var(--g);}
+.tx-amount.debit{color:var(--red);}
+
+/* PROFILE */
+.profwrap{padding:14px 14px 80px;}
+.prof-card{background:var(--card);border:1px solid var(--b2);border-radius:12px;padding:20px;margin-bottom:14px;display:flex;align-items:center;gap:14px;}
+.prof-av{width:60px;height:60px;border-radius:50%;background:var(--g);color:#000;display:flex;align-items:center;justify-content:center;font-family:var(--display);font-size:1.2rem;flex-shrink:0;}
+.prof-name{font-family:var(--display);font-size:1.3rem;color:var(--g);letter-spacing:0.04em;}
+.prof-handle{font-family:var(--mono);font-size:0.65rem;color:var(--m);}
+.prof-plan{font-family:var(--mono);font-size:0.62rem;margin-top:6px;}
+.smenu{background:var(--card);border:1px solid var(--b2);border-radius:10px;overflow:hidden;margin-bottom:14px;}
+.smitem{display:flex;align-items:center;gap:12px;padding:14px 16px;border-bottom:1px solid var(--b);cursor:pointer;transition:background 0.2s;}
+.smitem:last-child{border-bottom:none;}
+.smitem:hover{background:var(--s);}
+.smic{font-size:1rem;width:22px;text-align:center;}
+.smtx{flex:1;font-size:0.86rem;}
+.smar{color:var(--m);}
+
+/* MISC */
+.sp{width:14px;height:14px;border:2px solid rgba(0,0,0,0.2);border-top-color:#000;border-radius:50%;animation:spin 0.6s linear infinite;display:none;}
+.sp.on{display:block;}
+.btnp{display:inline-flex;align-items:center;gap:7px;padding:11px 20px;border:none;border-radius:8px;background:var(--g);color:#000;font-family:var(--body);font-size:0.8rem;font-weight:700;cursor:pointer;transition:all 0.2s;}
+.btng{display:inline-flex;align-items:center;gap:7px;padding:10px 20px;border:1px solid var(--b2);border-radius:8px;background:transparent;color:var(--txt);font-family:var(--body);font-size:0.8rem;cursor:pointer;transition:all 0.2s;}
+.btng:hover{border-color:var(--g);color:var(--g);}
+@media(max-width:360px){.acard{padding:20px 14px;}.f2{grid-template-columns:1fr;}}
+</style>
+</head>
+<body>
+<div class="gbg"></div>
+
+<!-- LOADING -->
+<div class="screen active" id="s-loading" style="flex-direction:column;gap:14px;z-index:10;">
+  <div style="width:42px;height:42px;border:3px solid var(--b2);border-top-color:var(--g);border-radius:50%;animation:spin 0.8s linear infinite;"></div>
+  <div style="font-family:var(--mono);font-size:0.7rem;letter-spacing:0.1em;text-transform:uppercase;color:var(--m);">YG Delivery Loading...</div>
+</div>
+
+<!-- SPLASH -->
+<div class="screen" id="s-splash" style="z-index:5;">
+  <div style="display:flex;flex-direction:column;align-items:center;text-align:center;position:relative;z-index:1;">
+    <div class="spl-logo">YG<br/>DELIVERY</div>
+    <div class="spl-sub">Book · Pay · Track</div>
+    <div class="spl-tag"><strong>Book deliveries & transport.</strong><br/>Fund your wallet. Auto-pay when your driver arrives. Track live. 🚐⚡</div>
+    <div class="spl-btns">
+      <button class="btnp" onclick="goAuth('signup')">Create Account</button>
+      <button class="btng" onclick="goAuth('login')">Sign In</button>
+    </div>
+    <div class="spl-switch">
+      <a href="yg-social.html">📱 Switch to YG Social →</a>
+    </div>
+  </div>
+</div>
+
+<!-- AUTH -->
+<div class="screen" id="s-auth" style="z-index:5;">
+  <div class="acard">
+    <div class="alogo">YG DELIVERY</div>
+    <div class="asub">Book · Pay · Track</div>
+    <div class="atabs">
+      <button class="atab active" id="tab-su" onclick="switchTab('signup')">Create Account</button>
+      <button class="atab" id="tab-li" onclick="switchTab('login')">Sign In</button>
+    </div>
+    <div id="form-su">
+      <div class="f2">
+        <div class="f"><label>First Name</label><input type="text" id="su-fn" placeholder="Moses"/></div>
+        <div class="f"><label>Last Name</label><input type="text" id="su-ln" placeholder="Reuben"/></div>
+      </div>
+      <div class="f"><label>Phone Number</label><input type="tel" id="su-ph" placeholder="+234 800 000 0000"/></div>
+      <div class="f"><label>Email</label><input type="email" id="su-em" placeholder="you@email.com"/></div>
+      <div class="f"><label>Password</label><input type="password" id="su-pw" placeholder="Min. 8 characters" oninput="chkPwd(this.value)"/>
+        <div class="pwdb"><div class="pwdbar" id="pb1"></div><div class="pwdbar" id="pb2"></div><div class="pwdbar" id="pb3"></div><div class="pwdbar" id="pb4"></div></div>
+      </div>
+      <div class="f"><label>Account Type</label>
+        <select id="su-type" onchange="toggleBiz()"><option value="customer">Individual Customer</option><option value="business">Business / Company</option></select>
+      </div>
+      <div class="f"><label>Choose Your Plan</label>
+        <div class="plgrid">
+          <div class="plcard sel" onclick="selPlan(this,'free')"><div class="plic">🆓</div><div class="plnm">Free</div><div class="plds">Book deliveries, pay on pickup</div><div class="plpr">₦0/month</div></div>
+          <div class="plcard" onclick="selPlan(this,'starter')"><div class="plic">⚡</div><div class="plnm">Starter</div><div class="plds">Priority + 5% discount</div><div class="plpr">₦1,500/month</div></div>
+          <div class="plcard" onclick="selPlan(this,'business')"><div class="plic">🏢</div><div class="plnm">Business</div><div class="plds">Bulk rates + invoice billing</div><div class="plpr">₦5,000/month</div></div>
+          <div class="plcard" onclick="selPlan(this,'enterprise')"><div class="plic">🚀</div><div class="plnm">Enterprise</div><div class="plds">Dedicated fleet + SLA</div><div class="plpr">Custom</div></div>
+        </div>
+      </div>
+      <div id="biz-fields" style="display:none;">
+        <div class="f"><label>Company Name</label><input type="text" id="su-biz" placeholder="e.g. Chukwu Stores Ltd"/></div>
+        <div class="f"><label>CAC Reg No. (optional)</label><input type="text" id="su-cac" placeholder="RC000000"/></div>
+      </div>
+      <div class="f"><label>How Did You Find Us?</label>
+        <select id="su-src"><option value="">Select...</option><option>Google</option><option>Instagram</option><option>Friend Referral</option><option>Referral Code</option><option>Other</option></select>
+      </div>
+      <div class="f" id="ref-field" style="display:none;"><label>Referral Code</label><input type="text" id="su-ref" placeholder="Enter code"/></div>
+      <button class="bta" onclick="doSignup()" id="btn-su"><div class="sp" id="sp-su"></div>Create Account ⚡</button>
+      <div class="divd">or</div>
+      <button class="btg" onclick="doGoogle()">🔑 Continue with Google</button>
+      <p style="text-align:center;margin-top:10px;"><button onclick="goBack()" style="background:none;border:none;color:var(--m);font-family:var(--body);font-size:0.72rem;cursor:pointer;">← Back</button></p>
+    </div>
+    <div id="form-li" style="display:none;">
+      <div class="f"><label>Email</label><input type="email" id="li-em" placeholder="you@email.com"/></div>
+      <div class="f"><label>Password</label><input type="password" id="li-pw" placeholder="Your password" onkeydown="if(event.key==='Enter')doLogin()"/></div>
+      <button class="bta" onclick="doLogin()" id="btn-li"><div class="sp" id="sp-li"></div>Sign In ⚡</button>
+      <div class="divd">or</div>
+      <button class="btg" onclick="doGoogle()">🔑 Continue with Google</button>
+      <p style="text-align:center;margin-top:8px;"><a href="#" onclick="forgotPwd()" style="font-size:0.72rem;color:var(--m);">Forgot password?</a></p>
+      <p style="text-align:center;margin-top:8px;"><button onclick="goBack()" style="background:none;border:none;color:var(--m);font-family:var(--body);font-size:0.72rem;cursor:pointer;">← Back</button></p>
+    </div>
+    <div class="amsg" id="amsg"></div>
+  </div>
+</div>
+
+<!-- MAIN APP -->
+<div class="screen" id="s-app" style="z-index:5;">
+  <div class="app">
+    <nav class="topnav">
+      <div style="display:flex;align-items:center;">
+        <div class="tnlogo">YG</div>
+        <div class="tnsub">Delivery</div>
+      </div>
+      <div class="tnr">
+        <div style="background:var(--s);border:1px solid var(--b2);border-radius:99px;padding:5px 12px;font-family:var(--mono);font-size:0.65rem;color:var(--g);cursor:pointer;" onclick="goP('wallet')">₦<span id="nav-balance">0.00</span></div>
+        <div class="uav" id="uav" onclick="goP('profile')">YG</div>
+      </div>
+    </nav>
+    <div class="switch-banner">
+      <div class="sb-text">📱 See the YG community feed?</div>
+      <a href="yg-social.html" class="sb-btn">YG Social →</a>
+    </div>
+
+    <div class="abody">
+
+      <!-- HOME DASHBOARD -->
+      <div class="tp active" id="p-home">
+        <div class="dash-wrap">
+          <div class="welcome-card">
+            <div class="wc-greet">Welcome back, <span id="wc-name">Moses</span>! ⚡</div>
+            <div class="wc-sub">YOUNG GIANT · EV LOGISTICS · NIGERIA 🇳🇬</div>
+          </div>
+
+          <!-- WALLET MINI -->
+          <div class="wallet-card" onclick="goP('wallet')">
+            <div class="wallet-label">YG Wallet Balance</div>
+            <div class="wallet-balance">₦<span id="wallet-bal">0.00</span></div>
+            <div class="wallet-sub">Tap to fund · Auto-debited on delivery</div>
+            <div class="wallet-actions">
+              <button class="btn-fund" onclick="event.stopPropagation();openFundModal()">+ Fund Wallet</button>
+              <button class="btn-history" onclick="event.stopPropagation();goP('wallet')">History</button>
+            </div>
+          </div>
+
+          <!-- QUICK ACTIONS -->
+          <div class="qa-grid">
+            <div class="qa-card" onclick="goP('book')"><div class="qa-ic">📦</div><div class="qa-nm">Book Delivery</div><div class="qa-ds">Lagos & Abuja · From ₦1,500</div></div>
+            <div class="qa-card" onclick="goP('transport')"><div class="qa-ic">🚌</div><div class="qa-nm">Transport</div><div class="qa-ds">Lagos ↔ Abuja · Q3 2026</div></div>
+            <div class="qa-card" onclick="goP('track')"><div class="qa-ic">📍</div><div class="qa-nm">Track Order</div><div class="qa-ds">Live GPS tracking</div></div>
+            <div class="qa-card" onclick="openFundModal()"><div class="qa-ic">💰</div><div class="qa-nm">Fund Wallet</div><div class="qa-ds">Bank transfer · Fast</div></div>
+          </div>
+
+          <!-- RECENT ORDERS -->
+          <div class="section-hd"><div class="section-title">Recent Orders</div></div>
+          <div id="recent-orders">
+            <div style="text-align:center;padding:24px;color:var(--m);font-family:var(--mono);font-size:0.7rem;letter-spacing:0.08em;">No orders yet — book your first delivery! 🚐</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- BOOKING -->
+      <div class="tp" id="p-book">
+        <div class="bkwrap">
+          <div class="sh">Book Delivery</div>
+          <div class="ss">YOUNG GIANT · EV LOGISTICS ⚡</div>
+          <div class="bcard">
+            <div class="bcardt">📍 Pickup & Dropoff</div>
+            <div class="f"><label>Pickup Address</label><input type="text" id="b-pu" placeholder="e.g. 12 Allen Ave, Ikeja"/></div>
+            <div class="f"><label>Dropoff Address</label><input type="text" id="b-do" placeholder="e.g. 5 Eko Hotel Way, VI"/></div>
+            <div class="f2">
+              <div class="f"><label>Date</label><input type="date" id="b-dt"/></div>
+              <div class="f"><label>Time</label><input type="time" id="b-tm"/></div>
+            </div>
+          </div>
+          <div class="bcard">
+            <div class="bcardt">📦 Package Details</div>
+            <div class="f2">
+              <div class="f"><label>Weight (kg)</label><input type="number" id="b-wt" placeholder="10" min="0"/></div>
+              <div class="f"><label>Package Type</label><select id="b-pt"><option value="">Select...</option><option>Documents</option><option>Electronics</option><option>Food</option><option>Clothing</option><option>Furniture</option><option>Other</option></select></div>
+            </div>
+            <div class="f"><label>Special Instructions</label><textarea id="b-nt" placeholder="Fragile, gate code, handling..."></textarea></div>
+          </div>
+          <div class="bcard">
+            <div class="bcardt">👤 Receiver Details</div>
+            <div class="f"><label>Receiver Name</label><input type="text" id="b-rn" placeholder="Full name"/></div>
+            <div class="f"><label>Receiver Phone</label><input type="tel" id="b-rp" placeholder="+234 800 000 0000"/></div>
+            <div class="ygchk"><input type="checkbox" id="rec-yg" onchange="document.getElementById('recygf').style.display=this.checked?'block':'none'"/><label for="rec-yg">Receiver uses the Young Giant app</label></div>
+            <div id="recygf" style="display:none;margin-top:8px;"><div class="f" style="margin-bottom:0;"><label>Receiver's YG Username / Email</label><input type="text" id="b-ryg" placeholder="@username or email"/></div></div>
+          </div>
+          <div class="bcard">
+            <div class="bcardt">💳 Payment Method</div>
+            <div class="pay-options">
+              <button class="pay-opt active" id="pay-wallet" onclick="selPay('wallet',this)">💰 YG Wallet</button>
+              <button class="pay-opt" id="pay-cash" onclick="selPay('cash',this)">💵 Pay on Pickup</button>
+              <button class="pay-opt" id="pay-transfer" onclick="selPay('transfer',this)">🏦 Transfer</button>
+            </div>
+            <div class="wallet-balance-sm" id="wallet-bal-sm">
+              <div class="wbal-label">YG Wallet Balance</div>
+              <div class="wbal-amount">₦<span id="book-bal">0.00</span></div>
+            </div>
+          </div>
+          <button class="btnbk" onclick="submitBooking()" id="btn-bk"><div class="sp" id="sp-bk"></div>⚡ Book My Delivery</button>
+          <div class="bmsg" id="bmsg"></div>
+        </div>
+      </div>
+
+      <!-- TRANSPORT -->
+      <div class="tp" id="p-transport">
+        <div class="twrap">
+          <div class="thero"><div class="soonatg">🚌 Coming Q3 2026</div><h2>YG TRANSPORT</h2><p style="font-size:0.8rem;color:rgba(240,255,240,0.4);line-height:1.6;">Lagos ↔ Abuja · Book online, pay from wallet.</p></div>
+          <div class="rtcard" onclick="tgRoute('la')">
+            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;"><div style="font-family:var(--display);font-size:1.1rem;letter-spacing:0.05em;">Lagos <span style="color:var(--g);">⇄</span> Abuja</div><span style="background:rgba(255,179,0,0.1);border:1px solid rgba(255,179,0,0.2);color:var(--yellow);font-family:var(--mono);font-size:0.58rem;letter-spacing:0.08em;text-transform:uppercase;padding:3px 8px;border-radius:3px;">Pre-Register</span></div>
+            <div style="font-family:var(--mono);font-size:0.65rem;color:var(--m);margin-bottom:0;">~6 hrs · EV Coach · Daily · Q3 2026</div>
+            <div class="svcgrid" id="svc-la" style="display:none;">
+              <div class="svcard" onclick="event.stopPropagation();selSvc(this)"><div class="svic">🧳</div><div class="svnm">Travel Only</div><div class="svds">Passenger seat, no pickup</div><div class="svpr">From ₦8,500</div></div>
+              <div class="svcard" onclick="event.stopPropagation();selSvc(this)"><div class="svic">📦</div><div class="svnm">Luggage Pickup</div><div class="svds">We pick up from home</div><div class="svpr">From ₦12,000</div></div>
+              <div class="svcard" onclick="event.stopPropagation();selSvc(this)"><div class="svic">🚚</div><div class="svnm">Package Ahead</div><div class="svds">Package goes before you</div><div class="svpr">From ₦6,000</div></div>
+              <div class="svcard" onclick="event.stopPropagation();selSvc(this)"><div class="svic">⭐</div><div class="svnm">Full Service</div><div class="svds">Pickup + travel + delivery</div><div class="svpr">From ₦18,000</div></div>
+            </div>
+          </div>
+          <div id="tform" style="display:none;">
+            <div class="bcard" style="margin-top:10px;">
+              <div class="bcardt" id="tftitle">📋 Pre-Register</div>
+              <div class="f"><label>Full Name</label><input type="text" id="tf-nm" placeholder="Your full name"/></div>
+              <div class="f"><label>Phone</label><input type="tel" id="tf-ph" placeholder="+234 800 000 0000"/></div>
+              <div class="f2">
+                <div class="f"><label>Travel Date</label><input type="date" id="tf-dt"/></div>
+                <div class="f"><label>Passengers</label><input type="number" id="tf-px" placeholder="1" min="1"/></div>
+              </div>
+              <div class="f"><label>Pickup Address</label><input type="text" id="tf-ad" placeholder="Home address"/></div>
+              <button class="btnbk" onclick="submitTransport()" id="btn-tf"><div class="sp" id="sp-tf"></div>🚌 Pre-Register</button>
+              <div class="bmsg" id="tfmsg"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- TRACKING -->
+      <div class="tp" id="p-track">
+        <div class="track-wrap">
+          <div class="sh">Track Delivery</div>
+          <div class="ss">LIVE GPS TRACKING ⚡</div>
+          <div class="track-map">
+            <div class="pulse-ring"></div>
+            <div class="van-dot">🚐</div>
+            <div style="position:absolute;bottom:10px;left:10px;background:rgba(5,12,5,0.85);backdrop-filter:blur(8px);border:1px solid var(--b2);border-radius:6px;padding:6px 12px;font-family:var(--mono);font-size:0.62rem;letter-spacing:0.08em;color:var(--g);">📍 Live GPS · Updating...</div>
+          </div>
+          <div class="bcard">
+            <div class="track-step"><div class="tdot done">✓</div><div class="tinfo"><h4>Booking Confirmed</h4><p>Your delivery has been accepted</p></div></div>
+            <div class="track-step"><div class="tdot done">✓</div><div class="tinfo"><h4>Driver Assigned</h4><p>Your Young Giant EV driver is ready</p></div></div>
+            <div class="track-step"><div class="tdot active">🚐</div><div class="tinfo"><h4>Driver On The Way</h4><p>ETA: ~12 minutes to pickup</p></div></div>
+            <div class="track-step"><div class="tdot pend">📦</div><div class="tinfo"><h4>Package Picked Up</h4><p>Waiting...</p></div></div>
+            <div class="track-step"><div class="tdot pend">✅</div><div class="tinfo"><h4>Delivered</h4><p>Waiting...</p></div></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- WALLET -->
+      <div class="tp" id="p-wallet">
+        <div class="wallet-wrap">
+          <div class="wallet-full-card">
+            <div class="wf-label">YG Wallet Balance</div>
+            <div class="wf-balance">₦<span id="wallet-full-bal">0.00</span></div>
+            <div style="font-family:var(--mono);font-size:0.62rem;color:var(--m);margin-top:4px;">Auto-debited when delivery is confirmed ⚡</div>
+            <div class="wf-btns">
+              <button class="btn-w btn-w-green" onclick="openFundModal()">+ Fund Wallet</button>
+              <button class="btn-w btn-w-outline">↑ Withdraw</button>
+            </div>
+          </div>
+
+          <!-- FUND MODAL -->
+          <div class="fund-modal" id="fund-modal">
+            <div style="font-family:var(--display);font-size:1.2rem;color:var(--g);letter-spacing:0.05em;margin-bottom:14px;">Fund Your Wallet</div>
+            <div class="f"><label>Amount (₦)</label><input type="number" id="fund-amount" placeholder="e.g. 5000" min="500"/></div>
+            <div class="bank-details">
+              <div style="font-family:var(--mono);font-size:0.62rem;letter-spacing:0.1em;text-transform:uppercase;color:var(--m);margin-bottom:10px;">Transfer to this account:</div>
+              <div class="bd-row"><div class="bd-label">Bank</div><div class="bd-value">Opay / Palmpay</div></div>
+              <div class="bd-row"><div class="bd-label">Account Number</div><div style="display:flex;align-items:center;gap:8px;"><div class="bd-value" id="acc-num">8012345678</div><button class="copy-btn" onclick="copyAccNum()">Copy</button></div></div>
+              <div class="bd-row"><div class="bd-label">Account Name</div><div class="bd-value">Young Giant Logistics</div></div>
+              <div class="bd-row"><div class="bd-label">Reference</div><div style="display:flex;align-items:center;gap:8px;"><div class="bd-value" id="pay-ref">YG-...</div><button class="copy-btn" onclick="copyRef()">Copy</button></div></div>
+            </div>
+            <div style="background:rgba(255,179,0,0.07);border:1px solid rgba(255,179,0,0.2);border-radius:8px;padding:12px;margin-top:12px;font-family:var(--mono);font-size:0.68rem;color:var(--yellow);line-height:1.65;">⚠️ After transferring, tap "I've Paid" below. Your wallet will be credited within 5–10 minutes after Moses confirms receipt.</div>
+            <button class="btnbk" onclick="confirmPayment()" style="margin-top:12px;" id="btn-paid"><div class="sp" id="sp-paid"></div>✅ I've Paid — Notify Moses</button>
+            <div class="bmsg" id="fund-msg"></div>
+          </div>
+
+          <!-- TRANSACTIONS -->
+          <div class="section-hd"><div class="section-title">Transactions</div></div>
+          <div class="tx-list" id="tx-list">
+            <div class="tx-item"><div class="tx-ic credit">💰</div><div class="tx-info"><div class="tx-name">Wallet Funded</div><div class="tx-date">Today · 10:30 AM</div></div><div class="tx-amount credit">+₦5,000</div></div>
+            <div class="tx-item"><div class="tx-ic debit">📦</div><div class="tx-info"><div class="tx-name">Ikeja → Victoria Island</div><div class="tx-date">Yesterday · 2:15 PM</div></div><div class="tx-amount debit">-₦2,500</div></div>
+            <div class="tx-item"><div class="tx-ic credit">💰</div><div class="tx-info"><div class="tx-name">Wallet Funded</div><div class="tx-date">3 days ago</div></div><div class="tx-amount credit">+₦10,000</div></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- PROFILE -->
+      <div class="tp" id="p-profile">
+        <div class="profwrap">
+          <div class="prof-card">
+            <div class="prof-av" id="prof-av">YG</div>
+            <div>
+              <div class="prof-name" id="prof-name">Loading...</div>
+              <div class="prof-handle" id="prof-handle">@loading</div>
+              <div class="prof-plan" id="prof-plan"></div>
+            </div>
+          </div>
+          <div class="smenu">
+            <div class="smitem" onclick="goP('book')"><div class="smic">📦</div><div class="smtx">Book Delivery</div><div class="smar">›</div></div>
+            <div class="smitem" onclick="goP('wallet')"><div class="smic">💰</div><div class="smtx">My Wallet</div><div class="smar">›</div></div>
+            <div class="smitem" onclick="goP('track')"><div class="smic">📍</div><div class="smtx">Track Delivery</div><div class="smar">›</div></div>
+            <div class="smitem" onclick="goP('transport')"><div class="smic">🚌</div><div class="smtx">Transport</div><div class="smar">›</div></div>
+            <div class="smitem"><div class="smic">🔔</div><div class="smtx">Notifications</div><div class="smar">›</div></div>
+            <div class="smitem"><div class="smic">⭐</div><div class="smtx">Upgrade Plan</div><div class="smar">›</div></div>
+            <div class="smitem"><div class="smic">🔒</div><div class="smtx">Security</div><div class="smar">›</div></div>
+          </div>
+          <button class="bta" onclick="doSignout()" style="background:transparent;border:1px solid rgba(255,68,68,0.3);color:var(--red);">Sign Out</button>
+        </div>
+      </div>
+
+    </div>
+
+    <nav class="botnav">
+      <button class="bn active" id="bn-home" onclick="goP('home')"><div class="bnic">🏠</div><div class="bnlb">Home</div></button>
+      <button class="bn" id="bn-book" onclick="goP('book')"><div class="bnic">📦</div><div class="bnlb">Book</div></button>
+      <button class="bn" id="bn-wallet" onclick="goP('wallet')"><div class="bnic">💰</div><div class="bnlb">Wallet</div></button>
+      <button class="bn" id="bn-track" onclick="goP('track')"><div class="bnic">📍</div><div class="bnlb">Track</div></button>
+      <button class="bn" id="bn-profile" onclick="goP('profile')"><div class="bnic">👤</div><div class="bnlb">Profile</div></button>
+    </nav>
+  </div>
+</div>
+
+<!-- WAITING -->
+<div class="waiting" id="waiting">
+  <div class="wring"></div>
+  <div class="wtitle">BOOKING SENT</div>
+  <div class="wsub">⚡ Finding Your Driver</div>
+  <div class="wtimer" id="wtimer">25:00</div>
+  <div class="wnote">Moses is reviewing your booking. Driver confirmed in 20–25 minutes. Watch the feed while you wait!</div>
+  <a href="yg-social.html" class="wfeed-link">🎬 <strong style="color:var(--g);">Watch YG Social</strong> while your driver is being assigned — videos, posts, community ⚡</a>
+  <button onclick="closeWaiting()" style="margin-top:18px;padding:10px 24px;border:1px solid var(--b2);border-radius:7px;background:transparent;color:var(--m);font-family:var(--body);font-size:0.82rem;cursor:pointer;">Continue Browsing</button>
+</div>
+
+<script>
+const SURL='https://vkpemsxmygokgmaqstbi.supabase.co';
+const SKEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZrcGVtc3hteWdva2dtYXFzdGJpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzkzMTMzMjcsImV4cCI6MjA5NDg4OTMyN30.4BXwDMsd48KuNoc3xo6j6bmac9t38Oh2_XvIUvho758';
+const {createClient}=supabase;const db=createClient(SURL,SKEY);
+let CU=null,wInt=null,planSel='free',payMethod='wallet',walletBalance=0,routeOpen=false;
+
+window.addEventListener('DOMContentLoaded',async()=>{
+  setTimeout(async()=>{try{const{data:{session}}=await db.auth.getSession();if(session?.user)showApp(session.user);else showS('splash');}catch{showS('splash');}},1200);
+  db.auth.onAuthStateChange((_e,s)=>{if(s?.user)showApp(s.user);});
+  document.getElementById('b-dt').value=new Date().toISOString().split('T')[0];
+  genPayRef();
+});
+
+function showS(n){document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));document.getElementById('s-'+n).classList.add('active');}
+function goAuth(t){showS('auth');switchTab(t);}
+function goBack(){showS('splash');}
+function switchTab(t){document.getElementById('form-su').style.display=t==='signup'?'block':'none';document.getElementById('form-li').style.display=t==='login'?'block':'none';document.getElementById('tab-su').classList.toggle('active',t==='signup');document.getElementById('tab-li').classList.toggle('active',t==='login');document.getElementById('amsg').className='amsg';}
+function toggleBiz(){document.getElementById('biz-fields').style.display=document.getElementById('su-type').value==='business'?'block':'none';}
+function selPlan(el,p){planSel=p;document.querySelectorAll('.plcard').forEach(c=>c.classList.remove('sel'));el.classList.add('sel');}
+
+document.getElementById('su-src').addEventListener('change',()=>{document.getElementById('ref-field').style.display=document.getElementById('su-src').value==='Referral Code'?'block':'none';});
+
+async function doSignup(){
+  const fn=document.getElementById('su-fn').value.trim(),ln=document.getElementById('su-ln').value.trim();
+  const ph=document.getElementById('su-ph').value.trim(),em=document.getElementById('su-em').value.trim(),pw=document.getElementById('su-pw').value;
+  const type=document.getElementById('su-type').value,src=document.getElementById('su-src').value;
+  if(!fn||!em||!pw)return showAmsg('Please fill in all required fields.','err');
+  if(pw.length<8)return showAmsg('Password must be at least 8 characters.','err');
+  setL('su',true);
+  const meta={full_name:`${fn} ${ln}`,first_name:fn,phone:ph,account_type:type,plan:planSel,how_found:src,app_type:'delivery',wallet_balance:0};
+  if(type==='business'){meta.business_name=document.getElementById('su-biz').value.trim();meta.cac=document.getElementById('su-cac').value.trim();}
+  const{data,error}=await db.auth.signUp({email:em,password:pw,options:{data:meta}});
+  setL('su',false);
+  if(error)showAmsg(error.message,'err');
+  else if(data.user?.identities?.length===0)showAmsg('Account exists. Please sign in.','err');
+  else{showAmsg('✅ Account created! Check email to verify, then sign in.','ok');setTimeout(()=>switchTab('login'),3000);}
+}
+async function doLogin(){
+  const em=document.getElementById('li-em').value.trim(),pw=document.getElementById('li-pw').value;
+  if(!em||!pw)return showAmsg('Enter email and password.','err');
+  setL('li',true);
+  const{data,error}=await db.auth.signInWithPassword({email:em,password:pw});
+  setL('li',false);
+  if(error)showAmsg('Incorrect email or password.','err');
+  else showApp(data.user);
+}
+async function doGoogle(){await db.auth.signInWithOAuth({provider:'google',options:{redirectTo:window.location.href}});}
+async function forgotPwd(){const em=document.getElementById('li-em').value.trim();if(!em)return showAmsg('Enter email first.','err');await db.auth.resetPasswordForEmail(em);showAmsg('✅ Reset email sent!','ok');}
+
+function showApp(user){
+  CU=user;const m=user.user_metadata||{};
+  const name=m.first_name||m.full_name?.split(' ')[0]||user.email?.split('@')[0]||'User';
+  const un=m.username||('@'+name.toLowerCase().replace(/\s/g,'_'));
+  const init=name.slice(0,2).toUpperCase();
+  const plan=m.plan||'free';
+  walletBalance=m.wallet_balance||0;
+  document.getElementById('uav').textContent=init;
+  document.getElementById('wc-name').textContent=name;
+  document.getElementById('prof-av').textContent=init;
+  document.getElementById('prof-name').textContent=m.full_name||name;
+  document.getElementById('prof-handle').textContent=un;
+  const pc={free:'var(--m)',starter:'var(--g)',business:'var(--yellow)',enterprise:'var(--purple)'};
+  const pi={free:'🆓',starter:'⚡',business:'🏢',enterprise:'🚀'};
+  document.getElementById('prof-plan').innerHTML=`<span style="color:${pc[plan]}">${pi[plan]} ${plan.charAt(0).toUpperCase()+plan.slice(1)} Plan</span>`;
+  updateBalanceUI();
+  genPayRef();
+  showS('app');
+  loadOrders();
+}
+async function doSignout(){await db.auth.signOut();showS('splash');}
+
+function goP(n){
+  document.querySelectorAll('.tp').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.bn').forEach(b=>b.classList.remove('active'));
+  const p=document.getElementById('p-'+n);if(p)p.classList.add('active');
+  const b=document.getElementById('bn-'+n);if(b)b.classList.add('active');
+}
+
+function updateBalanceUI(){
+  const fmt=walletBalance.toLocaleString('en-NG',{minimumFractionDigits:2,maximumFractionDigits:2});
+  document.getElementById('wallet-bal').textContent=fmt;
+  document.getElementById('wallet-full-bal').textContent=fmt;
+  document.getElementById('book-bal').textContent=fmt;
+  document.getElementById('nav-balance').textContent=fmt;
+}
+
+function selPay(method,el){payMethod=method;document.querySelectorAll('.pay-opt').forEach(b=>b.classList.remove('active'));el.classList.add('active');document.getElementById('wallet-bal-sm').style.display=method==='wallet'?'flex':'none';}
+
+function openFundModal(){const m=document.getElementById('fund-modal');m.classList.toggle('open');if(m.classList.contains('open'))goP('wallet');}
+
+function genPayRef(){
+  const ref='YG-'+(CU?.id||'USER').slice(0,6).toUpperCase()+'-'+Date.now().toString().slice(-6);
+  const el=document.getElementById('pay-ref');if(el)el.textContent=ref;
+}
+function copyAccNum(){navigator.clipboard.writeText('8012345678').then(()=>alert('Account number copied!'));}
+function copyRef(){navigator.clipboard.writeText(document.getElementById('pay-ref').textContent).then(()=>alert('Reference copied!'));}
+
+async function confirmPayment(){
+  const amount=parseInt(document.getElementById('fund-amount').value);
+  if(!amount||amount<500){const m=document.getElementById('fund-msg');m.textContent='Minimum funding amount is ₦500.';m.className='bmsg on err';return;}
+  setLE('btn-paid','sp-paid',true);
+  await db.from('bookings').insert({name:CU?.user_metadata?.full_name||'User',email:CU?.email,phone:CU?.user_metadata?.phone||'',pickup:'WALLET FUND',dropoff:'CREDIT',date:new Date().toISOString().split('T')[0],notes:`WALLET FUND REQUEST | Amount: ₦${amount} | Ref: ${document.getElementById('pay-ref').textContent} | User: ${CU?.email}`,status:'wallet-pending'}).catch(()=>{});
+  setLE('btn-paid','sp-paid',false);
+  const m=document.getElementById('fund-msg');
+  m.textContent=`✅ Payment notification sent to Moses! Your wallet will be credited within 5–10 minutes once confirmed. Reference: ${document.getElementById('pay-ref').textContent}`;
+  m.className='bmsg on ok';
+}
+
+async function submitBooking(){
+  const pu=document.getElementById('b-pu').value.trim(),dop=document.getElementById('b-do').value.trim(),dt=document.getElementById('b-dt').value;
+  if(!pu||!dop||!dt)return showBmsg('Fill in pickup, dropoff and date.','err');
+  if(payMethod==='wallet'&&walletBalance<1500){showBmsg('Insufficient wallet balance. Please fund your wallet first (min ₦1,500).','err');return;}
+  setLE('btn-bk','sp-bk',true);
+  const ryg=document.getElementById('rec-yg').checked?document.getElementById('b-ryg').value.trim():null;
+  const{error}=await db.from('bookings').insert({name:CU?.user_metadata?.full_name||CU?.email,phone:CU?.user_metadata?.phone||'',email:CU?.email,pickup:pu,dropoff:dop,date:dt+(document.getElementById('b-tm').value?' '+document.getElementById('b-tm').value:''),notes:`Type:${document.getElementById('b-pt').value||'Other'}|Weight:${document.getElementById('b-wt').value||'?'}kg|Receiver:${document.getElementById('b-rn').value} ${document.getElementById('b-rp').value}${ryg?'|RecYG:'+ryg:''}|Payment:${payMethod}|${document.getElementById('b-nt').value}`,status:'new'});
+  setLE('btn-bk','sp-bk',false);
+  if(error)showBmsg('❌ '+error.message,'err');
+  else{showBmsg('✅ Booking submitted!','ok');showWaiting();loadOrders();}
+}
+
+function showWaiting(){const w=document.getElementById('waiting');w.classList.add('show');let s=25*60;if(wInt)clearInterval(wInt);wInt=setInterval(()=>{if(s<=0){clearInterval(wInt);return;}s--;const m=Math.floor(s/60),sec=s%60;document.getElementById('wtimer').textContent=`${String(m).padStart(2,'0')}:${String(sec).padStart(2,'0')}`;},1000);}
+function closeWaiting(){document.getElementById('waiting').classList.remove('show');goP('track');}
+
+function tgRoute(id){routeOpen=!routeOpen;document.getElementById('svc-'+id).style.display=routeOpen?'grid':'none';document.getElementById('tform').style.display=routeOpen?'block':'none';}
+function selSvc(el){document.querySelectorAll('.svcard').forEach(c=>c.classList.remove('sel'));el.classList.add('sel');document.getElementById('tftitle').textContent='📋 Book: '+el.querySelector('.svnm').textContent;}
+
+async function submitTransport(){
+  const nm=document.getElementById('tf-nm').value.trim(),ph=document.getElementById('tf-ph').value.trim();
+  if(!nm||!ph){const m=document.getElementById('tfmsg');m.textContent='Fill in name and phone.';m.className='bmsg on err';return;}
+  setLE('btn-tf','sp-tf',true);
+  const svc=document.querySelector('.svcard.sel')?.querySelector('.svnm')?.textContent||'General';
+  const{error}=await db.from('bookings').insert({name:nm,phone:ph,email:CU?.email||'',pickup:'Lagos',dropoff:'Abuja',date:document.getElementById('tf-dt').value,notes:`TRANSPORT|Svc:${svc}|Pax:${document.getElementById('tf-px').value}|Addr:${document.getElementById('tf-ad').value}`,status:'transport-inquiry'});
+  setLE('btn-tf','sp-tf',false);
+  const m=document.getElementById('tfmsg');
+  if(error){m.textContent='❌ '+error.message;m.className='bmsg on err';}
+  else{m.textContent='✅ Pre-registered! Moses will contact you when transport launches.';m.className='bmsg on ok';}
+}
+
+async function loadOrders(){
+  if(!CU)return;
+  const{data}=await db.from('bookings').select('*').eq('email',CU.email).not('status','in','("wallet-pending","transport-inquiry","user-post")').order('created_at',{ascending:false}).limit(5);
+  const el=document.getElementById('recent-orders');
+  if(!data||!data.length){el.innerHTML='<div style="text-align:center;padding:24px;color:var(--m);font-family:var(--mono);font-size:0.7rem;">No orders yet — book your first delivery! 🚐</div>';return;}
+  el.innerHTML=data.map(b=>{
+    const sc={new:'st-new',confirmed:'st-confirmed',delivered:'st-delivered'}[b.status]||'st-new';
+    const sl={new:'🟢 New',confirmed:'🔵 Confirmed',delivered:'✅ Delivered'}[b.status]||b.status;
+    const dt=b.created_at?new Date(b.created_at).toLocaleDateString('en-NG',{day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'}):'-';
+    return `<div class="order-card"><div class="oc-top"><div><div class="oc-route">${b.pickup||'?'} → ${b.dropoff||'?'}</div><div class="oc-date">${dt}</div></div><span class="status-tag ${sc}">${sl}</span></div></div>`;
+  }).join('');
+}
+
+function chkPwd(p){let s=0;if(p.length>=8)s++;if(/[A-Z]/.test(p))s++;if(/[0-9]/.test(p))s++;if(/[^A-Za-z0-9]/.test(p))s++;const c=['','#ff4444','#ffb300','#00b894','#00FF87'];for(let i=1;i<=4;i++)document.getElementById('pb'+i).style.background=i<=s?c[s]:'var(--b2)';}
+function showAmsg(m,t){const e=document.getElementById('amsg');e.textContent=m;e.className='amsg show '+t;}
+function showBmsg(m,t){const e=document.getElementById('bmsg');e.textContent=m;e.className='bmsg on '+t;e.style.display='block';}
+function setL(f,l){document.getElementById('btn-'+f).disabled=l;document.getElementById('sp-'+f).classList.toggle('on',l);}
+function setLE(b,s,l){document.getElementById(b).disabled=l;document.getElementById(s).classList.toggle('on',l);}
+</script>
+</body>
+</html>
