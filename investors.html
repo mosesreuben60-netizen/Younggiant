@@ -149,15 +149,15 @@ footer{padding:56px 52px 40px;border-top:1px solid var(--border);}
 <body>
 
 <nav>
-<a href="index.html" class="nav-logo"><div class="nav-logo-mark">YG</div><span class="nav-logo-name">YOUNG GIANT</span></a>
+  <a href="index.html" class="nav-logo"><div class="nav-logo-mark">YG</div><span class="nav-logo-name">YOUNG GIANT</span></a>
   <div class="nav-links">
     <a href="index.html">Home</a>
     <a href="about.html">About</a>
-    <a href="booking.html">Book Delivery</a>
+    <a href="app.html">Book Delivery</a>
     <a href="register.html">Register</a>
     <a href="investors.html" class="active">Investors</a>
   </div>
-  <a href="booking.html" class="nav-cta">Book Now ⚡</a>
+  <a href="app.html" class="nav-cta">Book Now ⚡</a>
 </nav>
 
 <div class="ticker">
@@ -287,7 +287,9 @@ footer{padding:56px 52px 40px;border-top:1px solid var(--border);}
       </div>
     </div>
   </div>
- </section><!-- ROADMAP -->
+</section>
+
+<!-- ROADMAP -->
 <section class="section road-section">
   <div class="section-inner">
     <div class="reveal" style="text-align:center;">
@@ -315,7 +317,7 @@ footer{padding:56px 52px 40px;border-top:1px solid var(--border);}
         <div style="margin-top:32px;display:flex;flex-direction:column;gap:16px;">
           <div style="display:flex;align-items:center;gap:14px;padding:16px;background:var(--card);border:1px solid var(--border);border-radius:8px;">
             <span style="font-size:20px;">✉️</span>
-            <div><div style="font-family:var(--mono);font-size:10px;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted);margin-bottom:4px;">Email</div><div style="font-size:14px;">mosesreuben60@gmail.com</div></div>
+            <div><div style="font-family:var(--mono);font-size:10px;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted);margin-bottom:4px;">Email</div><div style="font-size:14px;">younggiantev@gmail.com</div></div>
           </div>
           <div style="display:flex;align-items:center;gap:14px;padding:16px;background:var(--card);border:1px solid var(--border);border-radius:8px;">
             <span style="font-size:20px;">👤</span>
@@ -356,8 +358,8 @@ footer{padding:56px 52px 40px;border-top:1px solid var(--border);}
       <p>Nigeria's first solar-powered electric vehicle logistics network. Clean. Affordable. Built for Africa's future.</p>
     </div>
     <div class="footer-col"><h4>Company</h4><a href="about.html">About Us</a><a href="index.html#solution">Our Solution</a><a href="investors.html">Investors</a></div>
-    <div class="footer-col"><h4>Services</h4><a href="booking.html">Book Delivery</a><a href="register.html">Register Business</a></div>
-    <div class="footer-col"><h4>Contact</h4><a href="mailto:mosesreuben60@gmail.com">mosesreuben60@gmail.com</a><a href="https://instagram.com/young_giant_ev_l" target="_blank">Instagram</a></div>
+    <div class="footer-col"><h4>Services</h4><a href="app.html">Book Delivery</a><a href="register.html">Register Business</a></div>
+    <div class="footer-col"><h4>Contact</h4><a href="mailto:younggiantev@gmail.com">younggiantev@gmail.com</a><a href="https://instagram.com/young_giant_ev_l" target="_blank">Instagram</a></div>
   </div>
   <div class="footer-bottom">
     <p>© 2026 Young Giant EV Logistics Nigeria</p>
@@ -367,13 +369,6 @@ footer{padding:56px 52px 40px;border-top:1px solid var(--border);}
 
 <!-- MODAL -->
 <div class="modal" id="modal">
-  <div class="modal-box">
-    <div class="modal-icon">⚡</div>
-    <div class="modal-title">Request Received!</div>
-    <p class="modal-desc" id="modal-desc">Thank you! We will send you our full investor pack within 24 hours.</p>
-    <button class="modal-btn" onclick="document.getElementById('modal').classList.remove('show')">Done</button>
-  </div>
-</div><div class="modal" id="modal">
   <div class="modal-box">
     <div class="modal-icon">⚡</div>
     <div class="modal-title">Request Received!</div>
@@ -420,11 +415,11 @@ async function submitInvestor(){
       document.getElementById('modal').classList.add('show');
       ['inv-name','inv-email','inv-org','inv-message'].forEach(id=>document.getElementById(id).value='');
       document.getElementById('inv-type').value='';
-    } else { alert('Something went wrong. Please email mosesreuben60@gmail.com directly.');}
-  }catch(err){alert('Network error. Please email mosesreuben60@gmail.com');}
+    } else { alert('Something went wrong. Please email younggiantev@gmail.com directly.');}
+  }catch(err){alert('Network error. Please email younggiantev@gmail.com');}
   btn.textContent='Request Investor Pack ⚡'; btn.disabled=false;
 }
 document.getElementById('modal').addEventListener('click',function(e){if(e.target===this)this.classList.remove('show');});
 </script>
 </body>
-  </html>
+</html>
