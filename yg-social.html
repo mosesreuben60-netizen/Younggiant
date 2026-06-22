@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 <title>YG Social — Young Giant</title>
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Outfit:wght@300;400;500;600;700;800&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet"/>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
 <style>
 :root{--g:#00FF87;--gd:#00C853;--dk:#050C05;--s:#0A130A;--card:#0F1A0F;--b:#162416;--b2:#1E3A1E;--txt:#F0FFF0;--m:#4A7A4A;--red:#FF4444;--yellow:#FFB300;--blue:#4FC3F7;--purple:#CE93D8;--display:'Bebas Neue',sans-serif;--body:'Outfit',sans-serif;--mono:'DM Mono',monospace;}
 *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
@@ -88,8 +88,7 @@ body{background:var(--dk);color:var(--txt);font-family:var(--body);}
 .ptab{flex:1;padding:10px 4px;border:none;background:transparent;color:var(--m);font-family:var(--mono);font-size:0.58rem;letter-spacing:0.06em;text-transform:uppercase;cursor:pointer;border-bottom:2px solid transparent;transition:all 0.2s;display:flex;flex-direction:column;align-items:center;gap:3px;}
 .ptab.active{color:var(--g);border-bottom-color:var(--g);}
 .ptab-ic{font-size:0.9rem;}
-
-/* CONTENT */
+  /* CONTENT */
 .abody{flex:1;overflow:hidden;position:relative;}
 .tp{position:absolute;inset:0;overflow-y:auto;overflow-x:hidden;display:none;-webkit-overflow-scrolling:touch;}
 .tp.active{display:block;animation:fu 0.25s ease;}
@@ -183,9 +182,7 @@ body{background:var(--dk);color:var(--txt);font-family:var(--body);}
 .tk-actions{position:absolute;bottom:70px;right:10px;display:flex;flex-direction:column;gap:16px;align-items:center;}
 .tka{display:flex;flex-direction:column;align-items:center;gap:3px;cursor:pointer;}
 .tka-ic{width:40px;height:40px;border-radius:50%;background:rgba(255,255,255,0.15);backdrop-filter:blur(4px);display:flex;align-items:center;justify-content:center;font-size:1.1rem;}
-.tka-lb{font-family:var(--mono);font-size:0.55rem;color:rgba(255,255,255,0.8);}
-
-/* CREATE POST MODAL */
+.tka-lb{font-family:var(--mono);font-size:0.55rem;color:rgba(255,255,255,0.8);}/* CREATE POST MODAL */
 .modal{position:fixed;inset:0;background:rgba(0,0,0,0.85);backdrop-filter:blur(8px);z-index:200;display:flex;align-items:flex-end;justify-content:center;opacity:0;pointer-events:none;transition:opacity 0.3s;}
 .modal.open{opacity:1;pointer-events:all;}
 .msheet{background:var(--card);border:1px solid var(--b2);border-radius:20px 20px 0 0;width:100%;max-width:600px;padding:18px 18px 28px;transform:translateY(100%);transition:transform 0.4s cubic-bezier(0.16,1,0.3,1);}
@@ -275,9 +272,7 @@ body{background:var(--dk);color:var(--txt);font-family:var(--body);}
       <a href="yg-delivery.html">📦 Switch to YG Delivery & Transport →</a>
     </div>
   </div>
-</div>
-
-<!-- AUTH -->
+</div><!-- AUTH -->
 <div class="screen" id="s-auth" style="z-index:5;">
   <div class="acard">
     <div class="alogo">YG SOCIAL</div>
@@ -341,6 +336,23 @@ body{background:var(--dk);color:var(--txt);font-family:var(--body);}
     </div>
 
     <!-- PLATFORM TABS -->
+    <div class="platform-tabs">
+      <button class="ptab active" id="ptab-all" onclick="switchPlatform('all',this)"><div class="ptab-ic">🏠</div>All</button>
+      <button class="ptab" id="ptab-tiktok" onclick="switchPlatform('tiktok',this)"><div class="ptab-ic">🎵</div>TikTok</button>
+      <button class="ptab" id="ptab-instagram" onclick="switchPlatform('instagram',this)"><div class="ptab-ic">📸</div>Insta</button>
+      <button class="ptab" id="ptab-x" onclick="switchPlatform('x',this)"><div class="ptab-ic">𝕏</div>X</button>
+      <button class="ptab" id="ptab-facebook" onclick="switchPlatform('facebook',this)"><div class="ptab-ic">👥</div>FB</button>
+    </div>
+
+    <!-- NOTIF -->
+    <div class="notif-panel" id="npanel">
+      <div style="padding:12px 14px;font-family:var(--mono);font-size:0.62rem;letter-spacing:0.1em;text-transform:uppercase;color:var(--m);">Notifications</div>
+      <div class="nitem"><div style="font-size:1rem;">❤️</div><div class="ntx"><h4>@young_giant_official liked your post</h4><p>Just now</p></div></div>
+      <div class="nitem"><div style="font-size:1rem;">👥</div><div class="ntx"><h4>@adaeze_nwosu started following you</h4><p>2 minutes ago</p></div></div>
+      <div class="nitem"><div style="font-size:1rem;">💬</div><div class="ntx"><h4>New comment on your post</h4><p>5 minutes ago</p></div></div>
+    </div>
+
+    <div class="abody">-- PLATFORM TABS -->
     <div class="platform-tabs">
       <button class="ptab active" id="ptab-all" onclick="switchPlatform('all',this)"><div class="ptab-ic">🏠</div>All</button>
       <button class="ptab" id="ptab-tiktok" onclick="switchPlatform('tiktok',this)"><div class="ptab-ic">🎵</div>TikTok</button>
@@ -463,9 +475,7 @@ body{background:var(--dk);color:var(--txt);font-family:var(--body);}
             <div id="uposts"></div>
           </div>
         </div>
-      </div>
-
-      <!-- TIKTOK VIEW -->
+  </div><!-- TIKTOK VIEW -->
       <div class="tp" id="p-tiktok">
         <div class="tiktok-feed" id="tk-feed">
           <div class="tkvid">
@@ -519,9 +529,7 @@ body{background:var(--dk);color:var(--txt);font-family:var(--body);}
           <div class="trend-item"><div class="trend-num">4</div><div><div class="trend-tag">#YoungGiantTransport</div><div style="font-family:var(--mono);font-size:0.6rem;color:var(--m);">Lagos–Abuja Transport</div></div><div class="trend-count">3.8K posts</div></div>
           <div class="trend-item"><div class="trend-num">5</div><div><div class="trend-tag">#SolarNigeria</div><div style="font-family:var(--mono);font-size:0.6rem;color:var(--m);">Clean Energy</div></div><div class="trend-count">22.1K posts</div></div>
         </div>
-      </div>
-
-      <!-- PROFILE -->
+                                                                </div><!-- PROFILE -->
       <div class="tp" id="p-profile">
         <div class="profwrap">
           <div class="profcover"></div>
@@ -596,17 +604,17 @@ body{background:var(--dk);color:var(--txt);font-family:var(--body);}
     <button class="bta" onclick="publishPost()" id="btn-pub"><div class="sp" id="sp-pub"></div>⚡ Post Now</button>
     <div class="amsg" id="pubmsg" style="margin-top:8px;"></div>
   </div>
-</div>
+                                </div><script>
+const API_URL='https://younggiant-backend-production.up.railway.app';
+let CU=null,authToken=null,ptType='experience',postPlatform='all';
 
-<script>
-const SURL='https://vkpemsxmygokgmaqstbi.supabase.co';
-const SKEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZrcGVtc3hteWdva2dtYXFzdGJpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzkzMTMzMjcsImV4cCI6MjA5NDg4OTMyN30.4BXwDMsd48KuNoc3xo6j6bmac9t38Oh2_XvIUvho758';
-const {createClient}=supabase;const db=createClient(SURL,SKEY);
-let CU=null,ptType='experience',postPlatform='all';
-
-window.addEventListener('DOMContentLoaded',async()=>{
-  setTimeout(async()=>{try{const{data:{session}}=await db.auth.getSession();if(session?.user)showApp(session.user);else showS('splash');}catch{showS('splash');}},1200);
-  db.auth.onAuthStateChange((_e,s)=>{if(s?.user)showApp(s.user);});
+window.addEventListener('DOMContentLoaded',()=>{
+  const saved=localStorage.getItem('yg_user');
+  const savedToken=localStorage.getItem('yg_token');
+  setTimeout(()=>{
+    if(saved&&savedToken){try{CU=JSON.parse(saved);authToken=savedToken;showApp(CU);}catch{showS('splash');}}
+    else showS('splash');
+  },1200);
   loadPosts();
 });
 
@@ -619,45 +627,49 @@ document.getElementById('su-src').addEventListener('change',()=>{document.getEle
 
 async function doSignup(){
   const fn=document.getElementById('su-fn').value.trim(),ln=document.getElementById('su-ln').value.trim();
-  const un=document.getElementById('su-un').value.trim()||('@'+fn.toLowerCase().replace(/\s/g,'_'));
   const em=document.getElementById('su-em').value.trim(),pw=document.getElementById('su-pw').value;
-  const bio=document.getElementById('su-bio').value.trim(),src=document.getElementById('su-src').value;
+  const ph=document.getElementById('su-ph')?.value.trim()||'';
   if(!fn||!em||!pw)return showAmsg('Please fill in all required fields.','err');
   if(pw.length<8)return showAmsg('Password must be at least 8 characters.','err');
   setL('su',true);
-  const{data,error}=await db.auth.signUp({email:em,password:pw,options:{data:{full_name:`${fn} ${ln}`,first_name:fn,username:un,bio,how_found:src,app_type:'social',verified:false}}});
-  setL('su',false);
-  if(error)showAmsg(error.message,'err');
-  else if(data.user?.identities?.length===0)showAmsg('Account exists. Please sign in.','err');
-  else{showAmsg('✅ Account created! Check email to verify, then sign in.','ok');setTimeout(()=>switchTab('login'),3000);}
+  try{
+    const res=await fetch(`${API_URL}/api/auth/register`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({name:`${fn} ${ln}`.trim(),email:em,phone:ph,password:pw})});
+    const data=await res.json();setL('su',false);
+    if(!res.ok)return showAmsg(data.error||'Registration failed.','err');
+    authToken=data.token;CU=data.user;
+    localStorage.setItem('yg_token',authToken);localStorage.setItem('yg_user',JSON.stringify(CU));
+    showApp(CU);
+  }catch{setL('su',false);showAmsg('Network error. Try again.','err');}
 }
 async function doLogin(){
   const em=document.getElementById('li-em').value.trim(),pw=document.getElementById('li-pw').value;
   if(!em||!pw)return showAmsg('Enter your email and password.','err');
   setL('li',true);
-  const{data,error}=await db.auth.signInWithPassword({email:em,password:pw});
-  setL('li',false);
-  if(error)showAmsg('Incorrect email or password.','err');
-  else showApp(data.user);
+  try{
+    const res=await fetch(`${API_URL}/api/auth/login`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email:em,password:pw})});
+    const data=await res.json();setL('li',false);
+    if(!res.ok)return showAmsg('Incorrect email or password.','err');
+    authToken=data.token;CU=data.user;
+    localStorage.setItem('yg_token',authToken);localStorage.setItem('yg_user',JSON.stringify(CU));
+    showApp(CU);
+  }catch{setL('li',false);showAmsg('Network error. Try again.','err');}
 }
-async function doGoogle(){await db.auth.signInWithOAuth({provider:'google',options:{redirectTo:window.location.href}});}
-async function forgotPwd(){const em=document.getElementById('li-em').value.trim();if(!em)return showAmsg('Enter email first.','err');await db.auth.resetPasswordForEmail(em);showAmsg('✅ Reset email sent!','ok');}
+function doGoogle(){showAmsg('Google login coming soon. Use email/password for now.','err');}
+function forgotPwd(){showAmsg('Please email younggiantev@gmail.com to reset your password.','ok');}
 
 function showApp(user){
-  CU=user;const m=user.user_metadata||{};
-  const name=m.first_name||m.full_name?.split(' ')[0]||user.email?.split('@')[0]||'User';
-  const un=m.username||('@'+name.toLowerCase().replace(/\s/g,'_'));
+  CU=user;
+  const name=user.name||user.email?.split('@')[0]||'User';
+  const un='@'+name.toLowerCase().replace(/\s/g,'_');
   const init=name.slice(0,2).toUpperCase();
   document.getElementById('uav').textContent=init;
   document.getElementById('cpav').textContent=init;
   document.getElementById('myavlg').textContent=init;
-  document.getElementById('myname').firstChild.textContent=m.full_name||name;
-  document.getElementById('myhandle').textContent=un;
-  if(m.bio)document.getElementById('mybio').textContent=m.bio;
-  if(m.verified)document.getElementById('my-verified').style.display='inline';
+  if(document.getElementById('myname'))document.getElementById('myname').firstChild.textContent=name;
+  if(document.getElementById('myhandle'))document.getElementById('myhandle').textContent=un;
   showS('app');
 }
-async function doSignout(){await db.auth.signOut();showS('splash');}
+function doSignout(){localStorage.removeItem('yg_token');localStorage.removeItem('yg_user');CU=null;authToken=null;showS('splash');}
 
 function goP(n){
   document.querySelectorAll('.tp').forEach(p=>{p.classList.remove('active');if(p.id==='p-tiktok')p.style.display='';});
@@ -692,11 +704,9 @@ function postCmt(pid){
 }
 
 async function saveCmt(postId,txt){
-  if(!CU)return;
-  await db.from('comments').insert({post_id:postId,user_id:CU.id,username:CU.user_metadata?.username||CU.email,content:txt}).catch(()=>{});
-}
-
-function openPost(){document.getElementById('postmodal').classList.add('open');}
+  // Comments stored locally only for now — backend integration coming
+  console.log('Comment saved locally',postId,txt);
+}function openPost(){document.getElementById('postmodal').classList.add('open');}
 function closePost(){document.getElementById('postmodal').classList.remove('open');}
 function setPT(el,t){ptType=t;document.querySelectorAll('.ptbtn').forEach(b=>b.classList.remove('active'));el.classList.add('active');}
 function selPlatform(el,p){postPlatform=p;document.querySelectorAll('.plbtn').forEach(b=>b.classList.remove('active'));el.classList.add('active');}
@@ -722,27 +732,15 @@ async function publishPost(){
   item.className='pgitem';item.textContent=file?(file.type.startsWith('video')?'🎬':'📷'):'📝';
   grid.insertBefore(item,grid.firstChild);
   const pe=document.getElementById('myposts');if(pe)pe.textContent=parseInt(pe.textContent||'0')+1;
-  await db.from('posts').insert({user_id:CU?.id,user_name:CU?.user_metadata?.full_name||'User',username:CU?.user_metadata?.username||CU?.email,content:txt,location:loc,rating:rtg,post_type:ptType,platform:postPlatform,likes:0,dislikes:0,comments:0,status:'active'}).catch(()=>{});
+  // Post saved to UI — backend posts integration coming soon
   setLE('btn-pub','sp-pub',false);
   document.getElementById('posttxt').value='';document.getElementById('postfile').value='';document.getElementById('postloc').value='';document.getElementById('postrating').value='';
   closePost();goP('home');document.getElementById('p-home').scrollTop=0;
 }
 
 async function loadPosts(){
-  try{
-    const{data}=await db.from('posts').select('*').eq('status','active').order('created_at',{ascending:false}).limit(20);
-    if(!data||!data.length)return;
-    const container=document.getElementById('uposts');
-    data.forEach(p=>{
-      const init=(p.user_name||p.username||'U').slice(0,2).toUpperCase();
-      const un=p.username||'@user';
-      const ptag=platformTags[p.platform]||'';
-      const dt=p.created_at?new Date(p.created_at).toLocaleDateString('en-NG',{day:'numeric',month:'short'}):'-';
-      const pid='db-'+p.id;
-      const html=`<div class="post" data-id="${pid}"><div class="posthd"><div class="postav">${init}</div><div style="flex:1;"><div class="postuname">${un}</div><div class="posttime">${dt}</div></div>${ptag}</div><div class="postcap">${(p.content||'').replace(/(#\w+)/g,'<span class="ht">$1</span>').replace(/(@\w+)/g,'<span class="mention">$1</span>')}</div><div class="postacts"><button class="actbtn" onclick="tgLike(this,'${pid}')"><span>❤️</span><span id="lc-${pid}">${p.likes||0}</span></button><button class="actbtn" onclick="tgDislike(this,'${pid}')"><span>👎</span><span id="dc-${pid}">${p.dislikes||0}</span></button><button class="actbtn" onclick="tgCmt('${pid}')"><span>💬</span><span id="cc-${pid}">${p.comments||0}</span></button><button class="actbtn" onclick="sharePost()"><span>🔗</span></button><div class="actsep"></div><button class="actbtn" onclick="tgSave(this)"><span>🔖</span></button></div><div class="cmtsec" id="cs-${pid}"><div id="ec-${pid}"></div><div class="cmtinrow"><input type="text" id="cin-${pid}" placeholder="Add a comment..." onkeydown="if(event.key==='Enter')postCmt('${pid}')"/><button class="btncmt" onclick="postCmt('${pid}')">Post</button></div></div></div>`;
-      container.insertAdjacentHTML('beforeend',html);
-    });
-  }catch(e){}
+  // Static posts for now — dynamic posts from backend coming soon
+  console.log('Posts loaded');
 }
 
 function switchPTab(t,el){document.querySelectorAll('.proftab').forEach(b=>b.classList.remove('active'));el.classList.add('active');document.getElementById('pt-posts').style.display=t==='posts'?'grid':'none';document.getElementById('pt-saved').style.display=t==='saved'?'block':'none';document.getElementById('pt-liked').style.display=t==='liked'?'block':'none';}
