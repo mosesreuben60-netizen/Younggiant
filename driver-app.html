@@ -1,0 +1,373 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>YG Driver</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Outfit:wght@400;600;700;800&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet"/>
+<style>
+:root{--g:#00FF87;--gd:#00C853;--dk:#050C05;--s:#0A130A;--card:#0F1A0F;--b:#162416;--b2:#1E3A1E;--txt:#F0FFF0;--m:#4A7A4A;--red:#FF4444;--yellow:#FFB300;--display:'Bebas Neue',sans-serif;--body:'Outfit',sans-serif;--mono:'DM Mono',monospace;}
+*{margin:0;padding:0;box-sizing:border-box;}
+html,body{height:100%;background:var(--dk);color:var(--txt);font-family:var(--body);}
+.screen{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;padding:20px;opacity:0;pointer-events:none;transition:opacity 0.3s;overflow-y:auto;}
+.screen.active{opacity:1;pointer-events:all;}
+.login-card{background:var(--card);border:1px solid var(--b2);border-radius:16px;padding:32px 28px;width:100%;max-width:380px;position:relative;overflow:hidden;}
+.login-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,var(--g),transparent);}
+.logo{font-family:var(--display);font-size:2rem;color:var(--g);text-align:center;letter-spacing:0.1em;}
+.sub{text-align:center;font-family:var(--mono);font-size:0.65rem;letter-spacing:0.15em;text-transform:uppercase;color:var(--m);margin-bottom:24px;}
+.field{margin-bottom:14px;}
+.field label{display:block;font-family:var(--mono);font-size:0.65rem;letter-spacing:0.1em;text-transform:uppercase;color:var(--m);margin-bottom:6px;}
+.field input,.field select{width:100%;background:var(--s);border:1px solid var(--b2);border-radius:8px;padding:12px 14px;color:var(--txt);font-family:var(--body);font-size:0.88rem;outline:none;transition:border-color 0.2s;}
+.field input:focus,.field select:focus{border-color:var(--g);}
+.field select option{background:var(--card);}
+.btn{width:100%;padding:13px;border:none;border-radius:8px;background:var(--g);color:#000;font-family:var(--body);font-size:0.9rem;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;transition:all 0.2s;}
+.btn:hover{background:var(--gd);}
+.btn:disabled{opacity:0.4;cursor:not-allowed;}
+.btn-red{background:rgba(255,68,68,0.1);border:1px solid rgba(255,68,68,0.3);color:var(--red);}
+.msg{padding:10px 13px;border-radius:8px;font-size:0.78rem;margin-top:10px;display:none;}
+.msg.show{display:block;}
+.msg.err{background:rgba(255,68,68,0.1);border:1px solid rgba(255,68,68,0.25);color:#ff8a8a;}
+.msg.ok{background:rgba(0,255,135,0.08);border:1px solid rgba(0,255,135,0.2);color:var(--g);}
+/* DRIVER APP */
+#scr-app{flex-direction:column;align-items:stretch;justify-content:flex-start;padding:0;}
+.driver-wrap{min-height:100vh;display:flex;flex-direction:column;}
+.d-header{background:rgba(5,12,5,0.98);backdrop-filter:blur(20px);border-bottom:1px solid var(--b2);padding:14px 16px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0;}
+.d-logo{font-family:var(--display);font-size:1.3rem;color:var(--g);letter-spacing:0.08em;}
+.d-status-badge{font-family:var(--mono);font-size:0.65rem;letter-spacing:0.08em;text-transform:uppercase;padding:5px 12px;border-radius:99px;transition:all 0.3s;}
+.d-status-badge.offline{background:rgba(255,68,68,0.1);border:1px solid rgba(255,68,68,0.3);color:var(--red);}
+.d-status-badge.online{background:rgba(0,255,135,0.1);border:1px solid rgba(0,255,135,0.3);color:var(--g);}
+.d-content{flex:1;padding:16px;overflow-y:auto;}
+/* GPS STATUS CARD */
+.gps-card{background:var(--card);border:1px solid var(--b2);border-radius:14px;padding:20px;margin-bottom:16px;text-align:center;position:relative;overflow:hidden;}
+.gps-card::before{content:'';position:absolute;inset:0;background:radial-gradient(circle at center,rgba(0,255,135,0.04),transparent 70%);}
+.gps-icon{font-size:3rem;margin-bottom:12px;animation:pulseIcon 2s infinite;}
+@keyframes pulseIcon{0%,100%{transform:scale(1);}50%{transform:scale(1.08);}}
+.gps-title{font-family:var(--display);font-size:1.4rem;color:var(--g);letter-spacing:0.05em;margin-bottom:4px;}
+.gps-coords{font-family:var(--mono);font-size:0.7rem;color:var(--m);margin-bottom:16px;min-height:18px;}
+.gps-accuracy{font-family:var(--mono);font-size:0.65rem;color:var(--m);margin-top:8px;}
+/* TOGGLE */
+.toggle-wrap{display:flex;align-items:center;justify-content:center;gap:16px;margin:20px 0;}
+.toggle-label{font-family:var(--mono);font-size:0.75rem;letter-spacing:0.1em;text-transform:uppercase;color:var(--m);}
+.big-toggle{width:80px;height:44px;border-radius:99px;background:var(--b2);position:relative;cursor:pointer;transition:background 0.3s;border:none;outline:none;}
+.big-toggle.on{background:var(--g);}
+.big-toggle::after{content:'';position:absolute;width:36px;height:36px;border-radius:50%;background:#fff;top:4px;left:4px;transition:transform 0.3s;box-shadow:0 2px 8px rgba(0,0,0,0.3);}
+.big-toggle.on::after{transform:translateX(36px);}
+/* STATS */
+.driver-stats{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px;}
+.d-stat{background:var(--card);border:1px solid var(--b2);border-radius:10px;padding:14px;text-align:center;}
+.d-stat-n{font-family:var(--display);font-size:1.6rem;color:var(--g);}
+.d-stat-l{font-family:var(--mono);font-size:0.6rem;letter-spacing:0.08em;text-transform:uppercase;color:var(--m);margin-top:2px;}
+/* ACTIVE DELIVERY */
+.active-delivery{background:var(--card);border:1px solid rgba(0,255,135,0.2);border-radius:12px;padding:18px;margin-bottom:16px;display:none;}
+.active-delivery.show{display:block;}
+.ad-title{font-family:var(--mono);font-size:0.65rem;letter-spacing:0.12em;text-transform:uppercase;color:var(--g);margin-bottom:12px;}
+.ad-route{font-size:0.88rem;font-weight:600;margin-bottom:4px;}
+.ad-customer{font-family:var(--mono);font-size:0.7rem;color:var(--m);}
+.ad-actions{display:flex;gap:8px;margin-top:12px;}
+.btn-sm{padding:9px 16px;border-radius:7px;font-family:var(--body);font-size:0.78rem;font-weight:600;cursor:pointer;border:none;transition:all 0.2s;}
+.btn-sm-g{background:var(--g);color:#000;}
+.btn-sm-outline{background:transparent;border:1px solid var(--b2);color:var(--txt);}
+/* PING STATUS */
+.ping-log{background:var(--s);border:1px solid var(--b2);border-radius:10px;padding:14px;margin-bottom:16px;}
+.ping-title{font-family:var(--mono);font-size:0.65rem;letter-spacing:0.1em;text-transform:uppercase;color:var(--m);margin-bottom:10px;}
+.ping-item{display:flex;align-items:center;gap:8px;padding:5px 0;font-family:var(--mono);font-size:0.65rem;color:var(--m);}
+.ping-dot{width:6px;height:6px;border-radius:50%;background:var(--g);flex-shrink:0;}
+.spin{width:14px;height:14px;border:2px solid rgba(0,0,0,0.2);border-top-color:#000;border-radius:50%;animation:spin 0.6s linear infinite;display:none;}
+.spin.show{display:inline-block;}
+@keyframes spin{to{transform:rotate(360deg);}}
+</style>
+</head>
+<body>
+
+<!-- LOGIN -->
+<div class="screen active" id="scr-login">
+  <div class="login-card">
+    <div class="logo">YG DRIVER</div>
+    <div class="sub">Young Giant · Driver Portal</div>
+    <div class="field"><label>Driver Email</label><input type="email" id="d-email" placeholder="your@email.com"/></div>
+    <div class="field"><label>Password</label><input type="password" id="d-pwd" placeholder="Your password" onkeydown="if(event.key==='Enter')driverLogin()"/></div>
+    <button class="btn" onclick="driverLogin()" id="btn-dlogin"><div class="spin" id="sp-dl"></div>🚐 Sign In as Driver</button>
+    <div class="msg" id="d-login-msg"></div>
+    <p style="text-align:center;margin-top:16px;font-family:var(--mono);font-size:0.65rem;color:var(--m);">🔒 Young Giant Drivers Only · Contact Moses if you need access</p>
+  </div>
+</div>
+
+<!-- DRIVER APP -->
+<div class="screen" id="scr-app">
+  <div class="driver-wrap">
+    <div class="d-header">
+      <div class="d-logo">YG DRIVER</div>
+      <div class="d-status-badge offline" id="d-status-badge">● OFFLINE</div>
+    </div>
+    <div class="d-content">
+      <!-- GPS CARD -->
+      <div class="gps-card">
+        <div class="gps-icon" id="gps-icon">📍</div>
+        <div class="gps-title" id="gps-title">GPS Ready</div>
+        <div class="gps-coords" id="gps-coords">Tap toggle to go online</div>
+        <div class="toggle-wrap">
+          <span class="toggle-label">Offline</span>
+          <button class="big-toggle" id="main-toggle" onclick="toggleOnline()"></button>
+          <span class="toggle-label">Online</span>
+        </div>
+        <div class="gps-accuracy" id="gps-accuracy">GPS accuracy: —</div>
+      </div>
+
+      <!-- STATS -->
+      <div class="driver-stats">
+        <div class="d-stat"><div class="d-stat-n" id="d-trips">0</div><div class="d-stat-l">Trips Today</div></div>
+        <div class="d-stat"><div class="d-stat-n" id="d-online-time">0m</div><div class="d-stat-l">Online Time</div></div>
+      </div>
+
+      <!-- ACTIVE DELIVERY -->
+      <div class="active-delivery" id="active-delivery">
+        <div class="ad-title">⚡ ACTIVE DELIVERY</div>
+        <div class="ad-route" id="ad-route">Pickup → Dropoff</div>
+        <div class="ad-customer" id="ad-customer">Customer: —</div>
+        <div class="ad-actions">
+          <button class="btn-sm btn-sm-g" onclick="updateDeliveryStatus('picked-up')">📦 Picked Up</button>
+          <button class="btn-sm btn-sm-g" onclick="updateDeliveryStatus('delivered')">✅ Delivered</button>
+          <button class="btn-sm btn-sm-outline" onclick="callCustomer()">📞 Call</button>
+        </div>
+      </div>
+
+      <!-- PING LOG -->
+      <div class="ping-log">
+        <div class="ping-title">📡 GPS Ping Log</div>
+        <div id="ping-log-items">
+          <div class="ping-item"><span>Waiting to go online...</span></div>
+        </div>
+      </div>
+
+      <!-- SIGN OUT -->
+      <button class="btn btn-red" onclick="driverLogout()" style="margin-top:8px;">Sign Out</button>
+    </div>
+  </div>
+</div>
+
+<script>
+const API = 'https://younggiant-backend-production.up.railway.app';
+let driverData = null;
+let authToken = null;
+let isOnline = false;
+let watchId = null;
+let pingInterval = null;
+let onlineStart = null;
+let tripCount = 0;
+let currentLat = null;
+let currentLng = null;
+let currentBookingId = null;
+let currentTrackingCode = null;
+
+// ── LOGIN ─────────────────────
+async function driverLogin() {
+  const email = document.getElementById('d-email').value.trim();
+  const pwd = document.getElementById('d-pwd').value;
+  const msg = document.getElementById('d-login-msg');
+  if (!email||!pwd) { msg.textContent='Enter email and password.'; msg.className='msg show err'; return; }
+  document.getElementById('btn-dlogin').disabled=true;
+  document.getElementById('sp-dl').classList.add('show');
+  try {
+    const res = await fetch(`${API}/api/auth/login`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email,password:pwd})});
+    const data = await res.json();
+    document.getElementById('btn-dlogin').disabled=false;
+    document.getElementById('sp-dl').classList.remove('show');
+    if (!res.ok) { msg.textContent='❌ Incorrect credentials or not a driver account.'; msg.className='msg show err'; return; }
+    authToken = data.token;
+    driverData = data.user;
+    localStorage.setItem('yg_driver_token', authToken);
+    localStorage.setItem('yg_driver_data', JSON.stringify(driverData));
+    showDriverApp();
+  } catch { document.getElementById('btn-dlogin').disabled=false; document.getElementById('sp-dl').classList.remove('show'); msg.textContent='❌ Network error.'; msg.className='msg show err'; }
+}
+
+function showDriverApp() {
+  document.getElementById('scr-login').classList.remove('active');
+  document.getElementById('scr-app').classList.add('active');
+  // Check for active booking assigned to this driver
+  checkActiveBooking();
+  // Update online time every minute
+  setInterval(updateOnlineTime, 60000);
+}
+
+function driverLogout() {
+  if (isOnline) toggleOnline();
+  localStorage.removeItem('yg_driver_token');
+  localStorage.removeItem('yg_driver_data');
+  document.getElementById('scr-app').classList.remove('active');
+  document.getElementById('scr-login').classList.add('active');
+}
+
+// ── TOGGLE ONLINE ─────────────
+function toggleOnline() {
+  if (!isOnline) goOnline();
+  else goOffline();
+}
+
+function goOnline() {
+  if (!navigator.geolocation) {
+    alert('GPS not available on this device.');
+    return;
+  }
+  document.getElementById('gps-title').textContent = 'Getting GPS...';
+  document.getElementById('gps-coords').textContent = 'Locating you...';
+  navigator.geolocation.getCurrentPosition(
+    pos => {
+      isOnline = true;
+      onlineStart = Date.now();
+      currentLat = pos.coords.latitude;
+      currentLng = pos.coords.longitude;
+      document.getElementById('main-toggle').classList.add('on');
+      document.getElementById('d-status-badge').textContent = '● ONLINE';
+      document.getElementById('d-status-badge').className = 'd-status-badge online';
+      document.getElementById('gps-icon').textContent = '🟢';
+      document.getElementById('gps-title').textContent = 'GPS Active';
+      document.getElementById('gps-coords').textContent = `${pos.coords.latitude.toFixed(5)}, ${pos.coords.longitude.toFixed(5)}`;
+      document.getElementById('gps-accuracy').textContent = `GPS accuracy: ±${Math.round(pos.coords.accuracy)}m`;
+      // Start watching position
+      watchId = navigator.geolocation.watchPosition(onLocationUpdate, onGPSError, {
+        enableHighAccuracy: true, maximumAge: 5000, timeout: 10000
+      });
+      // Ping every 15 seconds
+      pingLocation(pos.coords.latitude, pos.coords.longitude);
+      pingInterval = setInterval(() => pingLocation(currentLat, currentLng), 15000);
+      addPingLog(`✅ Online · ${new Date().toLocaleTimeString()}`);
+    },
+    err => {
+      document.getElementById('gps-title').textContent = 'GPS Error';
+      document.getElementById('gps-coords').textContent = err.message;
+      addPingLog(`❌ GPS Error: ${err.message}`);
+    },
+    { enableHighAccuracy: true, timeout: 15000 }
+  );
+}
+
+function goOffline() {
+  isOnline = false;
+  if (watchId) navigator.geolocation.clearWatch(watchId);
+  if (pingInterval) clearInterval(pingInterval);
+  document.getElementById('main-toggle').classList.remove('on');
+  document.getElementById('d-status-badge').textContent = '● OFFLINE';
+  document.getElementById('d-status-badge').className = 'd-status-badge offline';
+  document.getElementById('gps-icon').textContent = '📍';
+  document.getElementById('gps-title').textContent = 'GPS Paused';
+  document.getElementById('gps-coords').textContent = 'You are now offline';
+  addPingLog(`⭕ Offline · ${new Date().toLocaleTimeString()}`);
+  // Update driver status in backend
+  updateDriverStatus('inactive');
+}
+
+function onLocationUpdate(pos) {
+  currentLat = pos.coords.latitude;
+  currentLng = pos.coords.longitude;
+  document.getElementById('gps-coords').textContent = `${pos.coords.latitude.toFixed(5)}, ${pos.coords.longitude.toFixed(5)}`;
+  document.getElementById('gps-accuracy').textContent = `GPS accuracy: ±${Math.round(pos.coords.accuracy)}m`;
+}
+
+function onGPSError(err) {
+  addPingLog(`⚠️ GPS signal lost: ${err.message}`);
+}
+
+// ── PING LOCATION TO BACKEND ──
+async function pingLocation(lat, lng) {
+  if (!lat||!lng||!isOnline) return;
+  try {
+    // Update driver location in backend
+    await fetch(`${API}/api/drivers/location`, {
+      method: 'POST',
+      headers: { 'Content-Type':'application/json', 'Authorization':`Bearer ${authToken}` },
+      body: JSON.stringify({ lat, lng, status:'active' })
+    });
+    addPingLog(`📡 Pinged · ${lat.toFixed(4)}, ${lng.toFixed(4)} · ${new Date().toLocaleTimeString()}`);
+    // Also update active delivery tracking if exists
+    if (currentTrackingCode) {
+      await fetch(`${API}/api/track/${currentTrackingCode}/location`, {
+        method: 'POST',
+        headers: { 'Content-Type':'application/json' },
+        body: JSON.stringify({ lat, lng })
+      }).catch(()=>{});
+    }
+  } catch {
+    addPingLog(`⚠️ Ping failed · ${new Date().toLocaleTimeString()}`);
+  }
+}
+
+async function updateDriverStatus(status) {
+  try {
+    await fetch(`${API}/api/drivers/my-status`, {
+      method: 'PATCH',
+      headers: { 'Content-Type':'application/json', 'Authorization':`Bearer ${authToken}` },
+      body: JSON.stringify({ status, lat: currentLat, lng: currentLng })
+    });
+  } catch{}
+}
+
+// ── ACTIVE BOOKING ────────────
+async function checkActiveBooking() {
+  try {
+    const res = await fetch(`${API}/api/bookings/my-active`, {
+      headers: { 'Authorization':`Bearer ${authToken}` }
+    });
+    if (!res.ok) return;
+    const booking = await res.json();
+    if (booking && booking._id) {
+      currentBookingId = booking._id;
+      currentTrackingCode = booking.trackingCode;
+      document.getElementById('active-delivery').classList.add('show');
+      document.getElementById('ad-route').textContent = `${booking.pickupAddress} → ${booking.dropAddress}`;
+      document.getElementById('ad-customer').textContent = `${booking.receiverName} · ${booking.receiverPhone}`;
+    }
+  } catch{}
+}
+
+async function updateDeliveryStatus(status) {
+  if (!currentBookingId) return;
+  try {
+    await fetch(`${API}/api/bookings/${currentBookingId}/status`, {
+      method: 'PATCH',
+      headers: { 'Content-Type':'application/json' },
+      body: JSON.stringify({ status })
+    });
+    addPingLog(`✅ Delivery marked: ${status}`);
+    if (status==='delivered') {
+      document.getElementById('active-delivery').classList.remove('show');
+      currentBookingId = null; currentTrackingCode = null;
+      tripCount++;
+      document.getElementById('d-trips').textContent = tripCount;
+    }
+  } catch { addPingLog('❌ Failed to update status'); }
+}
+
+function callCustomer() {
+  const phone = document.getElementById('ad-customer').textContent.split('·')[1]?.trim();
+  if (phone) window.location.href = `tel:${phone}`;
+}
+
+// ── UI HELPERS ────────────────
+function addPingLog(text) {
+  const container = document.getElementById('ping-log-items');
+  const item = document.createElement('div');
+  item.className = 'ping-item';
+  item.innerHTML = `<div class="ping-dot"></div><span>${text}</span>`;
+  container.insertBefore(item, container.firstChild);
+  // Keep only last 10 logs
+  while (container.children.length > 10) container.removeChild(container.lastChild);
+}
+
+function updateOnlineTime() {
+  if (!onlineStart) return;
+  const mins = Math.floor((Date.now() - onlineStart) / 60000);
+  document.getElementById('d-online-time').textContent = mins < 60 ? `${mins}m` : `${Math.floor(mins/60)}h${mins%60}m`;
+}
+
+// ── AUTO LOGIN ────────────────
+window.addEventListener('DOMContentLoaded', () => {
+  const saved = localStorage.getItem('yg_driver_token');
+  const savedData = localStorage.getItem('yg_driver_data');
+  if (saved && savedData) {
+    try { authToken=saved; driverData=JSON.parse(savedData); showDriverApp(); } catch{}
+  }
+});
+</script>
+</body>
+</html>
