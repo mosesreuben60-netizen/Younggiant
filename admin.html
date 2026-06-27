@@ -1,0 +1,951 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Young Giant — Operations</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Outfit:wght@300;400;500;600;700;800&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet"/>
+<style>
+:root{
+  --g:#00FF87;--gd:#00C853;--dk:#050C05;--s:#0A130A;--card:#0F1A0F;
+  --b:#162416;--b2:#1E3A1E;--txt:#F0FFF0;--m:#4A7A4A;
+  --red:#FF4444;--yellow:#FFB300;--blue:#4FC3F7;--purple:#CE93D8;
+  --display:'Bebas Neue',sans-serif;--body:'Outfit',sans-serif;--mono:'DM Mono',monospace;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+html,body{height:100%;background:var(--dk);color:var(--txt);font-family:var(--body);}
+/* LOGIN */
+.login-wrap{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:20px;}
+.login-card{background:var(--card);border:1px solid var(--b2);border-radius:16px;padding:40px 32px;width:100%;max-width:400px;position:relative;overflow:hidden;}
+.login-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,var(--g),transparent);}
+.login-logo{font-family:var(--display);font-size:2.5rem;color:var(--g);text-align:center;letter-spacing:0.1em;}
+.login-sub{text-align:center;font-family:var(--mono);font-size:0.65rem;letter-spacing:0.15em;text-transform:uppercase;color:var(--m);margin-bottom:28px;}
+.field{margin-bottom:14px;}
+.field label{display:block;font-family:var(--mono);font-size:0.65rem;letter-spacing:0.1em;text-transform:uppercase;color:var(--m);margin-bottom:6px;}
+.field input,.field select,.field textarea{width:100%;background:var(--s);border:1px solid var(--b2);border-radius:8px;padding:12px 14px;color:var(--txt);font-family:var(--body);font-size:0.88rem;outline:none;transition:border-color 0.2s;}
+.field input:focus,.field select:focus{border-color:var(--g);}
+.field select option{background:var(--card);}
+.field textarea{resize:vertical;min-height:80px;}
+.frow{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+.btn-g{width:100%;padding:13px;border:none;border-radius:8px;background:var(--g);color:#000;font-family:var(--body);font-size:0.9rem;font-weight:700;cursor:pointer;transition:all 0.2s;display:flex;align-items:center;justify-content:center;gap:8px;}
+.btn-g:hover{background:var(--gd);}
+.btn-g:disabled{opacity:0.4;cursor:not-allowed;}
+.btn-red{background:rgba(255,68,68,0.1);border:1px solid rgba(255,68,68,0.3);color:var(--red);padding:8px 14px;border-radius:6px;font-family:var(--body);font-size:0.78rem;font-weight:600;cursor:pointer;transition:all 0.2s;}
+.btn-red:hover{background:rgba(255,68,68,0.2);}
+.btn-sm{padding:7px 13px;border:1px solid var(--b2);border-radius:6px;background:transparent;color:var(--txt);font-family:var(--body);font-size:0.75rem;cursor:pointer;transition:all 0.2s;}
+.btn-sm:hover{border-color:var(--g);color:var(--g);}
+.btn-sm.active{background:var(--g);color:#000;border-color:var(--g);}
+.msg{padding:10px 13px;border-radius:8px;font-size:0.78rem;margin-top:10px;display:none;}
+.msg.show{display:block;}
+.msg.err{background:rgba(255,68,68,0.1);border:1px solid rgba(255,68,68,0.25);color:#ff8a8a;}
+.msg.ok{background:rgba(0,255,135,0.08);border:1px solid rgba(0,255,135,0.2);color:var(--g);}
+/* ADMIN LAYOUT */
+.admin{display:none;min-height:100vh;flex-direction:column;}
+.admin.show{display:flex;}
+.topbar{height:56px;background:rgba(5,12,5,0.98);backdrop-filter:blur(20px);border-bottom:1px solid var(--b2);display:flex;align-items:center;justify-content:space-between;padding:0 16px;position:sticky;top:0;z-index:100;flex-shrink:0;}
+.topbar-logo{font-family:var(--display);font-size:1.4rem;color:var(--g);letter-spacing:0.08em;}
+.topbar-right{display:flex;align-items:center;gap:10px;}
+.badge{font-family:var(--mono);font-size:0.6rem;letter-spacing:0.08em;text-transform:uppercase;padding:3px 8px;border-radius:3px;background:rgba(0,255,135,0.1);border:1px solid rgba(0,255,135,0.2);color:var(--g);}
+.admin-body{display:flex;flex:1;overflow:hidden;}
+.sidebar{width:200px;background:var(--s);border-right:1px solid var(--b2);padding:16px 0;flex-shrink:0;overflow-y:auto;}
+.sidebar-item{display:flex;align-items:center;gap:10px;padding:11px 16px;cursor:pointer;transition:all 0.2s;border-left:2px solid transparent;font-size:0.85rem;color:var(--m);}
+.sidebar-item:hover{background:var(--b);color:var(--txt);}
+.sidebar-item.active{background:var(--b);color:var(--g);border-left-color:var(--g);}
+.sidebar-icon{font-size:1rem;width:20px;text-align:center;}
+.sidebar-label{font-size:0.82rem;font-weight:500;}
+.sidebar-count{margin-left:auto;background:var(--g);color:#000;font-family:var(--mono);font-size:0.55rem;font-weight:700;padding:2px 6px;border-radius:99px;min-width:18px;text-align:center;}
+.main-content{flex:1;overflow-y:auto;padding:20px;}
+.panel{display:none;}
+.panel.active{display:block;}
+/* STATS ROW */
+.stats-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:12px;margin-bottom:20px;}
+.stat-card{background:var(--card);border:1px solid var(--b2);border-radius:10px;padding:16px;}
+.stat-n{font-family:var(--display);font-size:2rem;color:var(--g);letter-spacing:0.03em;}
+.stat-l{font-family:var(--mono);font-size:0.6rem;letter-spacing:0.1em;text-transform:uppercase;color:var(--m);margin-top:2px;}
+.stat-delta{font-family:var(--mono);font-size:0.65rem;color:var(--gd);margin-top:4px;}
+/* SECTION */
+.section-hd{font-family:var(--display);font-size:1.3rem;color:var(--g);letter-spacing:0.05em;margin-bottom:4px;}
+.section-sd{font-family:var(--mono);font-size:0.65rem;color:var(--m);letter-spacing:0.1em;text-transform:uppercase;margin-bottom:16px;}
+/* TABLE */
+.tbl-wrap{background:var(--card);border:1px solid var(--b2);border-radius:10px;overflow:hidden;margin-bottom:20px;}
+.tbl-head{display:flex;align-items:center;justify-content:space-between;padding:14px 16px;border-bottom:1px solid var(--b2);}
+.tbl-title{font-family:var(--mono);font-size:0.65rem;letter-spacing:0.12em;text-transform:uppercase;color:var(--m);}
+table{width:100%;border-collapse:collapse;}
+th{background:var(--s);padding:10px 14px;text-align:left;font-family:var(--mono);font-size:0.6rem;letter-spacing:0.1em;text-transform:uppercase;color:var(--m);border-bottom:1px solid var(--b2);}
+td{padding:11px 14px;border-bottom:1px solid var(--b);font-size:0.82rem;vertical-align:middle;}
+tr:last-child td{border-bottom:none;}
+tr:hover td{background:rgba(0,255,135,0.02);}
+/* STATUS TAGS */
+.tag{font-family:var(--mono);font-size:0.6rem;letter-spacing:0.08em;text-transform:uppercase;padding:3px 8px;border-radius:3px;font-weight:700;}
+.tag-new{background:rgba(79,195,247,0.1);border:1px solid rgba(79,195,247,0.3);color:var(--blue);}
+.tag-confirmed{background:rgba(0,255,135,0.1);border:1px solid rgba(0,255,135,0.2);color:var(--g);}
+.tag-transit{background:rgba(255,179,0,0.1);border:1px solid rgba(255,179,0,0.3);color:var(--yellow);}
+.tag-delivered{background:rgba(0,200,83,0.1);border:1px solid rgba(0,200,83,0.3);color:var(--gd);}
+.tag-cancelled{background:rgba(255,68,68,0.1);border:1px solid rgba(255,68,68,0.3);color:var(--red);}
+.tag-active{background:rgba(0,255,135,0.1);border:1px solid rgba(0,255,135,0.2);color:var(--g);}
+.tag-inactive{background:rgba(74,122,74,0.1);border:1px solid var(--b2);color:var(--m);}
+.tag-on-trip{background:rgba(255,179,0,0.1);border:1px solid rgba(255,179,0,0.3);color:var(--yellow);}
+/* MODALS */
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.7);backdrop-filter:blur(4px);z-index:500;display:none;align-items:center;justify-content:center;padding:20px;}
+.modal-overlay.show{display:flex;}
+.modal{background:var(--card);border:1px solid var(--b2);border-radius:14px;padding:28px;width:100%;max-width:480px;max-height:90vh;overflow-y:auto;position:relative;}
+.modal::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,var(--g),transparent);}
+.modal-title{font-family:var(--display);font-size:1.3rem;color:var(--g);letter-spacing:0.05em;margin-bottom:4px;}
+.modal-sub{font-family:var(--mono);font-size:0.65rem;color:var(--m);letter-spacing:0.08em;margin-bottom:20px;}
+.modal-close{position:absolute;top:14px;right:14px;background:var(--s);border:1px solid var(--b2);border-radius:6px;padding:6px 10px;color:var(--m);cursor:pointer;font-size:0.8rem;}
+/* MAP PLACEHOLDER */
+.map-box{background:var(--s);border:1px solid var(--b2);border-radius:10px;height:280px;display:flex;align-items:center;justify-content:center;position:relative;overflow:hidden;margin-bottom:20px;}
+.map-label{font-family:var(--mono);font-size:0.7rem;letter-spacing:0.1em;text-transform:uppercase;color:var(--m);}
+.driver-dot{position:absolute;width:28px;height:28px;border-radius:50%;background:var(--g);display:flex;align-items:center;justify-content:center;font-size:0.7rem;box-shadow:0 0 16px rgba(0,255,135,0.4);cursor:pointer;}
+.driver-dot::after{content:'';position:absolute;width:44px;height:44px;border-radius:50%;border:2px solid rgba(0,255,135,0.3);animation:pulse 2s infinite;}
+@keyframes pulse{0%{transform:scale(0.8);opacity:1;}100%{transform:scale(1.4);opacity:0;}}
+/* CHARTS */
+.chart-row{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:20px;}
+.chart-card{background:var(--card);border:1px solid var(--b2);border-radius:10px;padding:16px;}
+.chart-title{font-family:var(--mono);font-size:0.65rem;letter-spacing:0.1em;text-transform:uppercase;color:var(--m);margin-bottom:14px;}
+.bar-chart{display:flex;align-items:flex-end;gap:6px;height:80px;}
+.bar{flex:1;background:rgba(0,255,135,0.15);border-radius:3px 3px 0 0;position:relative;transition:height 0.5s ease;min-height:4px;}
+.bar:hover{background:rgba(0,255,135,0.3);}
+.bar-label{position:absolute;bottom:-18px;left:50%;transform:translateX(-50%);font-family:var(--mono);font-size:0.5rem;color:var(--m);white-space:nowrap;}
+.bar-val{position:absolute;top:-16px;left:50%;transform:translateX(-50%);font-family:var(--mono);font-size:0.55rem;color:var(--g);white-space:nowrap;}
+/* ACTIVITY FEED */
+.activity-feed{background:var(--card);border:1px solid var(--b2);border-radius:10px;overflow:hidden;}
+.activity-item{display:flex;align-items:flex-start;gap:12px;padding:12px 16px;border-bottom:1px solid var(--b);animation:fadeIn 0.3s ease;}
+.activity-item:last-child{border-bottom:none;}
+@keyframes fadeIn{from{opacity:0;transform:translateY(-4px);}to{opacity:1;transform:translateY(0);}}
+.activity-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;margin-top:6px;}
+.activity-text{flex:1;font-size:0.8rem;line-height:1.5;color:rgba(240,255,240,0.7);}
+.activity-text strong{color:var(--txt);}
+.activity-time{font-family:var(--mono);font-size:0.6rem;color:var(--m);flex-shrink:0;margin-top:2px;}
+/* STAFF CARD */
+.staff-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:12px;margin-bottom:20px;}
+.staff-card{background:var(--card);border:1px solid var(--b2);border-radius:10px;padding:16px;text-align:center;}
+.staff-av{width:48px;height:48px;border-radius:50%;background:var(--g);color:#000;display:flex;align-items:center;justify-content:center;font-size:1rem;font-weight:800;margin:0 auto 10px;}
+.staff-name{font-size:0.88rem;font-weight:600;margin-bottom:2px;}
+.staff-role{font-family:var(--mono);font-size:0.65rem;color:var(--m);margin-bottom:8px;}
+.staff-actions{display:flex;gap:6px;justify-content:center;margin-top:10px;}
+/* MOBILE */
+.mobile-nav{display:none;position:fixed;bottom:0;left:0;right:0;background:rgba(5,12,5,0.98);border-top:1px solid var(--b2);padding:8px 0 12px;z-index:200;}
+.mnav-item{flex:1;display:flex;flex-direction:column;align-items:center;gap:2px;cursor:pointer;color:var(--m);border:none;background:none;padding:4px;}
+.mnav-item.active{color:var(--g);}
+.mnav-icon{font-size:1.1rem;}
+.mnav-label{font-family:var(--mono);font-size:0.5rem;letter-spacing:0.05em;text-transform:uppercase;}
+.spin{width:14px;height:14px;border:2px solid rgba(0,0,0,0.2);border-top-color:#000;border-radius:50%;animation:spin 0.6s linear infinite;display:none;}
+.spin.show{display:inline-block;}
+.spin-g{border:2px solid var(--b2);border-top-color:var(--g);}
+@keyframes spin{to{transform:rotate(360deg);}}
+.empty{text-align:center;padding:40px 20px;color:var(--m);}
+.empty-icon{font-size:2.5rem;margin-bottom:10px;}
+.empty p{font-family:var(--mono);font-size:0.7rem;letter-spacing:0.08em;text-transform:uppercase;line-height:1.7;}
+@media(max-width:640px){
+  .sidebar{display:none;}
+  .mobile-nav{display:flex;}
+  .main-content{padding:14px 14px 80px;}
+  .chart-row{grid-template-columns:1fr;}
+  .frow{grid-template-columns:1fr;}
+  table{font-size:0.75rem;}
+  th,td{padding:8px 10px;}
+}
+</style>
+</head>
+<body>
+
+<!-- LOGIN -->
+<div class="login-wrap" id="login-wrap">
+  <div class="login-card">
+    <div class="login-logo">YG OPS</div>
+    <div class="login-sub">Young Giant Operations Centre</div>
+    <div class="field"><label>Admin Email</label><input type="email" id="adm-email" placeholder="admin@younggiant.com"/></div>
+    <div class="field"><label>Password</label><input type="password" id="adm-pwd" placeholder="Enter admin password" onkeydown="if(event.key==='Enter')adminLogin()"/></div>
+    <button class="btn-g" onclick="adminLogin()" id="btn-adm-login"><div class="spin" id="sp-adm"></div>Access Operations ⚡</button>
+    <div class="msg" id="adm-msg"></div>
+    <p style="text-align:center;margin-top:16px;font-family:var(--mono);font-size:0.65rem;color:var(--m);">🔒 Restricted Access · Young Giant Staff Only</p>
+  </div>
+</div>
+
+<!-- ADMIN APP -->
+<div class="admin" id="admin-app">
+  <!-- TOP BAR -->
+  <div class="topbar">
+    <div class="topbar-logo">YG OPS</div>
+    <div class="topbar-right">
+      <div class="badge" id="tb-time">--:--</div>
+      <div class="badge">⚡ LIVE</div>
+      <button onclick="adminLogout()" style="background:none;border:1px solid var(--b2);border-radius:6px;padding:6px 12px;color:var(--m);font-family:var(--mono);font-size:0.6rem;cursor:pointer;letter-spacing:0.08em;">LOGOUT</button>
+    </div>
+  </div>
+
+  <div class="admin-body">
+    <!-- SIDEBAR -->
+    <div class="sidebar">
+      <div class="sidebar-item active" onclick="showPanel('dashboard')" id="sb-dashboard">
+        <div class="sidebar-icon">📊</div><div class="sidebar-label">Dashboard</div>
+      </div>
+      <div class="sidebar-item" onclick="showPanel('bookings')" id="sb-bookings">
+        <div class="sidebar-icon">📦</div><div class="sidebar-label">Bookings</div>
+        <div class="sidebar-count" id="sc-bookings">0</div>
+      </div>
+      <div class="sidebar-item" onclick="showPanel('drivers')" id="sb-drivers">
+        <div class="sidebar-icon">🚐</div><div class="sidebar-label">Drivers</div>
+        <div class="sidebar-count" id="sc-drivers">0</div>
+      </div>
+      <div class="sidebar-item" onclick="showPanel('staff')" id="sb-staff">
+        <div class="sidebar-icon">👥</div><div class="sidebar-label">Staff</div>
+      </div>
+      <div class="sidebar-item" onclick="showPanel('customers')" id="sb-customers">
+        <div class="sidebar-icon">👤</div><div class="sidebar-label">Customers</div>
+        <div class="sidebar-count" id="sc-customers">0</div>
+      </div>
+      <div class="sidebar-item" onclick="showPanel('tracking')" id="sb-tracking">
+        <div class="sidebar-icon">📍</div><div class="sidebar-label">Live Map</div>
+      </div>
+      <div class="sidebar-item" onclick="showPanel('analytics')" id="sb-analytics">
+        <div class="sidebar-icon">📈</div><div class="sidebar-label">Analytics</div>
+      </div>
+      <div style="padding:16px;margin-top:8px;border-top:1px solid var(--b2);">
+        <div style="font-family:var(--mono);font-size:0.55rem;letter-spacing:0.1em;text-transform:uppercase;color:var(--m);margin-bottom:8px;">Logged in as</div>
+        <div style="font-size:0.8rem;font-weight:600;" id="sb-admin-name">Admin</div>
+        <div style="font-family:var(--mono);font-size:0.65rem;color:var(--m);" id="sb-admin-email">—</div>
+      </div>
+    </div>
+
+    <!-- MAIN -->
+    <div class="main-content" id="main-content">
+
+      <!-- DASHBOARD -->
+      <div class="panel active" id="panel-dashboard">
+        <div class="section-hd">Dashboard</div>
+        <div class="section-sd">YOUNG GIANT OPERATIONS · LIVE OVERVIEW</div>
+        <div class="stats-row">
+          <div class="stat-card"><div class="stat-n" id="ds-total">0</div><div class="stat-l">Total Bookings</div><div class="stat-delta">All time</div></div>
+          <div class="stat-card"><div class="stat-n" id="ds-new" style="color:var(--blue)">0</div><div class="stat-l">New Orders</div><div class="stat-delta">Awaiting action</div></div>
+          <div class="stat-card"><div class="stat-n" id="ds-transit" style="color:var(--yellow)">0</div><div class="stat-l">In Transit</div><div class="stat-delta">Active deliveries</div></div>
+          <div class="stat-card"><div class="stat-n" id="ds-delivered">0</div><div class="stat-l">Delivered</div><div class="stat-delta">Completed</div></div>
+          <div class="stat-card"><div class="stat-n" id="ds-drivers">0</div><div class="stat-l">Active Drivers</div><div class="stat-delta">Online now</div></div>
+          <div class="stat-card"><div class="stat-n" id="ds-customers">0</div><div class="stat-l">Customers</div><div class="stat-delta">Registered</div></div>
+        </div>
+        <div class="chart-row">
+          <div class="chart-card">
+            <div class="chart-title">Bookings This Week</div>
+            <div class="bar-chart" id="week-chart"></div>
+            <div style="height:20px;"></div>
+          </div>
+          <div class="chart-card">
+            <div class="chart-title">Delivery Status Split</div>
+            <div id="status-split" style="display:flex;flex-direction:column;gap:8px;margin-top:4px;"></div>
+          </div>
+        </div>
+        <div class="tbl-wrap">
+          <div class="tbl-head"><div class="tbl-title">⚡ Recent Activity</div><button class="btn-sm" onclick="loadDashboard()">Refresh</button></div>
+          <div class="activity-feed" id="activity-feed">
+            <div class="empty"><div class="empty-icon">⚡</div><p>Loading activity...</p></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- BOOKINGS -->
+      <div class="panel" id="panel-bookings">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:4px;">
+          <div class="section-hd">Bookings</div>
+          <button class="btn-sm" onclick="loadBookings()">🔄 Refresh</button>
+        </div>
+        <div class="section-sd">ALL DELIVERY ORDERS</div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px;" id="booking-filters">
+          <button class="btn-sm active" onclick="filterBookings('all',this)">All</button>
+          <button class="btn-sm" onclick="filterBookings('pending',this)">New</button>
+          <button class="btn-sm" onclick="filterBookings('confirmed',this)">Confirmed</button>
+          <button class="btn-sm" onclick="filterBookings('in-transit',this)">In Transit</button>
+          <button class="btn-sm" onclick="filterBookings('delivered',this)">Delivered</button>
+        </div>
+        <div class="tbl-wrap">
+          <table>
+            <thead><tr>
+              <th>Tracking</th><th>Customer</th><th>Route</th><th>Date</th><th>Status</th><th>Actions</th>
+            </tr></thead>
+            <tbody id="bookings-tbody">
+              <tr><td colspan="6"><div class="empty"><div class="empty-icon">📦</div><p>Loading bookings...</p></div></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- DRIVERS -->
+      <div class="panel" id="panel-drivers">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:4px;">
+          <div class="section-hd">Drivers</div>
+          <button class="btn-g" style="width:auto;padding:9px 16px;font-size:0.8rem;" onclick="openModal('modal-add-driver')">+ Add Driver</button>
+        </div>
+        <div class="section-sd">FLEET & DRIVER MANAGEMENT</div>
+        <div class="tbl-wrap">
+          <table>
+            <thead><tr>
+              <th>Driver</th><th>Phone</th><th>Vehicle</th><th>License</th><th>Status</th><th>Actions</th>
+            </tr></thead>
+            <tbody id="drivers-tbody">
+              <tr><td colspan="6"><div class="empty"><div class="empty-icon">🚐</div><p>No drivers yet. Add your first driver.</p></div></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- STAFF -->
+      <div class="panel" id="panel-staff">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:4px;">
+          <div class="section-hd">Staff</div>
+          <button class="btn-g" style="width:auto;padding:9px 16px;font-size:0.8rem;" onclick="openModal('modal-add-staff')">+ Add Staff</button>
+        </div>
+        <div class="section-sd">YOUNG GIANT TEAM RECORDS</div>
+        <div class="staff-grid" id="staff-grid">
+          <div class="empty" style="grid-column:1/-1"><div class="empty-icon">👥</div><p>No staff records yet.</p></div>
+        </div>
+      </div>
+
+      <!-- CUSTOMERS -->
+      <div class="panel" id="panel-customers">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:4px;">
+          <div class="section-hd">Customers</div>
+          <button class="btn-sm" onclick="loadCustomers()">🔄 Refresh</button>
+        </div>
+        <div class="section-sd">REGISTERED USERS</div>
+        <div class="tbl-wrap">
+          <table>
+            <thead><tr>
+              <th>Name</th><th>Email</th><th>Phone</th><th>Joined</th><th>Bookings</th>
+            </tr></thead>
+            <tbody id="customers-tbody">
+              <tr><td colspan="5"><div class="empty"><div class="empty-icon">👤</div><p>Loading customers...</p></div></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- LIVE MAP -->
+      <div class="panel" id="panel-tracking">
+        <div class="section-hd">Live Map</div>
+        <div class="section-sd">DRIVER LOCATIONS · REAL-TIME</div>
+        <div class="map-box">
+          <div style="position:absolute;inset:0;background:linear-gradient(135deg,rgba(0,255,135,0.03),rgba(0,100,40,0.06));"></div>
+          <!-- Grid lines to simulate map -->
+          <svg style="position:absolute;inset:0;width:100%;height:100%;opacity:0.08;" xmlns="http://www.w3.org/2000/svg">
+            <defs><pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse"><path d="M 40 0 L 0 0 0 40" fill="none" stroke="#00FF87" stroke-width="0.5"/></pattern></defs>
+            <rect width="100%" height="100%" fill="url(#grid)"/>
+          </svg>
+          <div class="driver-dot" style="top:35%;left:25%;" title="Driver 1 · Ikeja">🚐</div>
+          <div class="driver-dot" style="top:55%;left:60%;" title="Driver 2 · VI">🚐</div>
+          <div class="driver-dot" style="top:25%;left:70%;" title="Driver 3 · Lekki">🚐</div>
+          <div style="position:absolute;bottom:12px;left:12px;background:rgba(5,12,5,0.9);border:1px solid var(--b2);border-radius:6px;padding:8px 12px;">
+            <div style="font-family:var(--mono);font-size:0.6rem;color:var(--g);letter-spacing:0.08em;">📍 GPS TRACKING</div>
+            <div style="font-family:var(--mono);font-size:0.58rem;color:var(--m);margin-top:2px;">Full GPS integration coming soon</div>
+          </div>
+          <div style="position:absolute;top:12px;right:12px;background:rgba(5,12,5,0.9);border:1px solid var(--b2);border-radius:6px;padding:8px 12px;">
+            <div style="font-family:var(--mono);font-size:0.6rem;color:var(--m);">🚐 <span style="color:var(--g)" id="map-active-count">0</span> drivers active</div>
+          </div>
+        </div>
+        <div class="tbl-wrap">
+          <div class="tbl-head"><div class="tbl-title">Active Deliveries</div></div>
+          <table>
+            <thead><tr><th>Tracking</th><th>Driver</th><th>Route</th><th>Status</th><th>Update</th></tr></thead>
+            <tbody id="active-deliveries-tbody">
+              <tr><td colspan="5"><div class="empty"><p>No active deliveries right now</p></div></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- ANALYTICS -->
+      <div class="panel" id="panel-analytics">
+        <div class="section-hd">Analytics</div>
+        <div class="section-sd">YOUNG GIANT PERFORMANCE METRICS</div>
+        <div class="stats-row">
+          <div class="stat-card"><div class="stat-n" id="an-total">0</div><div class="stat-l">Total Orders</div></div>
+          <div class="stat-card"><div class="stat-n" id="an-delivered">0</div><div class="stat-l">Completed</div></div>
+          <div class="stat-card"><div class="stat-n" id="an-rate" style="color:var(--g)">0%</div><div class="stat-l">Completion Rate</div></div>
+          <div class="stat-card"><div class="stat-n" id="an-customers">0</div><div class="stat-l">Total Customers</div></div>
+        </div>
+        <div class="tbl-wrap">
+          <div class="tbl-head"><div class="tbl-title">Top Routes</div></div>
+          <table>
+            <thead><tr><th>Pickup Area</th><th>Dropoff Area</th><th>Orders</th></tr></thead>
+            <tbody id="routes-tbody">
+              <tr><td colspan="3"><div class="empty"><p>Route data will appear as bookings come in</p></div></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+    </div><!-- /main-content -->
+  </div><!-- /admin-body -->
+
+  <!-- MOBILE NAV -->
+  <div class="mobile-nav">
+    <button class="mnav-item active" onclick="showPanel('dashboard')" id="mn-dashboard"><div class="mnav-icon">📊</div><div class="mnav-label">Home</div></button>
+    <button class="mnav-item" onclick="showPanel('bookings')" id="mn-bookings"><div class="mnav-icon">📦</div><div class="mnav-label">Orders</div></button>
+    <button class="mnav-item" onclick="showPanel('drivers')" id="mn-drivers"><div class="mnav-icon">🚐</div><div class="mnav-label">Drivers</div></button>
+    <button class="mnav-item" onclick="showPanel('staff')" id="mn-staff"><div class="mnav-icon">👥</div><div class="mnav-label">Staff</div></button>
+    <button class="mnav-item" onclick="showPanel('tracking')" id="mn-tracking"><div class="mnav-icon">📍</div><div class="mnav-label">Map</div></button>
+  </div>
+</div>
+
+<!-- MODALS -->
+<!-- Add Driver -->
+<div class="modal-overlay" id="modal-add-driver">
+  <div class="modal">
+    <button class="modal-close" onclick="closeModal('modal-add-driver')">✕ Close</button>
+    <div class="modal-title">Add Driver</div>
+    <div class="modal-sub">NEW FLEET MEMBER · YOUNG GIANT</div>
+    <div class="frow">
+      <div class="field"><label>Full Name</label><input type="text" id="dr-name" placeholder="Driver's full name"/></div>
+      <div class="field"><label>Phone</label><input type="tel" id="dr-phone" placeholder="+234 800 000 0000"/></div>
+    </div>
+    <div class="field"><label>Email (optional)</label><input type="email" id="dr-email" placeholder="driver@email.com"/></div>
+    <div class="frow">
+      <div class="field"><label>License Number</label><input type="text" id="dr-license" placeholder="License No."/></div>
+      <div class="field"><label>Vehicle ID / Plate</label><input type="text" id="dr-vehicle" placeholder="e.g. LAG-123YG"/></div>
+    </div>
+    <div class="field"><label>Vehicle Type</label>
+      <select id="dr-vtype"><option value="EV Van">EV Van</option><option value="EV Bike">EV Bike</option><option value="EV Bus">EV Bus</option></select>
+    </div>
+    <button class="btn-g" onclick="addDriver()" id="btn-add-dr"><div class="spin" id="sp-dr"></div>Add Driver to Fleet</button>
+    <div class="msg" id="dr-msg"></div>
+  </div>
+</div>
+
+<!-- Add Staff -->
+<div class="modal-overlay" id="modal-add-staff">
+  <div class="modal">
+    <button class="modal-close" onclick="closeModal('modal-add-staff')">✕ Close</button>
+    <div class="modal-title">Add Staff</div>
+    <div class="modal-sub">NEW TEAM MEMBER · YOUNG GIANT</div>
+    <div class="frow">
+      <div class="field"><label>Full Name</label><input type="text" id="st-name" placeholder="Staff full name"/></div>
+      <div class="field"><label>Phone</label><input type="tel" id="st-phone" placeholder="+234 800 000 0000"/></div>
+    </div>
+    <div class="field"><label>Email</label><input type="email" id="st-email" placeholder="staff@email.com"/></div>
+    <div class="frow">
+      <div class="field"><label>Role / Position</label><input type="text" id="st-role" placeholder="e.g. Dispatch Officer"/></div>
+      <div class="field"><label>Department</label>
+        <select id="st-dept"><option>Operations</option><option>Dispatch</option><option>Customer Service</option><option>Finance</option><option>Tech</option><option>Marketing</option></select>
+      </div>
+    </div>
+    <div class="frow">
+      <div class="field"><label>Start Date</label><input type="date" id="st-start"/></div>
+      <div class="field"><label>Salary (₦/month)</label><input type="number" id="st-salary" placeholder="e.g. 80000"/></div>
+    </div>
+    <div class="field"><label>Address</label><input type="text" id="st-address" placeholder="Home address"/></div>
+    <div class="field"><label>Notes</label><textarea id="st-notes" placeholder="Any additional notes..."></textarea></div>
+    <button class="btn-g" onclick="addStaff()" id="btn-add-st"><div class="spin" id="sp-st"></div>Add Staff Member</button>
+    <div class="msg" id="st-msg"></div>
+  </div>
+</div>
+
+<!-- Update Booking Status -->
+<div class="modal-overlay" id="modal-update-booking">
+  <div class="modal">
+    <button class="modal-close" onclick="closeModal('modal-update-booking')">✕ Close</button>
+    <div class="modal-title">Update Booking</div>
+    <div class="modal-sub">CHANGE DELIVERY STATUS</div>
+    <div id="update-booking-info" style="background:var(--s);border:1px solid var(--b2);border-radius:8px;padding:14px;margin-bottom:16px;font-size:0.82rem;line-height:1.7;"></div>
+    <div class="field"><label>New Status</label>
+      <select id="upd-status">
+        <option value="pending">🔵 New / Pending</option>
+        <option value="confirmed">✅ Confirmed</option>
+        <option value="in-transit">🚐 In Transit</option>
+        <option value="delivered">📦 Delivered</option>
+        <option value="cancelled">❌ Cancelled</option>
+      </select>
+    </div>
+    <div class="field"><label>Assign Driver</label>
+      <select id="upd-driver"><option value="">— No driver assigned —</option></select>
+    </div>
+    <div class="field"><label>Update Note (optional)</label><textarea id="upd-note" placeholder="e.g. Driver en route, ETA 15 mins..."></textarea></div>
+    <button class="btn-g" onclick="updateBooking()" id="btn-upd-bk"><div class="spin" id="sp-upd"></div>Save Changes</button>
+    <div class="msg" id="upd-msg"></div>
+  </div>
+</div>
+
+<script>
+const API = 'https://younggiant-backend-production.up.railway.app';
+// Admin credentials — change these
+const ADMIN_CREDS = [
+  { email: 'younggiantev@gmail.com', password: 'YGAdmin2026!', name: 'Moses Reuben', role: 'CEO' },
+  { email: 'admin@younggiant.com', password: 'YGOps2026!', name: 'Operations Admin', role: 'Admin' }
+];
+
+let adminToken = null;
+let allBookings = [];
+let allDrivers = [];
+let allStaff = JSON.parse(localStorage.getItem('yg_staff') || '[]');
+let currentBookingId = null;
+let currentFilter = 'all';
+
+// ── CLOCK ─────────────────────
+setInterval(() => {
+  const now = new Date();
+  const t = now.toLocaleTimeString('en-NG', {hour:'2-digit',minute:'2-digit',hour12:true});
+  const el = document.getElementById('tb-time');
+  if(el) el.textContent = t;
+}, 1000);
+
+// ── LOGIN ─────────────────────
+function adminLogin() {
+  const email = document.getElementById('adm-email').value.trim();
+  const pwd = document.getElementById('adm-pwd').value;
+  const msg = document.getElementById('adm-msg');
+  if(!email||!pwd){msg.textContent='Enter email and password.';msg.className='msg show err';return;}
+  document.getElementById('btn-adm-login').disabled=true;
+  document.getElementById('sp-adm').classList.add('show');
+  setTimeout(()=>{
+    const admin = ADMIN_CREDS.find(a=>a.email===email && a.password===pwd);
+    document.getElementById('btn-adm-login').disabled=false;
+    document.getElementById('sp-adm').classList.remove('show');
+    if(!admin){msg.textContent='❌ Incorrect credentials.';msg.className='msg show err';return;}
+    adminToken = btoa(email+':'+Date.now());
+    localStorage.setItem('yg_admin',JSON.stringify({...admin,token:adminToken}));
+    document.getElementById('sb-admin-name').textContent=admin.name;
+    document.getElementById('sb-admin-email').textContent=admin.role;
+    document.getElementById('login-wrap').style.display='none';
+    document.getElementById('admin-app').classList.add('show');
+    loadDashboard();
+    loadBookings();
+    loadDrivers();
+    loadCustomers();
+  },800);
+}
+
+function adminLogout(){
+  localStorage.removeItem('yg_admin');
+  adminToken=null;
+  document.getElementById('login-wrap').style.display='flex';
+  document.getElementById('admin-app').classList.remove('show');
+}
+
+// Check if already logged in
+window.addEventListener('DOMContentLoaded',()=>{
+  const saved=localStorage.getItem('yg_admin');
+  if(saved){try{const a=JSON.parse(saved);adminToken=a.token;document.getElementById('sb-admin-name').textContent=a.name;document.getElementById('sb-admin-email').textContent=a.role;document.getElementById('login-wrap').style.display='none';document.getElementById('admin-app').classList.add('show');loadDashboard();loadBookings();loadDrivers();loadCustomers();}catch{}}
+  document.getElementById('st-start').value=new Date().toISOString().split('T')[0];
+  buildWeekChart([0,0,0,0,0,0,0]);
+  // Auto-refresh every 30 seconds
+  setInterval(()=>{loadBookings();loadCustomers();},30000);
+});
+
+// ── PANELS ────────────────────
+function showPanel(name){
+  document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.sidebar-item').forEach(s=>s.classList.remove('active'));
+  document.querySelectorAll('.mnav-item').forEach(m=>m.classList.remove('active'));
+  document.getElementById('panel-'+name).classList.add('active');
+  const sb=document.getElementById('sb-'+name);if(sb)sb.classList.add('active');
+  const mn=document.getElementById('mn-'+name);if(mn)mn.classList.add('active');
+  if(name==='tracking')document.getElementById('map-active-count').textContent=allDrivers.filter(d=>d.status==='active').length;
+}
+
+// ── MODALS ────────────────────
+function openModal(id){document.getElementById(id).classList.add('show');}
+function closeModal(id){document.getElementById(id).classList.remove('show');}
+
+// ── LOAD DASHBOARD ────────────
+async function loadDashboard(){
+  try{
+    const [bRes,uRes]=await Promise.all([
+      fetch(`${API}/api/bookings`),
+      fetch(`${API}/api/drivers`)
+    ]);
+    const bookings=bRes.ok?await bRes.json():[];
+    const drivers=uRes.ok?await uRes.json():[];
+    allBookings=Array.isArray(bookings)?bookings:[];
+    allDrivers=Array.isArray(drivers)?drivers:[];
+    const total=allBookings.length;
+    const newB=allBookings.filter(b=>b.status==='pending').length;
+    const transit=allBookings.filter(b=>b.status==='in-transit').length;
+    const delivered=allBookings.filter(b=>b.status==='delivered').length;
+    const activeDrivers=allDrivers.filter(d=>d.status==='active').length;
+    document.getElementById('ds-total').textContent=total;
+    document.getElementById('ds-new').textContent=newB;
+    document.getElementById('ds-transit').textContent=transit;
+    document.getElementById('ds-delivered').textContent=delivered;
+    document.getElementById('ds-drivers').textContent=activeDrivers;
+    document.getElementById('sc-bookings').textContent=newB||total;
+    document.getElementById('sc-drivers').textContent=allDrivers.length;
+    buildStatusSplit(allBookings);
+    buildWeekChart(buildWeekData(allBookings));
+    buildActivityFeed(allBookings);
+  }catch(e){console.error(e);}
+}
+
+function buildWeekData(bookings){
+  const days=[0,0,0,0,0,0,0];
+  const now=new Date();
+  bookings.forEach(b=>{
+    const d=new Date(b.createdAt);
+    const diff=Math.floor((now-d)/(1000*60*60*24));
+    if(diff>=0&&diff<7)days[6-diff]++;
+  });
+  return days;
+}
+
+function buildWeekChart(data){
+  const labels=['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
+  const max=Math.max(...data,1);
+  const chart=document.getElementById('week-chart');
+  if(!chart)return;
+  chart.innerHTML=data.map((v,i)=>`
+    <div class="bar" style="height:${Math.max(4,(v/max)*80)}px">
+      <span class="bar-val">${v||''}</span>
+      <span class="bar-label">${labels[i]}</span>
+    </div>`).join('');
+}
+
+function buildStatusSplit(bookings){
+  const total=bookings.length||1;
+  const statuses=[
+    {label:'Pending',key:'pending',color:'var(--blue)'},
+    {label:'Confirmed',key:'confirmed',color:'var(--g)'},
+    {label:'In Transit',key:'in-transit',color:'var(--yellow)'},
+    {label:'Delivered',key:'delivered',color:'var(--gd)'},
+    {label:'Cancelled',key:'cancelled',color:'var(--red)'},
+  ];
+  document.getElementById('status-split').innerHTML=statuses.map(s=>{
+    const count=bookings.filter(b=>b.status===s.key).length;
+    const pct=Math.round((count/total)*100);
+    return `<div>
+      <div style="display:flex;justify-content:space-between;font-family:var(--mono);font-size:0.6rem;color:var(--m);margin-bottom:3px;">
+        <span>${s.label}</span><span style="color:${s.color}">${count} (${pct}%)</span>
+      </div>
+      <div style="height:4px;background:var(--b2);border-radius:99px;">
+        <div style="height:4px;width:${pct}%;background:${s.color};border-radius:99px;transition:width 0.5s;"></div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function buildActivityFeed(bookings){
+  const feed=document.getElementById('activity-feed');
+  if(!bookings.length){feed.innerHTML='<div class="empty"><div class="empty-icon">⚡</div><p>No activity yet</p></div>';return;}
+  const recent=bookings.slice(0,8);
+  const colors={pending:'var(--blue)',confirmed:'var(--g)',delivered:'var(--gd)','in-transit':'var(--yellow)',cancelled:'var(--red)'};
+  feed.innerHTML=recent.map(b=>{
+    const dt=b.createdAt?new Date(b.createdAt).toLocaleString('en-NG',{day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'}):'-';
+    return `<div class="activity-item">
+      <div class="activity-dot" style="background:${colors[b.status]||'var(--m)'}"></div>
+      <div class="activity-text"><strong>${b.trackingCode||'—'}</strong> · ${b.pickupAddress||'?'} → ${b.dropAddress||'?'} · Receiver: ${b.receiverName||'?'}</div>
+      <div class="activity-time">${dt}</div>
+    </div>`;
+  }).join('');
+}
+
+// ── BOOKINGS ──────────────────
+async function loadBookings(){
+  try{
+    const res=await fetch(`${API}/api/bookings`);
+    if(!res.ok)return;
+    allBookings=await res.json();
+    if(!Array.isArray(allBookings))allBookings=[];
+    document.getElementById('sc-bookings').textContent=allBookings.filter(b=>b.status==='pending').length||allBookings.length;
+    renderBookings(currentFilter);
+    buildActivityFeed(allBookings);
+    // Update dashboard stats
+    document.getElementById('ds-total').textContent=allBookings.length;
+    document.getElementById('ds-new').textContent=allBookings.filter(b=>b.status==='pending').length;
+    document.getElementById('ds-transit').textContent=allBookings.filter(b=>b.status==='in-transit').length;
+    document.getElementById('ds-delivered').textContent=allBookings.filter(b=>b.status==='delivered').length;
+    // Active deliveries on map
+    renderActiveDeliveries();
+  }catch(e){console.error(e);}
+}
+
+function filterBookings(filter,btn){
+  currentFilter=filter;
+  document.querySelectorAll('#booking-filters .btn-sm').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  renderBookings(filter);
+}
+
+function renderBookings(filter){
+  const tbody=document.getElementById('bookings-tbody');
+  let filtered=allBookings;
+  if(filter!=='all')filtered=allBookings.filter(b=>b.status===filter);
+  if(!filtered.length){tbody.innerHTML=`<tr><td colspan="6"><div class="empty"><div class="empty-icon">📦</div><p>No ${filter==='all'?'':filter} bookings</p></div></td></tr>`;return;}
+  const tagMap={pending:'tag-new',confirmed:'tag-confirmed','in-transit':'tag-transit',delivered:'tag-delivered',cancelled:'tag-cancelled'};
+  const labelMap={pending:'New',confirmed:'Confirmed','in-transit':'In Transit',delivered:'Delivered',cancelled:'Cancelled'};
+  tbody.innerHTML=filtered.map(b=>{
+    const dt=b.createdAt?new Date(b.createdAt).toLocaleDateString('en-NG',{day:'numeric',month:'short'}):'-';
+    const tag=tagMap[b.status]||'tag-new';
+    const label=labelMap[b.status]||b.status;
+    const route=`${(b.pickupAddress||'?').slice(0,20)}... → ${(b.dropAddress||'?').slice(0,20)}...`;
+    return `<tr>
+      <td><span style="font-family:var(--mono);font-size:0.75rem;color:var(--g);">${b.trackingCode||'—'}</span></td>
+      <td>${b.receiverName||'—'}<br/><span style="font-family:var(--mono);font-size:0.6rem;color:var(--m);">${b.receiverPhone||''}</span></td>
+      <td style="font-size:0.75rem;max-width:180px;">${route}</td>
+      <td><span style="font-family:var(--mono);font-size:0.72rem;">${dt}</span></td>
+      <td><span class="tag ${tag}">${label}</span></td>
+      <td><button class="btn-sm" onclick="openUpdateBooking('${b._id}')">Update</button></td>
+    </tr>`;
+  }).join('');
+}
+
+function openUpdateBooking(id){
+  const b=allBookings.find(x=>x._id===id);
+  if(!b)return;
+  currentBookingId=id;
+  document.getElementById('update-booking-info').innerHTML=`
+    <div style="font-family:var(--mono);font-size:0.65rem;color:var(--m);margin-bottom:8px;">BOOKING DETAILS</div>
+    <div><strong>Tracking:</strong> ${b.trackingCode||'—'}</div>
+    <div><strong>Receiver:</strong> ${b.receiverName||'—'} · ${b.receiverPhone||'—'}</div>
+    <div><strong>Pickup:</strong> ${b.pickupAddress||'—'}</div>
+    <div><strong>Dropoff:</strong> ${b.dropAddress||'—'}</div>
+    <div><strong>Notes:</strong> ${b.notes||'None'}</div>
+  `;
+  document.getElementById('upd-status').value=b.status||'pending';
+  // Populate driver select
+  const dsel=document.getElementById('upd-driver');
+  dsel.innerHTML='<option value="">— No driver assigned —</option>'+allDrivers.map(d=>`<option value="${d._id}" ${b.driverId===d._id?'selected':''}>${d.name} · ${d.vehicleId||d.vehicleType}</option>`).join('');
+  document.getElementById('upd-msg').className='msg';
+  openModal('modal-update-booking');
+}
+
+async function updateBooking(){
+  const status=document.getElementById('upd-status').value;
+  const driverId=document.getElementById('upd-driver').value;
+  const note=document.getElementById('upd-note').value.trim();
+  const msg=document.getElementById('upd-msg');
+  document.getElementById('btn-upd-bk').disabled=true;
+  document.getElementById('sp-upd').classList.add('show');
+  try{
+    const res=await fetch(`${API}/api/bookings/${currentBookingId}/status`,{
+      method:'PATCH',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({status,driverId:driverId||undefined})
+    });
+    document.getElementById('btn-upd-bk').disabled=false;
+    document.getElementById('sp-upd').classList.remove('show');
+    if(!res.ok){msg.textContent='❌ Update failed.';msg.className='msg show err';return;}
+    // Also update tracking if note provided
+    if(note){
+      const b=allBookings.find(x=>x._id===currentBookingId);
+      if(b?.trackingCode){
+        await fetch(`${API}/api/track/${b.trackingCode}/update`,{
+          method:'POST',
+          headers:{'Content-Type':'application/json'},
+          body:JSON.stringify({status,message:note,location:''})
+        }).catch(()=>{});
+      }
+    }
+    msg.textContent='✅ Booking updated successfully!';msg.className='msg show ok';
+    setTimeout(()=>{closeModal('modal-update-booking');loadBookings();loadDashboard();},1200);
+  }catch{document.getElementById('btn-upd-bk').disabled=false;document.getElementById('sp-upd').classList.remove('show');msg.textContent='❌ Network error.';msg.className='msg show err';}
+}
+
+// ── DRIVERS ───────────────────
+async function loadDrivers(){
+  try{
+    const res=await fetch(`${API}/api/drivers`);
+    if(!res.ok)return;
+    allDrivers=await res.json();
+    if(!Array.isArray(allDrivers))allDrivers=[];
+    document.getElementById('sc-drivers').textContent=allDrivers.length;
+    document.getElementById('ds-drivers').textContent=allDrivers.filter(d=>d.status==='active').length;
+    renderDrivers();
+  }catch(e){}
+}
+
+function renderDrivers(){
+  const tbody=document.getElementById('drivers-tbody');
+  if(!allDrivers.length){tbody.innerHTML='<tr><td colspan="6"><div class="empty"><div class="empty-icon">🚐</div><p>No drivers yet. Add your first driver.</p></div></td></tr>';return;}
+  const tagMap={'active':'tag-active','inactive':'tag-inactive','on-trip':'tag-on-trip'};
+  tbody.innerHTML=allDrivers.map(d=>`<tr>
+    <td><strong>${d.name}</strong><br/><span style="font-family:var(--mono);font-size:0.6rem;color:var(--m);">${d.email||''}</span></td>
+    <td><span style="font-family:var(--mono);font-size:0.75rem;">${d.phone}</span></td>
+    <td>${d.vehicleType||'EV'}<br/><span style="font-family:var(--mono);font-size:0.65rem;color:var(--m);">${d.vehicleId||'—'}</span></td>
+    <td><span style="font-family:var(--mono);font-size:0.72rem;">${d.licenseNo}</span></td>
+    <td><span class="tag ${tagMap[d.status]||'tag-inactive'}">${d.status||'inactive'}</span></td>
+    <td style="display:flex;gap:6px;">
+      <button class="btn-sm" onclick="toggleDriverStatus('${d._id}','${d.status}')">${d.status==='active'?'Set Offline':'Set Online'}</button>
+      <button class="btn-red" onclick="deleteDriver('${d._id}')">Remove</button>
+    </td>
+  </tr>`).join('');
+}
+
+async function addDriver(){
+  const name=document.getElementById('dr-name').value.trim();
+  const phone=document.getElementById('dr-phone').value.trim();
+  const email=document.getElementById('dr-email').value.trim();
+  const licenseNo=document.getElementById('dr-license').value.trim();
+  const vehicleId=document.getElementById('dr-vehicle').value.trim();
+  const vehicleType=document.getElementById('dr-vtype').value;
+  const msg=document.getElementById('dr-msg');
+  if(!name||!phone||!licenseNo){msg.textContent='Name, phone and license are required.';msg.className='msg show err';return;}
+  document.getElementById('btn-add-dr').disabled=true;document.getElementById('sp-dr').classList.add('show');
+  try{
+    const res=await fetch(`${API}/api/drivers`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({name,phone,email,licenseNo,vehicleId,vehicleType,status:'active'})});
+    document.getElementById('btn-add-dr').disabled=false;document.getElementById('sp-dr').classList.remove('show');
+    if(!res.ok){msg.textContent='❌ Failed to add driver.';msg.className='msg show err';return;}
+    msg.textContent='✅ Driver added to fleet!';msg.className='msg show ok';
+    ['dr-name','dr-phone','dr-email','dr-license','dr-vehicle'].forEach(id=>document.getElementById(id).value='');
+    setTimeout(()=>{closeModal('modal-add-driver');loadDrivers();loadDashboard();},1200);
+  }catch{document.getElementById('btn-add-dr').disabled=false;document.getElementById('sp-dr').classList.remove('show');msg.textContent='❌ Network error.';msg.className='msg show err';}
+}
+
+async function toggleDriverStatus(id,currentStatus){
+  const newStatus=currentStatus==='active'?'inactive':'active';
+  try{
+    await fetch(`${API}/api/drivers/${id}`,{method:'PATCH',headers:{'Content-Type':'application/json'},body:JSON.stringify({status:newStatus})});
+    loadDrivers();loadDashboard();
+  }catch{}
+}
+
+async function deleteDriver(id){
+  if(!confirm('Remove this driver from the fleet?'))return;
+  try{await fetch(`${API}/api/drivers/${id}`,{method:'PATCH',headers:{'Content-Type':'application/json'},body:JSON.stringify({status:'inactive'})});loadDrivers();}catch{}
+}
+
+// ── STAFF ─────────────────────
+function addStaff(){
+  const name=document.getElementById('st-name').value.trim();
+  const phone=document.getElementById('st-phone').value.trim();
+  const email=document.getElementById('st-email').value.trim();
+  const role=document.getElementById('st-role').value.trim();
+  const dept=document.getElementById('st-dept').value;
+  const start=document.getElementById('st-start').value;
+  const salary=document.getElementById('st-salary').value;
+  const address=document.getElementById('st-address').value.trim();
+  const notes=document.getElementById('st-notes').value.trim();
+  const msg=document.getElementById('st-msg');
+  if(!name||!phone||!role){msg.textContent='Name, phone and role are required.';msg.className='msg show err';return;}
+  const staff={id:'ST-'+Date.now(),name,phone,email,role,department:dept,startDate:start,salary,address,notes,createdAt:new Date().toISOString()};
+  allStaff.push(staff);
+  localStorage.setItem('yg_staff',JSON.stringify(allStaff));
+  msg.textContent='✅ Staff member added!';msg.className='msg show ok';
+  ['st-name','st-phone','st-email','st-role','st-address','st-notes','st-salary'].forEach(id=>document.getElementById(id).value='');
+  setTimeout(()=>{closeModal('modal-add-staff');renderStaff();},1200);
+}
+
+function renderStaff(){
+  const grid=document.getElementById('staff-grid');
+  if(!allStaff.length){grid.innerHTML='<div class="empty" style="grid-column:1/-1"><div class="empty-icon">👥</div><p>No staff records yet.</p></div>';return;}
+  grid.innerHTML=allStaff.map(s=>`<div class="staff-card">
+    <div class="staff-av">${s.name.slice(0,2).toUpperCase()}</div>
+    <div class="staff-name">${s.name}</div>
+    <div class="staff-role">${s.role} · ${s.department}</div>
+    <div style="font-family:var(--mono);font-size:0.6rem;color:var(--m);">${s.phone}</div>
+    ${s.salary?`<div style="font-family:var(--mono);font-size:0.65rem;color:var(--g);margin-top:4px;">₦${parseInt(s.salary).toLocaleString()}/mo</div>`:''}
+    ${s.startDate?`<div style="font-family:var(--mono);font-size:0.6rem;color:var(--m);">Since ${new Date(s.startDate).toLocaleDateString('en-NG',{month:'short',year:'numeric'})}</div>`:''}
+    <div class="staff-actions">
+      <button class="btn-sm" onclick="removeStaff('${s.id}')">Remove</button>
+    </div>
+  </div>`).join('');
+}
+
+function removeStaff(id){
+  if(!confirm('Remove this staff member?'))return;
+  allStaff=allStaff.filter(s=>s.id!==id);
+  localStorage.setItem('yg_staff',JSON.stringify(allStaff));
+  renderStaff();
+}
+
+// ── CUSTOMERS ─────────────────
+async function loadCustomers(){
+  try{
+    const res=await fetch(`${API}/api/bookings`);
+    if(!res.ok)return;
+    const bookings=await res.json();
+    if(!Array.isArray(bookings))return;
+    // Get unique customers from bookings
+    const customerMap={};
+    bookings.forEach(b=>{
+      if(b.userId){
+        if(!customerMap[b.userId])customerMap[b.userId]={id:b.userId,bookings:0,lastBooking:b.createdAt};
+        customerMap[b.userId].bookings++;
+      }
+    });
+    const customers=Object.values(customerMap);
+    document.getElementById('ds-customers').textContent=customers.length;
+    document.getElementById('sc-customers').textContent=customers.length;
+    document.getElementById('an-customers').textContent=customers.length;
+    // Also try to get registered users list
+    try{
+      const uRes=await fetch(`${API}/api/users`);
+      if(uRes.ok){
+        const users=await uRes.json();
+        if(Array.isArray(users)&&users.length){
+          document.getElementById('ds-customers').textContent=users.length;
+          document.getElementById('sc-customers').textContent=users.length;
+          document.getElementById('an-customers').textContent=users.length;
+          renderCustomers(users);
+          return;
+        }
+      }
+    }catch{}
+    renderCustomersFromBookings(bookings);
+  }catch(e){}
+}
+
+function renderCustomers(users){
+  const tbody=document.getElementById('customers-tbody');
+  if(!users.length){tbody.innerHTML='<tr><td colspan="5"><div class="empty"><div class="empty-icon">👤</div><p>No customers yet</p></div></td></tr>';return;}
+  tbody.innerHTML=users.map(u=>{
+    const dt=u.createdAt?new Date(u.createdAt).toLocaleDateString('en-NG',{day:'numeric',month:'short',year:'numeric'}):'-';
+    return `<tr>
+      <td><strong>${u.name||'—'}</strong></td>
+      <td><span style="font-family:var(--mono);font-size:0.75rem;">${u.email||'—'}</span></td>
+      <td>${u.phone||'—'}</td>
+      <td><span style="font-family:var(--mono);font-size:0.72rem;">${dt}</span></td>
+      <td><span style="font-family:var(--mono);font-size:0.75rem;color:var(--g);">—</span></td>
+    </tr>`;
+  }).join('');
+}
+
+function renderCustomersFromBookings(bookings){
+  const tbody=document.getElementById('customers-tbody');
+  if(!bookings.length){tbody.innerHTML='<tr><td colspan="5"><div class="empty"><div class="empty-icon">👤</div><p>No customers yet</p></div></td></tr>';return;}
+  const unique=[...new Map(bookings.filter(b=>b.receiverName).map(b=>[b.receiverPhone,b])).values()];
+  tbody.innerHTML=unique.slice(0,20).map(b=>{
+    const dt=b.createdAt?new Date(b.createdAt).toLocaleDateString('en-NG',{day:'numeric',month:'short'}):'-';
+    return `<tr>
+      <td><strong>${b.receiverName||'—'}</strong></td>
+      <td>—</td>
+      <td>${b.receiverPhone||'—'}</td>
+      <td>${dt}</td>
+      <td><span style="color:var(--g);font-family:var(--mono);font-size:0.75rem;">${bookings.filter(x=>x.receiverPhone===b.receiverPhone).length}</span></td>
+    </tr>`;
+  }).join('');
+}
+
+// ── ACTIVE DELIVERIES MAP ─────
+function renderActiveDeliveries(){
+  const active=allBookings.filter(b=>b.status==='in-transit');
+  const tbody=document.getElementById('active-deliveries-tbody');
+  if(!active.length){tbody.innerHTML='<tr><td colspan="5"><div class="empty"><p>No active deliveries</p></div></td></tr>';return;}
+  const tagMap={'in-transit':'tag-transit'};
+  tbody.innerHTML=active.map(b=>{
+    const driver=allDrivers.find(d=>d._id===b.driverId);
+    return `<tr>
+      <td><span style="font-family:var(--mono);font-size:0.75rem;color:var(--g);">${b.trackingCode||'—'}</span></td>
+      <td>${driver?driver.name:'Unassigned'}</td>
+      <td style="font-size:0.75rem;">${(b.pickupAddress||'?').slice(0,15)}... → ${(b.dropAddress||'?').slice(0,15)}...</td>
+      <td><span class="tag tag-transit">In Transit</span></td>
+      <td><button class="btn-sm" onclick="openUpdateBooking('${b._id}')">Update</button></td>
+    </tr>`;
+  }).join('');
+}
+
+// ── ANALYTICS ─────────────────
+function loadAnalytics(){
+  const total=allBookings.length;
+  const delivered=allBookings.filter(b=>b.status==='delivered').length;
+  const rate=total?Math.round((delivered/total)*100):0;
+  document.getElementById('an-total').textContent=total;
+  document.getElementById('an-delivered').textContent=delivered;
+  document.getElementById('an-rate').textContent=rate+'%';
+}
+
+// Call analytics when panel is shown
+const origShowPanel=showPanel;
+window.showPanel=function(name){
+  origShowPanel(name);
+  if(name==='analytics')loadAnalytics();
+  if(name==='staff')renderStaff();
+};
+</script>
+</body>
+</html>
