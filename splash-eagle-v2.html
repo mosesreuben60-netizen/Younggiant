@@ -1,0 +1,622 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Young Giant</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Outfit:wght@300;400;500;600;700;800&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet"/>
+<style>
+:root{
+  --g:#00FF87;--gd:#00C853;--dk:#050C05;--s:#0A130A;--card:#0F1A0F;
+  --b:#162416;--b2:#1E3A1E;--txt:#F0FFF0;--m:#4A7A4A;
+  --display:'Bebas Neue',sans-serif;--body:'Outfit',sans-serif;--mono:'DM Mono',monospace;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+html,body{height:100%;overflow:hidden;font-family:var(--body);}
+
+/* ── FULL SCREEN CANVAS ── */
+#sky-canvas{position:fixed;inset:0;z-index:0;}
+
+/* ── EAGLE IMAGE LAYER ── */
+#eagle-layer{
+  position:fixed;inset:0;z-index:1;
+  display:flex;align-items:center;justify-content:center;
+  pointer-events:none;
+}
+#eagle-svg{
+  width:min(95vw,95vh);
+  height:min(95vw,95vh);
+  opacity:0;
+  animation:eagleReveal 2.5s 0.8s cubic-bezier(0.16,1,0.3,1) forwards;
+  filter:drop-shadow(0 0 40px rgba(0,255,135,0.25)) drop-shadow(0 0 80px rgba(0,200,83,0.15));
+  transform-origin:center;
+}
+@keyframes eagleReveal{
+  0%{opacity:0;transform:scale(0.7);}
+  60%{opacity:0.9;transform:scale(1.04);}
+  100%{opacity:1;transform:scale(1);}
+}
+
+/* ── OVERLAY GRADIENT ── */
+.overlay{
+  position:fixed;inset:0;z-index:2;pointer-events:none;
+  background:
+    radial-gradient(ellipse at center,rgba(5,12,5,0) 20%,rgba(5,12,5,0.3) 60%,rgba(5,12,5,0.85) 100%),
+    linear-gradient(to bottom,rgba(5,12,5,0.4) 0%,rgba(5,12,5,0) 30%,rgba(5,12,5,0) 60%,rgba(5,12,5,0.95) 100%);
+}
+
+/* ── SCREENS ── */
+.screen{position:fixed;inset:0;display:flex;opacity:0;pointer-events:none;transition:opacity 0.5s;z-index:10;overflow-y:auto;}
+.screen.active{opacity:1;pointer-events:all;}
+
+/* ── SPLASH SCREEN ── */
+#scr-splash{flex-direction:column;justify-content:space-between;padding:0;}
+
+.splash-top{
+  padding:48px 24px 20px;
+  text-align:center;
+  animation:fadeDown 1s 1.8s ease forwards;
+  opacity:0;
+}
+@keyframes fadeDown{from{opacity:0;transform:translateY(-20px);}to{opacity:1;transform:translateY(0);}}
+
+.splash-eyebrow{
+  font-family:var(--mono);font-size:0.65rem;letter-spacing:0.35em;
+  text-transform:uppercase;color:rgba(0,255,135,0.7);margin-bottom:8px;
+}
+.splash-logo{
+  font-family:var(--display);
+  font-size:clamp(4rem,22vw,9rem);
+  color:#fff;
+  letter-spacing:0.04em;line-height:0.85;
+  text-shadow:0 0 60px rgba(0,255,135,0.4),0 4px 30px rgba(0,0,0,0.8);
+}
+.splash-logo span{color:var(--g);text-shadow:0 0 40px rgba(0,255,135,0.6),0 0 80px rgba(0,255,135,0.3);}
+
+.splash-bottom{
+  padding:20px 24px 52px;
+  animation:fadeUp 1s 2.2s ease forwards;
+  opacity:0;
+}
+@keyframes fadeUp{from{opacity:0;transform:translateY(20px);}to{opacity:1;transform:translateY(0);}}
+
+.splash-tagline{
+  font-size:1rem;font-weight:300;
+  color:rgba(240,255,240,0.7);
+  line-height:1.6;margin-bottom:28px;
+  text-align:center;
+  text-shadow:0 2px 10px rgba(0,0,0,0.8);
+}
+.splash-tagline strong{color:var(--g);font-weight:700;}
+
+.splash-btns{display:flex;gap:12px;margin-bottom:32px;}
+.btn-hero{
+  flex:1;padding:15px 20px;border:none;border-radius:10px;
+  font-family:var(--body);font-size:0.95rem;font-weight:700;
+  cursor:pointer;transition:all 0.25s;
+}
+.btn-hero-primary{
+  background:var(--g);color:#000;
+  box-shadow:0 4px 20px rgba(0,255,135,0.4);
+}
+.btn-hero-primary:hover{background:var(--gd);transform:translateY(-2px);box-shadow:0 8px 28px rgba(0,255,135,0.5);}
+.btn-hero-ghost{
+  background:rgba(255,255,255,0.08);
+  color:#fff;border:1px solid rgba(255,255,255,0.2);
+  backdrop-filter:blur(10px);
+}
+.btn-hero-ghost:hover{background:rgba(255,255,255,0.15);border-color:rgba(255,255,255,0.4);}
+
+.splash-stats{
+  display:flex;justify-content:space-around;
+  border-top:1px solid rgba(255,255,255,0.08);
+  padding-top:20px;
+}
+.sstat{text-align:center;}
+.sstat-n{font-family:var(--display);font-size:1.8rem;color:var(--g);text-shadow:0 0 20px rgba(0,255,135,0.5);}
+.sstat-l{font-family:var(--mono);font-size:0.58rem;letter-spacing:0.1em;text-transform:uppercase;color:rgba(255,255,255,0.4);margin-top:2px;}
+
+/* ── AUTH SCREEN ── */
+#scr-auth{align-items:flex-end;justify-content:center;background:rgba(5,12,5,0.7);backdrop-filter:blur(8px);}
+.auth-sheet{
+  background:var(--card);border:1px solid var(--b2);
+  border-radius:20px 20px 0 0;
+  padding:28px 24px 40px;
+  width:100%;max-width:480px;
+  position:relative;overflow:hidden;
+  animation:slideUp 0.4s ease;
+  max-height:92vh;overflow-y:auto;
+}
+@keyframes slideUp{from{transform:translateY(100%);}to{transform:translateY(0);}}
+.auth-sheet::before{content:'';display:block;width:36px;height:3px;background:var(--b2);border-radius:99px;margin:0 auto 20px;}
+.auth-sheet::after{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,var(--g),transparent);}
+.auth-logo{font-family:var(--display);font-size:1.5rem;color:var(--g);text-align:center;letter-spacing:0.1em;}
+.auth-sub{text-align:center;font-family:var(--mono);font-size:0.65rem;letter-spacing:0.1em;text-transform:uppercase;color:var(--m);margin-bottom:22px;}
+.auth-tabs{display:flex;background:var(--s);border:1px solid var(--b);border-radius:8px;padding:3px;margin-bottom:20px;}
+.auth-tab{flex:1;padding:9px;border:none;border-radius:6px;background:transparent;color:var(--m);font-family:var(--body);font-size:0.82rem;font-weight:600;cursor:pointer;transition:all 0.2s;color:var(--txt);}
+.auth-tab.active{background:var(--g);color:#000;}
+.field{margin-bottom:13px;}
+.field label{display:block;font-family:var(--mono);font-size:0.62rem;letter-spacing:0.1em;text-transform:uppercase;color:var(--m);margin-bottom:5px;}
+.field input{width:100%;background:var(--s);border:1px solid var(--b2);border-radius:8px;padding:11px 14px;color:var(--txt);font-family:var(--body);font-size:0.88rem;outline:none;transition:border-color 0.2s;}
+.field input:focus{border-color:var(--g);}
+.frow{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+.btn-auth{width:100%;padding:13px;border:none;border-radius:8px;background:var(--g);color:#000;font-family:var(--body);font-size:0.9rem;font-weight:700;cursor:pointer;margin-top:4px;display:flex;align-items:center;justify-content:center;gap:8px;transition:all 0.2s;}
+.btn-auth:hover{background:var(--gd);}
+.btn-auth:disabled{opacity:0.4;cursor:not-allowed;}
+.auth-msg{margin-top:10px;padding:10px 13px;border-radius:8px;font-size:0.78rem;display:none;}
+.auth-msg.show{display:block;}
+.auth-msg.error{background:rgba(255,68,68,0.1);border:1px solid rgba(255,68,68,0.25);color:#ff8a8a;}
+.auth-msg.success{background:rgba(0,255,135,0.08);border:1px solid rgba(0,255,135,0.2);color:var(--g);}
+.pwd-bars{display:flex;gap:3px;margin-top:5px;}
+.pwd-bar{height:3px;flex:1;border-radius:99px;background:var(--b2);transition:background 0.3s;}
+.back-btn{text-align:center;margin-top:12px;}
+.back-btn button{background:none;border:none;color:var(--m);font-family:var(--body);font-size:0.78rem;cursor:pointer;}
+.spin-sm{width:15px;height:15px;border:2px solid rgba(0,0,0,0.2);border-top-color:#000;border-radius:50%;animation:spin 0.6s linear infinite;display:none;}
+.spin-sm.show{display:block;}
+@keyframes spin{to{transform:rotate(360deg);}}
+@media(max-width:380px){.frow{grid-template-columns:1fr;}}
+</style>
+</head>
+<body>
+
+<!-- SKY CANVAS - background atmosphere -->
+<canvas id="sky-canvas"></canvas>
+
+<!-- EAGLE FULL SCREEN IMAGE -->
+<div id="eagle-layer">
+  <svg id="eagle-svg" viewBox="0 0 600 600" xmlns="http://www.w3.org/2000/svg">
+    <defs>
+      <radialGradient id="bodyGrad" cx="50%" cy="50%" r="50%">
+        <stop offset="0%" stop-color="#00FF87" stop-opacity="0.9"/>
+        <stop offset="60%" stop-color="#00C853" stop-opacity="0.7"/>
+        <stop offset="100%" stop-color="#004D20" stop-opacity="0.4"/>
+      </radialGradient>
+      <radialGradient id="wingGradL" cx="80%" cy="30%" r="70%">
+        <stop offset="0%" stop-color="#00FF87" stop-opacity="0.8"/>
+        <stop offset="100%" stop-color="#003D15" stop-opacity="0.2"/>
+      </radialGradient>
+      <radialGradient id="wingGradR" cx="20%" cy="30%" r="70%">
+        <stop offset="0%" stop-color="#00FF87" stop-opacity="0.8"/>
+        <stop offset="100%" stop-color="#003D15" stop-opacity="0.2"/>
+      </radialGradient>
+      <filter id="glow">
+        <feGaussianBlur stdDeviation="4" result="blur"/>
+        <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+      </filter>
+      <filter id="glow-strong">
+        <feGaussianBlur stdDeviation="8" result="blur"/>
+        <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+      </filter>
+    </defs>
+
+    <!-- WING SHADOW / DEPTH -->
+    <ellipse cx="300" cy="420" rx="220" ry="30" fill="rgba(0,0,0,0.15)" filter="url(#glow)"/>
+
+    <!-- LEFT WING - massive spread -->
+    <g filter="url(#glow)">
+      <!-- Primary left wing shape -->
+      <path d="M 300 290
+               C 270 250, 210 200, 140 170
+               C 90 150, 30 145, 5 160
+               C 30 155, 85 165, 130 185
+               C 180 208, 240 255, 280 300
+               Z"
+            fill="url(#wingGradL)" stroke="#00FF87" stroke-width="1.5" opacity="0.9"/>
+
+      <!-- Left wing extended feathers -->
+      <path d="M 280 300 C 230 260, 155 220, 80 195 C 35 178, 5 180, 5 160
+               C 25 148, 60 152, 100 165 C 160 188, 230 238, 278 292 Z"
+            fill="#00C853" opacity="0.3"/>
+
+      <!-- Left feather tips detail -->
+      <path d="M 5 160 L 20 185 M 25 153 L 38 178 M 45 148 L 56 174
+               M 65 147 L 74 173 M 85 148 L 92 175 M 105 152 L 110 180
+               M 125 158 L 128 187"
+            stroke="#00FF87" stroke-width="2" stroke-linecap="round" opacity="0.7"/>
+
+      <!-- Mid wing feathers -->
+      <path d="M 120 175 C 160 210, 210 248, 250 278
+               M 140 180 C 175 218, 220 258, 258 286
+               M 160 188 C 192 225, 232 265, 265 292"
+            stroke="#00FF87" stroke-width="1.2" opacity="0.4" fill="none"/>
+
+      <!-- Secondary left wing lower -->
+      <path d="M 300 295
+               C 265 310, 210 320, 155 315
+               C 110 310, 60 295, 20 270
+               C 55 288, 105 300, 152 304
+               C 208 308, 265 298, 300 295 Z"
+            fill="#00C853" opacity="0.25" stroke="#00FF87" stroke-width="1"/>
+    </g>
+
+    <!-- RIGHT WING - massive spread -->
+    <g filter="url(#glow)">
+      <path d="M 300 290
+               C 330 250, 390 200, 460 170
+               C 510 150, 570 145, 595 160
+               C 570 155, 515 165, 470 185
+               C 420 208, 360 255, 320 300
+               Z"
+            fill="url(#wingGradR)" stroke="#00FF87" stroke-width="1.5" opacity="0.9"/>
+
+      <path d="M 320 300 C 370 260, 445 220, 520 195 C 565 178, 595 180, 595 160
+               C 575 148, 540 152, 500 165 C 440 188, 370 238, 322 292 Z"
+            fill="#00C853" opacity="0.3"/>
+
+      <path d="M 595 160 L 580 185 M 575 153 L 562 178 M 555 148 L 544 174
+               M 535 147 L 526 173 M 515 148 L 508 175 M 495 152 L 490 180
+               M 475 158 L 472 187"
+            stroke="#00FF87" stroke-width="2" stroke-linecap="round" opacity="0.7"/>
+
+      <path d="M 480 175 C 440 210, 390 248, 350 278
+               M 460 180 C 425 218, 380 258, 342 286
+               M 440 188 C 408 225, 368 265, 335 292"
+            stroke="#00FF87" stroke-width="1.2" opacity="0.4" fill="none"/>
+
+      <path d="M 300 295
+               C 335 310, 390 320, 445 315
+               C 490 310, 540 295, 580 270
+               C 545 288, 495 300, 448 304
+               C 392 308, 335 298, 300 295 Z"
+            fill="#00C853" opacity="0.25" stroke="#00FF87" stroke-width="1"/>
+    </g>
+
+    <!-- BODY - torso -->
+    <g filter="url(#glow-strong)">
+      <ellipse cx="300" cy="310" rx="45" ry="70" fill="url(#bodyGrad)" stroke="#00FF87" stroke-width="2"/>
+      <!-- Chest detail -->
+      <path d="M 275 285 C 290 295, 310 295, 325 285
+               M 272 300 C 288 312, 312 312, 328 300
+               M 275 315 C 290 325, 310 325, 325 315"
+            stroke="#00FF87" stroke-width="1" opacity="0.5" fill="none"/>
+    </g>
+
+    <!-- NECK -->
+    <ellipse cx="300" cy="240" rx="22" ry="32" fill="#00C853" opacity="0.85" filter="url(#glow)"/>
+
+    <!-- HEAD - majestic eagle head -->
+    <g filter="url(#glow-strong)">
+      <ellipse cx="300" cy="205" rx="32" ry="28" fill="#00FF87" opacity="0.95"/>
+      <!-- White head marking (like bald eagle) -->
+      <ellipse cx="300" cy="198" rx="26" ry="20" fill="rgba(255,255,255,0.12)"/>
+      <!-- Eye -->
+      <circle cx="313" cy="200" r="7" fill="#050C05"/>
+      <circle cx="313" cy="200" r="4" fill="#00FF87"/>
+      <circle cx="315" cy="198" r="1.5" fill="#fff"/>
+      <!-- Fierce brow ridge -->
+      <path d="M 305 194 C 312 190, 320 191, 325 194"
+            stroke="#050C05" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+    </g>
+
+    <!-- BEAK - hooked eagle beak -->
+    <g filter="url(#glow)">
+      <path d="M 320 205 C 345 202, 360 208, 355 218 C 350 225, 335 222, 322 215 Z"
+            fill="#00FF87" stroke="#00C853" stroke-width="1.5"/>
+      <!-- Hook at tip -->
+      <path d="M 355 215 C 362 218, 360 226, 352 225"
+            fill="#00C853" stroke="#00FF87" stroke-width="1"/>
+    </g>
+
+    <!-- TAIL FEATHERS -->
+    <g filter="url(#glow)" opacity="0.8">
+      <path d="M 270 375 C 255 410, 248 445, 245 470
+               M 282 378 C 272 415, 268 450, 268 475
+               M 295 380 C 290 418, 288 454, 290 478
+               M 308 380 C 308 418, 310 454, 312 478
+               M 320 378 C 325 415, 330 450, 334 475
+               M 332 375 C 342 410, 350 445, 356 470"
+            stroke="#00FF87" stroke-width="2.5" stroke-linecap="round" fill="none"/>
+      <!-- Tail webbing -->
+      <path d="M 245 470 C 260 465, 278 470, 290 478 C 302 472, 322 472, 334 475 C 344 470, 354 468, 356 470"
+            stroke="#00C853" stroke-width="1" fill="none" opacity="0.5"/>
+    </g>
+
+    <!-- TALONS -->
+    <g filter="url(#glow)" opacity="0.7">
+      <!-- Left talon -->
+      <path d="M 278 375 C 260 395, 245 410, 238 425 M 278 375 C 268 398, 258 415, 255 432
+               M 278 375 C 275 400, 272 418, 272 435 M 278 375 C 285 398, 288 415, 290 430"
+            stroke="#00FF87" stroke-width="1.8" stroke-linecap="round" fill="none"/>
+      <!-- Right talon -->
+      <path d="M 322 375 C 340 395, 355 410, 362 425 M 322 375 C 332 398, 342 415, 345 432
+               M 322 375 C 325 400, 328 418, 328 435 M 322 375 C 315 398, 312 415, 310 430"
+            stroke="#00FF87" stroke-width="1.8" stroke-linecap="round" fill="none"/>
+    </g>
+
+    <!-- WING ENERGY LINES - glowing veins -->
+    <g opacity="0.35">
+      <path d="M 300 290 C 240 255, 160 225, 70 210" stroke="#00FF87" stroke-width="1" fill="none" stroke-dasharray="4,3"/>
+      <path d="M 300 290 C 360 255, 440 225, 530 210" stroke="#00FF87" stroke-width="1" fill="none" stroke-dasharray="4,3"/>
+      <path d="M 300 295 C 230 280, 140 270, 50 262" stroke="#00FF87" stroke-width="0.8" fill="none" stroke-dasharray="3,4"/>
+      <path d="M 300 295 C 370 280, 460 270, 550 262" stroke="#00FF87" stroke-width="0.8" fill="none" stroke-dasharray="3,4"/>
+    </g>
+
+    <!-- OUTER GLOW RING - subtle aura -->
+    <circle cx="300" cy="300" r="280" fill="none" stroke="#00FF87" stroke-width="0.5" opacity="0.08"/>
+    <circle cx="300" cy="300" r="250" fill="none" stroke="#00FF87" stroke-width="0.3" opacity="0.06"/>
+  </svg>
+</div>
+
+<!-- OVERLAY -->
+<div class="overlay"></div>
+
+<!-- SPLASH SCREEN -->
+<div class="screen active" id="scr-splash">
+  <div class="splash-top">
+    <div class="splash-eyebrow">Nigeria's EV Logistics Network</div>
+    <div class="splash-logo">YOUNG<br/><span>GIANT</span></div>
+  </div>
+  <div class="splash-bottom">
+    <div class="splash-tagline">
+      <strong>Electric. Fearless. Built to soar.</strong><br/>
+      Solar-powered deliveries & transport across Nigeria ⚡
+    </div>
+    <div class="splash-btns">
+      <button class="btn-hero btn-hero-primary" onclick="goAuth('signup')">Create Account ⚡</button>
+      <button class="btn-hero btn-hero-ghost" onclick="goAuth('login')">Sign In</button>
+    </div>
+    <div class="splash-stats">
+      <div class="sstat"><div class="sstat-n">10X</div><div class="sstat-l">Cheaper</div></div>
+      <div class="sstat"><div class="sstat-n">0%</div><div class="sstat-l">Emissions</div></div>
+      <div class="sstat"><div class="sstat-n">25m</div><div class="sstat-l">Confirm</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- AUTH SCREEN -->
+<div class="screen" id="scr-auth">
+  <div class="auth-sheet">
+    <div class="auth-logo">YG ⚡</div>
+    <div class="auth-sub">Young Giant Logistics</div>
+    <div class="auth-tabs">
+      <button class="auth-tab active" id="tab-su" onclick="switchTab('signup')">Create Account</button>
+      <button class="auth-tab" id="tab-li" onclick="switchTab('login')">Sign In</button>
+    </div>
+    <div id="form-signup">
+      <div class="frow">
+        <div class="field"><label>First Name</label><input type="text" id="su-fname" placeholder="Moses"/></div>
+        <div class="field"><label>Last Name</label><input type="text" id="su-lname" placeholder="Reuben"/></div>
+      </div>
+      <div class="field"><label>Phone</label><input type="tel" id="su-phone" placeholder="+234 800 000 0000"/></div>
+      <div class="field"><label>Email</label><input type="email" id="su-email" placeholder="you@email.com"/></div>
+      <div class="field"><label>Password</label>
+        <input type="password" id="su-pwd" placeholder="Min. 8 characters" oninput="checkPwd(this.value)"/>
+        <div class="pwd-bars"><div class="pwd-bar" id="pb1"></div><div class="pwd-bar" id="pb2"></div><div class="pwd-bar" id="pb3"></div><div class="pwd-bar" id="pb4"></div></div>
+      </div>
+      <button class="btn-auth" onclick="handleSignup()" id="btn-su"><div class="spin-sm" id="sp-su"></div>Create My Account ⚡</button>
+    </div>
+    <div id="form-login" style="display:none;">
+      <div class="field"><label>Email</label><input type="email" id="li-email" placeholder="you@email.com"/></div>
+      <div class="field"><label>Password</label><input type="password" id="li-pwd" placeholder="Your password"/></div>
+      <button class="btn-auth" onclick="handleLogin()" id="btn-li"><div class="spin-sm" id="sp-li"></div>Sign In to Young Giant</button>
+    </div>
+    <div class="auth-msg" id="auth-msg"></div>
+    <div class="back-btn"><button onclick="goBack()">← Back to home</button></div>
+  </div>
+</div>
+
+<script>
+// ═══════════════════════════════════════
+// SKY + SMALL BIRDS ANIMATION
+// ═══════════════════════════════════════
+const canvas = document.getElementById('sky-canvas');
+const ctx = canvas.getContext('2d');
+let W, H, birds = [], clouds = [], stars = [];
+
+function resize() {
+  W = canvas.width = window.innerWidth;
+  H = canvas.height = window.innerHeight;
+}
+resize();
+window.addEventListener('resize', () => { resize(); initScene(); });
+
+// Sky gradient
+function drawSky() {
+  const grd = ctx.createLinearGradient(0, 0, 0, H);
+  grd.addColorStop(0, '#010A01');
+  grd.addColorStop(0.25, '#021402');
+  grd.addColorStop(0.55, '#031C03');
+  grd.addColorStop(0.8, '#051205');
+  grd.addColorStop(1, '#050C05');
+  ctx.fillStyle = grd;
+  ctx.fillRect(0, 0, W, H);
+}
+
+// Stars
+class Star {
+  constructor() {
+    this.x = Math.random() * W;
+    this.y = Math.random() * H * 0.6;
+    this.r = 0.3 + Math.random() * 1.2;
+    this.alpha = 0.1 + Math.random() * 0.5;
+    this.twinkle = Math.random() * Math.PI * 2;
+    this.twinkleSpeed = 0.02 + Math.random() * 0.03;
+  }
+  update() { this.twinkle += this.twinkleSpeed; }
+  draw() {
+    const a = this.alpha * (0.7 + 0.3 * Math.sin(this.twinkle));
+    ctx.save();
+    ctx.globalAlpha = a;
+    ctx.fillStyle = '#00FF87';
+    ctx.shadowColor = '#00FF87';
+    ctx.shadowBlur = 4;
+    ctx.beginPath();
+    ctx.arc(this.x, this.y, this.r, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.restore();
+  }
+}
+
+// Small birds
+class SmallBird {
+  constructor(delay) {
+    this.reset();
+    this.x = -50 - Math.random() * 300;
+    this.age = -(delay || 0);
+  }
+  reset() {
+    this.x = -80;
+    this.y = H * (0.05 + Math.random() * 0.55);
+    this.speed = 0.6 + Math.random() * 1.8;
+    this.scale = 0.3 + Math.random() * 0.9;
+    this.wingPhase = Math.random() * Math.PI * 2;
+    this.wingSpeed = 0.08 + Math.random() * 0.06;
+    this.alpha = 0;
+    this.vy = (Math.random() - 0.5) * 0.15;
+    this.age = 0;
+  }
+  update() {
+    this.age++;
+    if (this.age < 0) return;
+    this.wingPhase += this.wingSpeed;
+    this.x += this.speed;
+    this.y += this.vy + Math.sin(this.age * 0.02) * 0.2;
+    this.alpha = Math.min(this.alpha + 0.03, 0.55 + this.scale * 0.25);
+    if (this.x > W + 100) this.reset();
+  }
+  draw() {
+    if (this.age < 0 || this.alpha < 0.01) return;
+    const s = this.scale * 5;
+    const wf = Math.sin(this.wingPhase) * s * 1.8;
+    ctx.save();
+    ctx.translate(this.x, this.y);
+    ctx.globalAlpha = this.alpha;
+    ctx.strokeStyle = '#00FF87';
+    ctx.lineWidth = 0.8 + this.scale * 0.5;
+    ctx.lineCap = 'round';
+    // Simple bird silhouette - two wing arcs (M shape)
+    ctx.beginPath();
+    ctx.moveTo(-s * 2.5, wf * 0.3);
+    ctx.quadraticCurveTo(-s * 1.2, -wf, 0, wf * 0.1);
+    ctx.quadraticCurveTo(s * 1.2, -wf, s * 2.5, wf * 0.3);
+    ctx.stroke();
+    // Tiny body dot
+    ctx.fillStyle = '#00FF87';
+    ctx.beginPath();
+    ctx.arc(0, 0, this.scale * 0.8, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.restore();
+  }
+}
+
+// Clouds - subtle green-tinted mist
+class Cloud {
+  constructor(x, y, w, h, alpha) {
+    this.x = x || Math.random() * W;
+    this.y = y || H * (0.1 + Math.random() * 0.5);
+    this.w = w || 80 + Math.random() * 160;
+    this.h = h || 20 + Math.random() * 40;
+    this.alpha = alpha || 0.02 + Math.random() * 0.05;
+    this.speed = 0.08 + Math.random() * 0.12;
+  }
+  update() {
+    this.x += this.speed;
+    if (this.x > W + this.w) this.x = -this.w;
+  }
+  draw() {
+    ctx.save();
+    ctx.globalAlpha = this.alpha;
+    const grd = ctx.createRadialGradient(this.x, this.y, 0, this.x, this.y, this.w * 0.6);
+    grd.addColorStop(0, 'rgba(0,255,135,0.4)');
+    grd.addColorStop(1, 'rgba(0,255,135,0)');
+    ctx.fillStyle = grd;
+    ctx.beginPath();
+    ctx.ellipse(this.x, this.y, this.w * 0.6, this.h * 0.5, 0, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.restore();
+  }
+}
+
+function initScene() {
+  stars = Array.from({length: 60}, () => new Star());
+  birds = [];
+  for (let i = 0; i < 22; i++) birds.push(new SmallBird(i * 45));
+  clouds = [
+    new Cloud(W*0.1, H*0.15, 200, 50, 0.04),
+    new Cloud(W*0.4, H*0.25, 160, 35, 0.03),
+    new Cloud(W*0.7, H*0.12, 220, 55, 0.035),
+    new Cloud(W*0.85, H*0.35, 140, 30, 0.025),
+    new Cloud(W*0.25, H*0.42, 180, 40, 0.03),
+    new Cloud(W*0.6, H*0.48, 150, 35, 0.025),
+  ];
+}
+initScene();
+
+let frame = 0;
+function animate() {
+  requestAnimationFrame(animate);
+  frame++;
+  drawSky();
+  stars.forEach(s => { s.update(); s.draw(); });
+  clouds.forEach(c => { c.update(); c.draw(); });
+  birds.forEach(b => { b.update(); b.draw(); });
+}
+animate();
+
+// ═══════════════════════════════════════
+// AUTH LOGIC
+// ═══════════════════════════════════════
+const API_URL = 'https://younggiant-backend-production.up.railway.app';
+
+function showScreen(n) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById('scr-' + n).classList.add('active');
+}
+function goAuth(tab) { showScreen('auth'); switchTab(tab); }
+function goBack() { showScreen('splash'); }
+function switchTab(t) {
+  document.getElementById('form-signup').style.display = t==='signup'?'block':'none';
+  document.getElementById('form-login').style.display = t==='login'?'block':'none';
+  document.getElementById('tab-su').classList.toggle('active', t==='signup');
+  document.getElementById('tab-li').classList.toggle('active', t==='login');
+  document.getElementById('auth-msg').className = 'auth-msg';
+}
+
+async function handleSignup() {
+  const fname = document.getElementById('su-fname').value.trim();
+  const lname = document.getElementById('su-lname').value.trim();
+  const phone = document.getElementById('su-phone').value.trim();
+  const email = document.getElementById('su-email').value.trim();
+  const pwd = document.getElementById('su-pwd').value;
+  if (!fname||!email||!pwd) return showMsg('Please fill in all required fields.','error');
+  if (pwd.length<8) return showMsg('Password must be at least 8 characters.','error');
+  setLoad('su',true);
+  try {
+    const res = await fetch(`${API_URL}/api/auth/register`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({name:`${fname} ${lname}`.trim(),email,phone,password:pwd})});
+    const data = await res.json(); setLoad('su',false);
+    if (!res.ok){showMsg(data.error||'Registration failed.','error');return;}
+    localStorage.setItem('yg_token',data.token);
+    localStorage.setItem('yg_user',JSON.stringify(data.user));
+    showMsg('✅ Account created! Redirecting...','success');
+    setTimeout(()=>{ window.location.href='app.html'; },1200);
+  } catch { setLoad('su',false); showMsg('Network error. Try again.','error'); }
+}
+
+async function handleLogin() {
+  const email = document.getElementById('li-email').value.trim();
+  const pwd = document.getElementById('li-pwd').value;
+  if (!email||!pwd) return showMsg('Enter email and password.','error');
+  setLoad('li',true);
+  try {
+    const res = await fetch(`${API_URL}/api/auth/login`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email,password:pwd})});
+    const data = await res.json(); setLoad('li',false);
+    if (!res.ok){showMsg('Incorrect email or password.','error');return;}
+    localStorage.setItem('yg_token',data.token);
+    localStorage.setItem('yg_user',JSON.stringify(data.user));
+    showMsg('✅ Signed in! Redirecting...','success');
+    setTimeout(()=>{ window.location.href='app.html'; },1000);
+  } catch { setLoad('li',false); showMsg('Network error.','error'); }
+}
+
+function showMsg(m,t){const el=document.getElementById('auth-msg');el.textContent=m;el.className='auth-msg show '+t;}
+function setLoad(f,l){document.getElementById('btn-'+f).disabled=l;document.getElementById('sp-'+f).classList.toggle('show',l);}
+function checkPwd(p){let s=0;if(p.length>=8)s++;if(/[A-Z]/.test(p))s++;if(/[0-9]/.test(p))s++;if(/[^A-Za-z0-9]/.test(p))s++;const c=['','#ff4444','#ffb300','#00b894','#00FF87'];for(let i=1;i<=4;i++)document.getElementById('pb'+i).style.background=i<=s?c[s]:'var(--b2)';}
+
+// Auto-login
+window.addEventListener('DOMContentLoaded',()=>{
+  const t=localStorage.getItem('yg_token');
+  if(t){ try{ window.location.href='app.html'; }catch{} }
+});
+</script>
+</body>
+</html>
