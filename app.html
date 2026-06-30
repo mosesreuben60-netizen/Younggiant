@@ -630,25 +630,156 @@ body{background:var(--dk);color:var(--txt);font-family:var(--body);}
         </div>
       </div>
 
-      <!-- CHAT PANEL -->
+      <!-- CHAT PANEL — YG AI AGENT -->
       <div class="tab-panel" id="panel-chat" style="height:calc(100vh - 116px);display:none;flex-direction:column;">
         <div class="chat-wrap">
           <div class="chat-header">
-            <div class="agent-av">YG</div>
-            <div>
-              <div style="font-size:0.9rem;font-weight:600;">Young Giant Support</div>
-              <div class="agent-status"><div class="online-dot"></div>Online · Usually replies in minutes</div>
+            <div class="agent-av" style="background:linear-gradient(135deg,var(--g),var(--gd));">⚡</div>
+            <div style="flex:1;">
+              <div style="font-size:0.9rem;font-weight:600;">Young Giant AI Agent</div>
+              <div class="agent-status"><div class="online-dot"></div>Always online · Instant replies</div>
+            </div>
+            <div style="font-family:var(--mono);font-size:0.6rem;color:var(--m);background:rgba(0,255,135,0.08);border:1px solid rgba(0,255,135,0.15);padding:4px 8px;border-radius:4px;">🤖 YG BOT</div>
+          </div>
+
+          <!-- QUICK REPLY CHIPS -->
+          <div style="display:flex;gap:8px;padding:10px 14px;overflow-x:auto;scrollbar-width:none;border-bottom:1px solid var(--b2);flex-shrink:0;" id="quick-chips">
+            <button onclick="sendQuick('How much does delivery cost?')" style="background:var(--s);border:1px solid var(--b2);border-radius:99px;padding:6px 14px;color:var(--txt);font-family:var(--mono);font-size:0.62rem;white-space:nowrap;cursor:pointer;flex-shrink:0;">💰 Pricing</button>
+            <button onclick="sendQuick('I want to book a delivery')" style="background:var(--s);border:1px solid var(--b2);border-radius:99px;padding:6px 14px;color:var(--txt);font-family:var(--mono);font-size:0.62rem;white-space:nowrap;cursor:pointer;flex-shrink:0;">📦 Book</button>
+            <button onclick="sendQuick('How do I track my delivery?')" style="background:var(--s);border:1px solid var(--b2);border-radius:99px;padding:6px 14px;color:var(--txt);font-family:var(--mono);font-size:0.62rem;white-space:nowrap;cursor:pointer;flex-shrink:0;">📍 Track</button>
+            <button onclick="sendQuick('What areas do you cover?')" style="background:var(--s);border:1px solid var(--b2);border-radius:99px;padding:6px 14px;color:var(--txt);font-family:var(--mono);font-size:0.62rem;white-space:nowrap;cursor:pointer;flex-shrink:0;">🗺️ Coverage</button>
+            <button onclick="sendQuick('How do I fund my wallet?')" style="background:var(--s);border:1px solid var(--b2);border-radius:99px;padding:6px 14px;color:var(--txt);font-family:var(--mono);font-size:0.62rem;white-space:nowrap;cursor:pointer;flex-shrink:0;">💳 Wallet</button>
+            <button onclick="sendQuick('Tell me about Young Giant')" style="background:var(--s);border:1px solid var(--b2);border-radius:99px;padding:6px 14px;color:var(--txt);font-family:var(--mono);font-size:0.62rem;white-space:nowrap;cursor:pointer;flex-shrink:0;">🦅 About</button>
+          </div>
+
+          <div class="chat-messages" id="chat-msgs">
+            <div class="chat-msg bot">
+              <div class="msg-av" style="background:linear-gradient(135deg,var(--g),var(--gd));color:#000;">⚡</div>
+              <div class="msg-bub">Hello! 👋 I'm the Young Giant AI agent — here to help you 24/7 with bookings, pricing, tracking, and anything else. What can I do for you today?</div>
             </div>
           </div>
-          <div class="chat-messages" id="chat-msgs">
-            <div class="chat-msg bot"><div class="msg-av">YG</div><div class="msg-bub">Hello! 👋 Welcome to Young Giant. I'm here to help you with bookings, pricing, tracking, or any questions. How can I help you today?</div></div>
-          </div>
           <div class="chat-input-row">
-            <input type="text" id="chat-in" placeholder="Type your message..." onkeydown="if(event.key==='Enter')sendChat()"/>
-            <button class="btn-send" onclick="sendChat()">Send</button>
+            <input type="text" id="chat-in" placeholder="Ask me anything..." onkeydown="if(event.key==='Enter')sendChat()"/>
+            <button class="btn-send" onclick="sendChat()">⚡</button>
           </div>
         </div>
       </div>
+
+<!-- ═══════════════════════════════════════════════════ -->
+<!-- REPLACE THE sendChat() FUNCTION IN app.html WITH THIS -->
+<!-- ═══════════════════════════════════════════════════ -->
+
+<script>
+// ── YG AI AGENT ───────────────────────────────────────────
+const YGAgent = {
+  memory: { userName: null, stage: 'greeting', bookingData: {}, lastTopic: null, messageCount: 0 },
+  knowledge: {
+    pricing: { lagos: { within: '₦1,500 - ₦3,500' }, abuja: { within: '₦1,500 - ₦3,000' }, express: '₦500 extra for express under 2 hours' },
+    bankDetails: 'Bank: Opay/Palmpay | Account: 8106043892 | Name: Moses Reuben',
+  },
+  detectIntent(msg) {
+    const m = msg.toLowerCase();
+    if (/price|cost|how much|fee|charge|rate|expensive|cheap/.test(m)) return 'pricing';
+    if (/book|order|send|deliver|pickup|drop|schedule|want to/.test(m)) return 'booking';
+    if (/track|where|status|update|location|my order|my delivery/.test(m)) return 'tracking';
+    if (/pay|wallet|fund|transfer|bank|paystack|card|account number/.test(m)) return 'payment';
+    if (/time|long|fast|quick|when|eta|arrive|how soon/.test(m)) return 'timing';
+    if (/cancel|refund|return|money back/.test(m)) return 'cancellation';
+    if (/area|cover|operate|available|lagos|abuja|warri|ph|portharcourt|ibadan/.test(m)) return 'coverage';
+    if (/safe|trust|secure|reliable|legit|scam/.test(m)) return 'safety';
+    if (/transport|travel|coach|bus|intercity|journey/.test(m)) return 'transport';
+    if (/driver|vehicle|ev|electric|solar|green|environment/.test(m)) return 'ev';
+    if (/weight|heavy|big|small|size|kg/.test(m)) return 'weight';
+    if (/hello|hi|hey|good morning|good afternoon|good evening|start/.test(m)) return 'greeting';
+    if (/thank|thanks|appreciate|great|perfect|awesome|nice|wonderful/.test(m)) return 'thanks';
+    if (/human|speak|moses|person|agent|support|help/.test(m)) return 'human';
+    if (/business|company|sme|bulk|regular|subscription/.test(m)) return 'business';
+    if (/founder|who made|who built|about|story/.test(m)) return 'about';
+    if (/contact|email|phone|reach|call/.test(m)) return 'contact';
+    if (/wallet|balance|money/.test(m)) return 'wallet';
+    return 'unknown';
+  },
+  respond(userMsg, userName) {
+    this.memory.messageCount++;
+    if (userName) this.memory.userName = userName.split(' ')[0];
+    const name = this.memory.userName || '';
+    const intent = this.detectIntent(userMsg);
+    if (this.memory.stage === 'collecting') return this.handleBookingFlow(userMsg, name);
+    switch(intent) {
+      case 'greeting': return `Hey${name?' '+name:''}! 👋 Welcome to Young Giant — Nigeria's first solar-powered EV logistics. How can I help you today? ⚡`;
+      case 'pricing': return `📦 Young Giant Delivery Pricing:\n\n🏙️ Within Lagos: ₦1,500 - ₦3,500\n🏙️ Within Abuja: ₦1,500 - ₦3,000\n🚐 Lagos ↔ Abuja corridor: ₦3,500 - ₦8,000\n⚡ Express (under 2hrs): ₦500 extra\n\nWant an exact quote? Tell me your pickup and dropoff location!`;
+      case 'booking': this.memory.stage='collecting'; this.memory.bookingData={}; return `⚡ Let's book your delivery!\n\nWhat's the pickup address? (street, area, city)`;
+      case 'tracking': return `📍 To track your delivery:\n\n1. Tap the Delivery tab\n2. Select Track tab\n3. Enter your YG-XXXXXX code\n\nYour driver's live GPS updates every 15 seconds! 🗺️`;
+      case 'payment': return `💳 Payment Options:\n\n1. YG Wallet — fund once, pay instantly\n2. Pay on Delivery — cash or transfer\n3. Paystack — instant card payment\n\nBank transfer details:\n🏦 Opay/Palmpay\n📱 8106043892\n👤 Moses Reuben\n\nCredit within 5-10 mins after transfer!`;
+      case 'wallet': return `💳 Your YG Wallet:\n\nFund via:\n• Bank transfer to 8106043892 (Opay/Palmpay)\n• Paystack card payment\n\nTap the Wallet tab at the bottom to get started!`;
+      case 'timing': return `⏱️ Delivery Times:\n\n✅ Driver confirmation: 20-25 mins\n🚐 Driver arrival: 45-90 mins\n📦 Delivery within Lagos/Abuja: 1-4 hours\n⚡ Express option: Under 2 hours (+₦500)\n\nEV fleet is always charged and ready!`;
+      case 'cancellation': return `❌ Cancellation & Refunds:\n\n• Before driver assigned — full refund\n• After driver assigned — small fee may apply\n• Refunds within 48 hours\n\nEmail younggiantev@gmail.com to cancel ✉️`;
+      case 'coverage': return `📍 Young Giant Coverage:\n\n✅ Currently Active:\n• Lagos (all areas)\n• Abuja (all areas)\n\n🔜 Coming Soon:\n• Port Harcourt • Warri\n• Ibadan • Kano\n\nNot covered yet? Email us — we may arrange a special delivery!`;
+      case 'safety': return `🔒 Safety & Trust:\n\n✅ Verified drivers\n✅ Live GPS on every delivery\n✅ Unique tracking code per booking\n✅ CAC registered Nigerian company\n✅ Direct access to founder Moses\n\nWe built Young Giant because Nigerians deserve logistics they can trust ⚡`;
+      case 'transport': return `🚌 YG Transport — Intercity EV Travel:\n\nLaunching Lagos ↔ Abuja Q3 2026!\n\n🧳 Travel Only — from ₦8,500\n📦 Luggage Pickup — from ₦12,000\n🚚 Package Ahead — from ₦6,000\n⭐ Full Service — from ₦18,000\n\nTap Transport tab to pre-register!`;
+      case 'ev': return `⚡ Young Giant EV & Solar:\n\n• 100% electric vehicles — zero petrol\n• Solar charged — zero grid cost\n• Zero carbon emissions\n• Quieter, cleaner, faster\n\nNo fuel costs = 10X cheaper for you 🌱🇳🇬`;
+      case 'weight': return `⚖️ Package Weight:\n\n📄 Documents (under 1kg) — lightest rate\n👕 Light (1-10kg) — standard rate\n📦 Medium (10-50kg) — medium rate\n🏋️ Heavy (50-100kg+) — quote on request\n\nTell me your package weight for an estimate!`;
+      case 'business': return `🏢 Business Plans:\n\nFor SMEs with regular deliveries:\n✅ Dedicated driver\n✅ Priority booking\n✅ Monthly invoicing\n✅ Bulk discounts\n\nEmail younggiantev@gmail.com with your business name and monthly delivery volume!`;
+      case 'about': return `🦅 About Young Giant:\n\nFounded by Moses Reuben in 2026 from Warri, Delta State. Built with zero startup capital, entirely from a mobile phone.\n\nMission: Make logistics 10X cheaper, 100% cleaner, and completely reliable for every Nigerian. ⚡🇳🇬`;
+      case 'contact': return `📞 Contact Young Giant:\n\n📧 younggiantev@gmail.com\n💬 This chat (Moses monitors it)\n\nMoses responds personally within 2 hours during business hours!`;
+      case 'human': return `👨‍💼 Talk to Moses directly:\n\nEmail younggiantev@gmail.com and Moses will respond personally.\n\nOr I can help you right here — what do you need? 😊`;
+      case 'thanks': return `You're welcome${name?' '+name:''}! ⚡ Anything else I can help with?`;
+      default: return `I can help with:\n\n📦 Booking a delivery\n💰 Pricing info\n📍 Tracking orders\n💳 Payment options\n🗺️ Coverage areas\n🏢 Business plans\n\nWhat would you like to know?`;
+    }
+  },
+  handleBookingFlow(msg, name) {
+    const data = this.memory.bookingData;
+    if (!data.pickup) { data.pickup=msg; return `Got it! 📍 Pickup: ${msg}\n\nNow what's the dropoff address?`; }
+    if (!data.dropoff) { data.dropoff=msg; return `Perfect! 🗺️ Dropoff: ${msg}\n\nWhat's in the package and roughly how heavy?`; }
+    if (!data.packageInfo) { data.packageInfo=msg; return `Got it! 📦 Package: ${msg}\n\nReceiver's name and phone number?`; }
+    if (!data.receiver) {
+      data.receiver=msg; this.memory.stage='greeting';
+      return `✅ Booking Summary:\n\n📍 Pickup: ${data.pickup}\n🗺️ Dropoff: ${data.dropoff}\n📦 Package: ${data.packageInfo}\n👤 Receiver: ${data.receiver}\n\n⚡ Tap Delivery → Book tab to complete! Driver confirmed in 25 mins${name?', '+name:''}!`;
+    }
+  }
+};
+// ── CHAT FUNCTIONS ─────────────────────────────────────────
+const chatHistoryLocal = [];
+
+function sendChat() {
+  const input = document.getElementById('chat-in');
+  const msg = input.value.trim();
+  if (!msg) return;
+  addChatMsg('user', msg);
+  input.value = '';
+  chatHistoryLocal.push(msg);
+  // Show typing indicator
+  const tid = 'typing-' + Date.now();
+  addChatMsg('bot', '<div class="typing"><span></span><span></span><span></span></div>', tid);
+  // Respond after short delay (feels natural)
+  setTimeout(() => {
+    removeMsg(tid);
+    const userName = currentUser?.name || '';
+    const reply = YGAgent.respond(msg, userName);
+    addChatMsg('bot', reply.replace(/\n/g, '<br/>'));
+  }, 600 + Math.random() * 400);
+}
+
+function sendQuick(msg) {
+  document.getElementById('chat-in').value = msg;
+  sendChat();
+}
+
+function addChatMsg(type, content, id) {
+  const win = document.getElementById('chat-msgs');
+  const div = document.createElement('div');
+  div.className = 'chat-msg ' + type;
+  if (id) div.id = id;
+  const av = type === 'bot'
+    ? '<div class="msg-av" style="background:linear-gradient(135deg,var(--g),var(--gd));color:#000;">⚡</div>'
+    : '<div class="msg-av">You</div>';
+  div.innerHTML = `${av}<div class="msg-bub">${content}</div>`;
+  win.appendChild(div);
+  win.scrollTop = win.scrollHeight;
+}
+
+function removeMsg(id) { const el = document.getElementById(id); if (el) el.remove(); }
+</script>
 
       <!-- PROFILE PANEL -->
       <div class="tab-panel" id="panel-profile">
